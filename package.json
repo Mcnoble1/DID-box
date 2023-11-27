@@ -1,5 +1,5 @@
 {
-  "name": "getmadad",
+  "name": "did-box",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "author": {
-    "name": "getmadad",
-    "email": "hello@tailadmin.com",
-    "url": "https://getmadad.com"
+    "name": "Idowu Festus",
+    "email": "idowufestustemiloluwa@gmail.com",
+    "url": "https://did-box.netlify.app"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
@@ -20,12 +20,15 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@web5/api": "^0.8.2",
     "apexcharts": "^3.41.0",
     "axios": "^1.5.0",
+    "crypto-browserify": "^3.12.0",
     "express": "^4.18.2",
     "headlessui": "^0.0.0",
     "jsvectormap": "^1.5.3",
     "match-sorter": "^6.3.1",
+    "process": "^0.11.10",
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
@@ -37,6 +40,7 @@
     "react-select": "^5.7.7",
     "react-toastify": "^9.1.3",
     "sort-by": "^0.0.2",
+    "stream-browserify": "^3.0.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
