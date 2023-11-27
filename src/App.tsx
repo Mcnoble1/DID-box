@@ -7,9 +7,7 @@ import Workers from './pages/Workers';
 import Customers from './pages/Customers';
 import Transportation from './pages/Categories/Transportation';
 import Others from './pages/Categories/Others';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import ForgotPassword from './pages/ForgotPassword';
+import Homepage from './pages/Homepage';
 import Configuration from './pages/Configuration';
 import Loader from './common/Loader';
 import routes from './routes';
@@ -30,15 +28,12 @@ function App() {
     <Toaster position='top-right' reverseOrder={false} containerClassName='overflow-auto'/>
   
       <Routes>
-        <Route path="/" index element={<SignIn />} />
-        <Route path="/signin" index element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/" index element={<Homepage />} />
+        <Route path="/homepage" index element={<Homepage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/configuration" element={<Configuration />} />
         <Route path="/workers" element={<Workers />} />
         <Route path="/customers" element={<Customers />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/signin/forgot-password" element={<ForgotPassword />} />
         <Route path="/categories/transportation" element={<Transportation />} />
         <Route path="/categories/others" element={<Others />} />
         <Route element={<DefaultLayout />}>

@@ -73,7 +73,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <img src={Logo} alt="Logo" height={50} width={50} className='mr-5' />
 
          <div className='text-white text-2xl font-bold flex items-center mr-3'>
-            MADAD
+            DID-Box
           </div> 
         </NavLink>
 
@@ -117,7 +117,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   }`}
                 >
                    <FontAwesomeIcon icon={faSlack} style={{color: "#ffffff",}} />
-                  Dashboard
+                  Personal
                 </NavLink>
               </li>
               {/* <!-- Menu Item Dashboard --> */}
@@ -217,7 +217,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   }`}
                 >
                   <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
-                 Workers
+                 Academic
                 </NavLink>
               </li>
               {/* <!-- Menu Item Workers --> */}
@@ -234,7 +234,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   }`}
                 >
                   <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                  Customers
+                  Health
                 </NavLink>
               </li>
 
@@ -247,7 +247,85 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   }`}
                 >
                   <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                  Configuration
+                  Sport
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/customers"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('customers') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                 Entertainment
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/customers"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('customers') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                  Financial
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/customers"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('customers') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                  Chat Messaging
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/customers"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('customers') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                 Social Media
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/customers"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('customers') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                 Reviews
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/customers"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('customers') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                  Add Yours
                 </NavLink>
               </li>
               {/* <!-- Menu Item Customerss --> */}

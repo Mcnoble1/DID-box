@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
-import Logo from '../images/logo/logo.png';
+
 import DropdownUser from './DropdownUser';
-import { toast } from 'react-toastify'; 
-import 'react-toastify/dist/ReactToastify.css'; 
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
@@ -58,13 +54,13 @@ const Header = (props: {
           </button>
           {/* <!-- Hamburger Toggle BTN --> */}
 
-          <Link className="block flex-shrink-0 lg:hidden" to="/">
+          {/* <Link className="block flex-shrink-0 lg:hidden" to="/">
             <img src={Logo} alt="Logo" height={40} width={40}/>
-          </Link>
+          </Link> */}
         </div>
 
         <div className="hidden text-xl font-bold sm:block flex flex-row justify-center">
-          MADAD DASHBOARD
+          DID-Box
         </div>
 
         <div className="flex items-center gap-3 2xsm:gap-7">
