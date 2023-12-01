@@ -1,4 +1,4 @@
-#DID-Box: Your Personal Data Store and Management Application
+# DID-Box: Your Personal Data Store and Management Application
 
 ## Installation
 
