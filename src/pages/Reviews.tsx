@@ -22,7 +22,7 @@ const Review = () => {
               </div>
 
               <div className="mt-4">
-                <ReviewDetails />
+                {/* <ReviewDetails /> */}
               </div>
             </div>
           </main>

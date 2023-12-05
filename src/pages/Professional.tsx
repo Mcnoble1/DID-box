@@ -22,7 +22,7 @@ const Professional = () => {
               </div>
 
               <div className="mt-4">
-                <ProfessionalDetails />
+                {/* <ProfessionalDetails /> */}
               </div>
             </div>
           </main>

@@ -22,7 +22,7 @@ const Sport = () => {
               </div>
 
               <div className="mt-4">
-                <SportDetails />
+                {/* <SportDetails /> */}
               </div>
             </div>
           </main>

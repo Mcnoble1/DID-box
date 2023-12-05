@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://getmadad.com",
+  "homepage": "https://did-box.netlify.app",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

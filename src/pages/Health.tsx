@@ -22,7 +22,7 @@ const Health = () => {
               </div>
 
               <div className="mt-4">
-                <HealthDetails />
+                {/* <HealthDetails /> */}
               </div>
             </div>
           </main>

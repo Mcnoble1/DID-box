@@ -8,22 +8,14 @@ const PersonalDetails = () => {
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
 
   const [popupOpenMap, setPopupOpenMap] = useState<{ [key: number]: boolean }>({});
-  const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; whatsapp: string; area: string; block: string; address: string; nationality: string; category: string; service:string[]; languages: string[]; lengthOfService: string; familyInKuwait: string; petFriendly: string; image: File | null }>({
+  const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; languages: string[]; image: File | null }>({
     name: '',
     gender: '',
     phone: '',
-    whatsapp: '',
-    area: '',
     address: '',
-    block: '',
     nationality: '',
     languages: [],
-    service: [],
-    category: '',
     dateofbirth: '',
-    lengthOfService: '',
-    familyInKuwait: '',
-    petFriendly: '',
     image: null,
   });
 
@@ -37,18 +29,10 @@ const PersonalDetails = () => {
          name: worker.name,
          gender: worker.gender,
           phone: worker.phone,
-          whatsapp: worker.whatsapp,
-          area: worker.area,
-          block: worker.block,
           address: worker.address,
           nationality: worker.nationality,
           dateofbirth: worker.dateofbirth,
           languages: worker.languages,
-          service: worker.service,
-          category: worker.category,
-          lengthOfService: worker.lengthOfService,
-          familyInKuwait: worker.familyInKuwait,
-          petFriendly: worker.petFriendly,
           image: null,
         });
       }
@@ -141,7 +125,7 @@ const showDeleteConfirmation = (workerId: number) => {
   }, []);
 
   return (
-    <div className="mx-5 flex flex-col rounded-lg border border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
+    <div className="mx-5 flex flex-col rounded-lg border break-words border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="flex flex-wrap w-full">
         <div className='w-1/2 mb-5'>
           <span className="text-xl">Name</span>
@@ -152,9 +136,9 @@ const showDeleteConfirmation = (workerId: number) => {
 
         <div className='w-1/2 mb-5'>
           <span className="text-xl">Email</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+          <p className="text-xl mt-1 font-medium text-black  dark:text-white ">
             idowufestustemiloluwa@gmail.com
-          </h4>
+          </p>
         </div>
 
         <div className='w-1/2 mb-5'>
