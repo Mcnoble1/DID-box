@@ -35,7 +35,7 @@ const ProfileCard = () => {
     <div className="w-full md:w-3/5 flex justify-between rounded-lg border border-stroke bg-white py-7.5 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
        <div className="">
           <h4 className="text-2xl font-bold text-black dark:text-white">
-            Personal Details
+            Health Details
           </h4>
           <button
             ref={trigger}
@@ -53,7 +53,7 @@ const ProfileCard = () => {
                     style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'scroll' }}
                   >
                     <div className="flex flex-row justify-between">
-                      <h2 className="text-xl font-semibold mb-4">Add Personal Details</h2>
+                      <h2 className="text-xl font-semibold mb-4">Add Health Details</h2>
                       <div className="flex justify-end">
                         <button
                           onClick={() => setPopupOpen(false)} 

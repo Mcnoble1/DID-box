@@ -5,19 +5,63 @@ const Others = lazy(() => import('../pages/Categories/Others'));
 const Workers = lazy(() => import('../pages/Workers'));
 const Customers = lazy(() => import('../pages/Customers'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
-const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
 const Configuration = lazy(() => import('../pages/Configuration'));
+const Education = lazy(() => import('../pages/Education'));
+const Entertainment = lazy(() => import('../pages/Entertainment'));
+const Sport = lazy(() => import('../pages/Sport'));
+const Financial = lazy(() => import('../pages/Financial'));
+const Professional = lazy(() => import('../pages/Professional'));
+const Health = lazy(() => import('../pages/Health'));
+const Social = lazy(() => import('../pages/Social'));
+const Reviews = lazy(() => import('../pages/Reviews'));
+
+
 
 const coreRoutes = [
-  {
-    path: '/forgot-password',
-    title: 'Forgot Password',
-    component: ForgotPassword,
-  },
   {
     path: '/dashboard', 
     title: 'Dashboard',
     component: Dashboard, 
+  },
+  {
+    path: '/education', 
+    title: 'Education',
+    component: Education, 
+  },
+  {
+    path: '/professional', 
+    title: 'Professional',
+    component: Professional, 
+  },
+  {
+    path: '/sport', 
+    title: 'Sport',
+    component: Sport, 
+  },
+  {
+    path: '/reviews', 
+    title: 'Reviews',
+    component: Reviews, 
+  },
+  {
+    path: '/health', 
+    title: 'Health',
+    component: Health, 
+  },
+  {
+    path: '/social', 
+    title: 'Social',
+    component: Social, 
+  },
+  {
+    path: '/entertainment',
+    title: 'Entertainment',
+    component: Entertainment,
+  },
+  {
+    path: '/financial',
+    title: 'Financial',
+    component: Financial,
   },
   {
     path: '/customers',

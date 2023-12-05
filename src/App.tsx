@@ -2,6 +2,14 @@ import { Suspense, lazy, useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
+import Health from './pages/Health';
+import Education from './pages/Education';
+import Entertainment from './pages/Entertainment';
+import Sport from './pages/Sport';
+import Reviews from './pages/Reviews';
+import Professional from './pages/Professional';
+import Social from './pages/Social';
+import Financial from './pages/Financial';
 import Dashboard from './pages/Dashboard';
 import Workers from './pages/Workers';
 import Customers from './pages/Customers';
@@ -30,6 +38,14 @@ function App() {
       <Routes>
         <Route path="/" index element={<Homepage />} />
         <Route path="/homepage" index element={<Homepage />} />
+        <Route path="/financial" element={<Financial />} />
+        <Route path="/health" element={<Health />} />
+        <Route path="/social" element={<Social />} />
+        <Route path="/entertainment" element={<Entertainment />} />
+        <Route path="/education" element={<Education />} />
+        <Route path="/sport" element={<Sport />} />
+        <Route path="/reviews" element={<Reviews />} />
+        <Route path="/professional" element={<Professional />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/configuration" element={<Configuration />} />
         <Route path="/workers" element={<Workers />} />
