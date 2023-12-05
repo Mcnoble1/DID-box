@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 import Select from 'react-select';
-import Image from '../images/user/user-01.png';
+import Image from '../images/user/3.png';
 const ProfileCard = () => {
   
   const [popupOpen, setPopupOpen] = useState(false);
