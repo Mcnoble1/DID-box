@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, ChangeEvent, FormEvent, useEffect } from 'react';
 
 const PersonalDetails = () => {
   const [usersData, setUsersData] = useState<User[]>(0);
   const [workerToDeleteId, setWorkerToDeleteId] = useState<number | null>(null);
-  const [workersData, setWorkersData] = useState<Worker[]>([]);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
 
@@ -18,21 +17,39 @@ const PersonalDetails = () => {
     dateofbirth: '',
     image: null,
   });
+  const [showDetails, setShowDetails] = useState(false);
+
+  const usersDetails = [
+    { name: 'Mcnoble Don',
+      gender: 'Male',
+      email: 'mcnoble@gmail.com',
+      phone: '+23412345678',
+      address: '7 Kutan Estate, Lagos',
+      dateofbirth: 'March 12, 1700',
+      nationality: 'Nigerian',
+      languages: ['English', 'French'],
+    },
+  ];
 
   const popup = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const togglePopup = (workerId: number) => {
-    workersData.map((worker) => { 
-      if (worker._id === workerId) {
+  const toggleDetails = () => {
+    setShowDetails((prevShowDetails) => !prevShowDetails);
+  };
+
+  const togglePopup = (userId: number) => {
+    usersDetails.map((user) => { 
+      if (user._id === userId) {
         setFormData({
-         name: worker.name,
-         gender: worker.gender,
-          phone: worker.phone,
-          address: worker.address,
-          nationality: worker.nationality,
-          dateofbirth: worker.dateofbirth,
-          languages: worker.languages,
+         name: user.name,
+         gender: user.gender,
+          phone: user.phone,
+          email: user.email,
+          address: user.address,
+          nationality: user.nationality,
+          dateofbirth: user.dateofbirth,
+          languages: user.languages,
           image: null,
         });
       }
@@ -54,7 +71,7 @@ const closePopup = (workerId: number) => {
 const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
   const { name, value } = e.target;
 
-  if (name === 'phone' || name === 'whatsapp') {
+  if (name === 'phone') {
     // Use a regular expression to allow only phone numbers starting with a plus
     const phoneRegex = /^[+]?[0-9\b]+$/;
       
@@ -62,25 +79,13 @@ const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>)
       // If the input value doesn't match the regex and it's not an empty string, do not update the state
       return;
     }
-  } else if (name === 'name' || name === 'nationality' || name === 'area') {
+  } else if (name === 'name' || name === 'nationality' ) {
     // Use a regular expression to allow only letters and spaces
     const letterRegex = /^[A-Za-z\s]+$/;
     if (!value.match(letterRegex) && value !== '') {
       // If the input value doesn't match the regex and it's not an empty string, do not update the state
       return;
     }
-  }
-
-  if (name === 'category') {
-    // Find the selected category object from the categories array
-    const selectedCategoryObject = categories.find((category) => category._id === value);
-
-    setSelectedCategory(selectedCategoryObject || null);
-
-    setFormData((prevData) => ({
-      ...prevData,
-      service: [], // Clear the selected service
-    }));
   }
 
   setFormData((prevFormData) => ({
@@ -111,13 +116,7 @@ const showDeleteConfirmation = (workerId: number) => {
 
 
   const handleDelete = (workerId: number) => {
-    const config = {
-      method: 'delete',
-      url: `https://madad.onrender.com/api/admin/worker/delete/${workerId}`,
-      headers: {
-        'Authorization': `Bearer ${token}`, // Include the bearer token in the Authorization header
-      },
-    };
+    
   }
 
   useEffect(() => {
@@ -125,48 +124,64 @@ const showDeleteConfirmation = (workerId: number) => {
   }, []);
 
   return (
-    <div className="mx-5 flex flex-col rounded-lg border break-words border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="flex flex-wrap w-full">
-        <div className='w-1/2 mb-5'>
+    <div className="lg:mx-5 flex flex-col rounded-lg border break-words border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
+      {usersDetails.map((user, index) => (
+      <div className="flex flex-wrap w-full" key={index}>
+        <div className='w-1/2 mb-5' >
           <span className="text-xl">Name</span>
           <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            Festus Idowu
+            {showDetails ? user.name : '********'}
           </h4>
         </div>
 
         <div className='w-1/2 mb-5'>
           <span className="text-xl">Email</span>
-          <p className="text-xl mt-1 font-medium text-black  dark:text-white ">
-            idowufestustemiloluwa@gmail.com
-          </p>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.email : '********'}
+          </h4>
         </div>
 
         <div className='w-1/2 mb-5'>
           <span className="text-xl">Phone Number</span>
           <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            +2348067590789
+            {showDetails ? user.phone : '********'}
           </h4>
         </div>
 
         <div className='w-1/2 mb-5'>
           <span className="text-xl">Address</span>
           <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            7 Ayelabowo Moore, Ile-Ife
+            {showDetails ? user.address : '********'}
           </h4>
         </div>
 
         <div className='w-1/2 mb-5'>
           <span className="text-xl">Date of Birth</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            March 4, 2000
+          <h4 className={`text-xl mt-1 font-medium text-black dark:text-white}`}>
+            {showDetails ? user.dateofbirth : '********'}
           </h4>
-        </div>       
+        </div> 
+
+        <div className='w-1/2 mb-5'>
+          <span className="text-xl">Nationality</span>
+          <h4 className={`text-xl mt-1 font-medium text-black dark:text-white}`}>
+            {showDetails ? user.nationality : '********'}
+          </h4>
+        </div> 
+
+        <div className='w-1/2 mb-5'>
+          <span className="text-xl">Languages</span>
+          <h4 className={`text-xl mt-1 font-medium text-black dark:text-white}`}>
+            {showDetails ? user.languages : '********'}
+          </h4>
+        </div> 
       </div>
-      <div className="flex justify-evenly gap-2">
+      ))}
+      <div className="flex flex-row flex-wrap justify-evenly gap-2">
             <div className="relative">
               <button
                 // onClick={toggleSortDropdown}
-                className="inline-flex items-center justify-center rounded-full bg-success py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+                className="inline-flex items-center justify-center rounded-full bg-success py-3 px-7 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
               >
                 Share
               </button>
@@ -528,7 +543,7 @@ const showDeleteConfirmation = (workerId: number) => {
             <div className="relative">
               <button
                 onClick={() => showDeleteConfirmation(4)}
-                className="inline-flex items-center justify-center rounded-full bg-danger py-3 px-10 text-center font-medium text-white hover-bg-opacity-90 lg:px-8 xl:px-10"
+                className="inline-flex items-center justify-center rounded-full bg-danger py-3 px-7 text-center font-medium text-white hover-bg-opacity-90 lg:px-8 xl:px-10"
               >
                 Delete
               </button>
@@ -557,9 +572,23 @@ const showDeleteConfirmation = (workerId: number) => {
                       </div>
                     )}
             </div>
+            <div className="relative">
+          <button
+            onClick={toggleDetails}
+            className="inline-flex items-center justify-center rounded-full bg-primary py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          >
+            {showDetails ? 'Hide Details' : 'Show Details'}
+          </button>
+        </div>
           </div>
     </div>
   );
 };
 
 export default PersonalDetails;
+
+
+
+
+
+
