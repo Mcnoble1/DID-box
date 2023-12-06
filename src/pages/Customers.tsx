@@ -8,14 +8,7 @@ const Tables = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    // Check if the user is signed in, otherwise redirect to the sign-in page
-    const isSignedIn = localStorage.getItem('token');
-    if (!isSignedIn) {
-      navigate('/signin');
-    } else {
-      navigate('/customers');    }
-  }, [navigate]);
+
 
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">

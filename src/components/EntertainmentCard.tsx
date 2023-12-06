@@ -1,9 +1,6 @@
-import React, { useState, useRef, useEffect, FormEvent, ChangeEvent } from 'react';
+import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
 import Select from 'react-select';
-import { toast } from 'react-toastify'; 
-import 'react-toastify/dist/ReactToastify.css'; 
-import '../pages/signin.css';
-import Image from '../images/user/1.png';
+import Image from '../images/user/6.png';
 const ProfileCard = () => {
   
   const [popupOpen, setPopupOpen] = useState(false);
@@ -12,13 +9,9 @@ const ProfileCard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [personalDetails, setPersonalDetails] = useState<any[]>([]);
-  const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false);
-  const [sharePopupOpen, setSharePopupOpen] = useState(false);
-  const [shareLoading, setShareLoading] = useState(false);
-  const [recipientDid, setRecipientDid] = useState('');
-  const [myDid, setMyDid] = useState('');
-  const [web5, setWeb5] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+
   const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; languages: string[]; image: File | null }>({
     name: '',
     gender: '',
@@ -30,358 +23,19 @@ const ProfileCard = () => {
     image: null,
   });
 
-
-  const protocolDefinition = () => {
-    return {
-      protocol: "https://did-box.com",
-      published: true,
-      types: {
-        personalDetails: {
-          schema: "https://did-box.com/schemas/personalDetails",
-          dataFormats: ["application/json"],
-        },
-        healthDetails: {
-          schema: "https://did-box.com/schemas/healthDetails",
-          dataFormats: ["application/json"],
-        },
-        educationDetails: {
-          schema: "https://did-box.com/schemas/educationDetails",
-          dataFormats: ["application/json"],
-        },
-        professionDetails: {
-          schema: "https://did-box.com/schemas/workDetails",
-          dataFormats: ["application/json"],
-        },
-        financialDetails: {
-          schema: "https://did-box.com/schemas/financialDetails",
-          dataFormats: ["application/json"],
-        },
-        sportDetails: {
-          schema: "https://did-box.com/schemas/sportDetails",
-          dataFormats: ["application/json"],
-        },
-        socialDetails: {
-          schema: "https://did-box.com/schemas/socialDetails",
-          dataFormats: ["application/json"],
-        },
-        entertainmentDetails: {
-          schema: "https://did-box.com/schemas/entertainmentDetails",
-          dataFormats: ["application/json"],
-        },
-        reviewDetails: {
-          schema: "https://did-box.com/schemas/reviewDetails",
-          dataFormats: ["application/json"],
-        },
-        otherDetails: {
-          schema: "https://did-box.com/schemas/otherDetails",
-          dataFormats: ["application/json"],
-        },
-      },
-      structure: {
-        personalDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "personalDetails", can: "read" },
-          ],
-        },
-        healthDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "healthDetails", can: "read" },
-          ],
-        },
-        educationDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "educationDetails", can: "read" },
-          ],
-        },
-        professionDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "professionDetails", can: "read" },
-          ],
-        },
-        financialDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "financialDetails", can: "read" },
-          ],
-        },
-        sportDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "sportDetails", can: "read" },
-          ],
-        },
-        socialDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "socialDetails", can: "read" },
-          ],
-        },
-        entertainmentDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "entertainmentDetails", can: "read" },
-          ],
-        },
-        reviewDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "reviewDetails", can: "read" },
-          ],
-        },
-        otherDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "otherDetails", can: "read" },
-          ],
-        },
-      },
-    };
-  };
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-  
-    const file = e.target.files?.[0];
-  
-      if (file) {
-        setSelectedFileName(file.name);
-      }
-  
-      if (name === 'phone' ) {
-        const phoneRegex = /^[+]?[0-9\b]+$/;
-          
-        if (!value.match(phoneRegex) && value !== '') {
-          return;
-        }
-      } else if (name === 'name' || name === 'nationality' || name === 'language') {
-        const letterRegex = /^[A-Za-z\s]+$/;
-        if (!value.match(letterRegex) && value !== '') {
-          return;
-        }
-      }
-  
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-  
-    
-const handleAddProfile = async (e: FormEvent) => {
-  e.preventDefault();
-  setLoading(true); 
-
-  const requiredFields = ['name', 'gender', 'phone', 'nationality', 'languages', 'dateofbirth', 'address'];
-  const emptyFields = requiredFields.filter((field) => !formData[field]);
-
-  if (emptyFields.length > 0) {
-    toast.error('Please fill in all required fields.', {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 3000, 
-    });
-    requiredFields.forEach((field) => {
-      if (!formData[field]) {
-        const inputElement = document.querySelector(`[name="${field}"]`);
-        if (inputElement) {
-          inputElement.parentElement?.classList.add('error-outline');
-        }
-      }
-    });
-    setLoading(false);
-    return; 
+  function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void {
+    throw new Error('Function not implemented.');
   }
-    
-  const formdata = new FormData();
-  formdata.append('name', formData.name);
-  formdata.append('gender', formData.gender);
-  formdata.append('phone', formData.phone);  
-  formdata.append('nationality', formData.nationality);
-  for (let i = 0; i < formData.languages.length; i++) {
-    formdata.append('languages[]', formData.languages[i]);
-  } 
-  formdata.append('dateofbirth', formData.dateofbirth);
-  formdata.append('address', formData.address);
-  formdata.append("image", fileInputRef.current.files[0], fileInputRef.current.files[0].name);
 
-
-  try {
-    let record;
-    let targetDid; 
-
-    record = await writeProfileToDwn(formdata);
-
-    if (record) {
-      const { status } = await record.send(targetDid);
-      console.log("Send record status in handleAddProfile", status);
-      await fetchPersonalDetails();
-    } else {
-      toast.error('Failed to create personal record', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000, 
-        });
-      throw new Error('Failed to create personal record');       
-    }
-
-    setFormData({
-      name: '',
-      gender: '',
-      phone: '',
-      address: '',
-      nationality: '',
-      dateofbirth: '',
-      languages: [],
-      image: null,
-    });
-
-    setPopupOpen(false);
-    toast.success('Successfully created personal record', {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 3000, 
-    });
-
-    setLoading(false);
-
-  } catch (err) {
-      console.error('Error in handleCreateCause:', err);
-      toast.error('Error in handleAddProfile. Please try again later.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 5000, // Adjust the duration as needed
-      });
-      setLoading(false);
-    } 
-};
-
-   const writeProfileToDwn = async (profileData: FormData) => {
-    try {
-      const personalProtocol = protocolDefinition();
-      const { record, status } = await web5.dwn.records.write({
-        data: profileData,
-        message: {
-          protocol: personalProtocol.protocol,
-          protocolPath: 'personalDetails',
-          schema: personalProtocol.types.personalDetails.schema,
-          recipient: myDid,
-        },
-      });
-
-      if (status === 200) {
-        return { ...profileData, recordId: record.id}
-      } 
-      console.log('Successfully wrote personal details to DWN:', record);
-      toast.success('Personal Details written to DWN', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000, 
-      });
-      return record;
-    } catch (err) {
-      console.error('Failed to write personal details to DWN:', err);
-      toast.error('Failed to write personal details to DWN. Please try again later.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-    }
-   }; 
-
-   const shareProfile = async (recordId: string) => {
-    setShareLoading(true);
-    try {
-      const response = await web5.dwn.records.query({
-        message: {
-          filter: {
-            recordId: recordId,
-          },
-        },
-      });
-
-      if (response.records && response.records.length > 0) {
-        const record = response.records[0];
-        const { status } = await record.send(recipientDid);
-        console.log('Send record status in shareProfile', status);
-        toast.success('Successfully shared personal record', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-        setShareLoading(false);
-        setSharePopupOpen(false);
-      } else {
-        console.error('No record found with the specified ID');
-        toast.error('Failed to share personal record', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-      }
-      setShareLoading(false);
-    } catch (err) {
-      console.error('Error in shareProfile:', err);
-      toast.error('Error in shareProfile. Please try again later.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 5000,
-      });
-      setShareLoading(false);
-    }
-  };
-
-  const fetchPersonalDetails = async () => {
-    setFetchDetailsLoading(true);
-    try {
-      const response = await web5.dwn.records.query({
-        from: myDid,
-        message: {
-          filter: {
-            message: {
-              protocol: 'https://did-box.com',
-              protocolPath: 'personalDetails',
-              schema: 'https://did-box.com/schemas/personalDetails',
-            },
-          },
-        },
-      });
-      console.log('Personal Details:', response);
-
-      if (response.status.code === 200) {
-        const personalDetails = await Promise.all(
-          response.records.map(async (record: { data: { json: () => any; }; id: any; }) => {
-            const data = await record.data.json();
-            return {
-              ...data,
-              recordId: record.id,
-            };
-          })
-        );
-        setPersonalDetails(personalDetails);
-        toast.success('Successfully fetched personal details', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-        setFetchDetailsLoading(false);
-      } else {
-        console.error('No personal details found');
-        toast.error('Failed to fetch personal details', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-      }
-      setFetchDetailsLoading(false);
-    } catch (err) {
-      console.error('Error in fetchPersonalDetails:', err);
-      toast.error('Error in fetchPersonalDetails. Please try again later.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 5000,
-      });
-      setFetchDetailsLoading(false);
-    };
-  };
-
+  function handleAddProfile(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <div className="w-full md:w-3/5 flex justify-between rounded-lg border border-stroke bg-white py-7.5 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
        <div className="">
           <h4 className="text-2xl font-bold text-black dark:text-white">
-            Personal Details
+            Entertainment Details
           </h4>
           <button
             ref={trigger}
@@ -399,7 +53,7 @@ const handleAddProfile = async (e: FormEvent) => {
                     style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'scroll' }}
                   >
                     <div className="flex flex-row justify-between">
-                      <h2 className="text-xl font-semibold mb-4">Add Personal Details</h2>
+                      <h2 className="text-xl font-semibold mb-4">Add Entertainment Details</h2>
                       <div className="flex justify-end">
                         <button
                           onClick={() => setPopupOpen(false)} 
@@ -470,7 +124,7 @@ const handleAddProfile = async (e: FormEvent) => {
                           onChange={handleInputChange}
                           className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                         </div>
-                      </div> 
+                      </div>
                     </div>
 
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
