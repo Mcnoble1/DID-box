@@ -6,15 +6,6 @@ const Homepage = () => {
   
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   // When the component mounts, check localStorage for email and rememberMe values
-  //   const savedEmail = localStorage.getItem('email');
-   
-  //   if (savedEmail ) {
-      
-  //   }
-  // }, []);
-
 
   return (
     <>

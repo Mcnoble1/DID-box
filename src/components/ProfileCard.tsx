@@ -31,6 +31,45 @@ const ProfileCard = () => {
   });
 
 
+  const queryLocalProtocol = async (web5: any, url: string) => {
+    return await web5.dwn.protocols.query({
+      message: {
+        filter: {
+          protocol: "https://did-box.com",
+        },
+      },
+    });
+  };
+
+
+  const queryRemoteProtocol = async (web5: any, did: string, url: string) => {
+    return await web5.dwn.protocols.query({
+      from: did,
+      message: {
+        filter: {
+          protocol: "https://did-box.com",
+        },
+      },
+    });
+  };
+
+  const installLocalProtocol = async (web5: any, protocolDefinition: any) => {
+    return await web5.dwn.protocols.configure({
+      message: {
+        definition: protocolDefinition,
+      },
+    });
+  };
+
+  const installRemoteProtocol = async (web5: any, did: string, protocolDefinition: any) => {
+    const { protocol } = await web5.dwn.protocols.configure({
+      message: {
+        definition: protocolDefinition,
+      },
+    });
+    return await protocol.send(did);
+  };
+
   const protocolDefinition = () => {
     return {
       protocol: "https://did-box.com",
@@ -141,6 +180,42 @@ const ProfileCard = () => {
       },
     };
   };
+
+  const configureProtocol = async (web5, did) => {
+    const protocolDefinition = protocolDefinition();
+    const protocolUrl = protocolDefinition.protocol;
+
+    const { protocols: localProtocols, status: localProtocolStatus } = await queryLocalProtocol(web5, protocolUrl);
+    if (localProtocolStatus.code !== 200 || localProtocols.length === 0) {
+      const result = await installLocalProtocol(web5, protocolDefinition);
+      console.log({ result })
+      toast.success('Personal Protocol installed locally', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+    } else {
+      toast.success('Personal Protocol already installed locally', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+      }
+
+    const { protocols: remoteProtocols, status: remoteProtocolStatus } = await queryRemoteProtocol(web5, did, protocolUrl);
+    if (remoteProtocolStatus.code !== 200 || remoteProtocols.length === 0) {
+      const result = await installRemoteProtocol(web5, did, protocolDefinition);
+      console.log({ result })
+      toast.success('Personal Protocol installed remotely', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+    }  else {
+      toast.success('Personal Protocol already installed remotely', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+      }
+  };
+  
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
