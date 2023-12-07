@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import useWeb5 from '../hooks/useWeb5';  // Adjust the path based on your project structure
-
+import useWeb5 from '../hooks/useWeb5';  
 const DidCard = () => {
 
-  const { web5, myDid } = useWeb5();
+    const { web5, myDid } = useWeb5();
 
   const [didCopied, setDidCopied] = useState(false);
 

@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect, FormEvent, ChangeEvent } from 'react';
 import Select from 'react-select';
+import useWeb5 from '../hooks/useWeb5';  
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import '../pages/signin.css';
 import Image from '../images/user/1.png';
 const ProfileCard = () => {
   
+  const { web5, myDid } = useWeb5();
+
   const [popupOpen, setPopupOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const popup = useRef<HTMLDivElement | null>(null);
@@ -17,8 +20,6 @@ const ProfileCard = () => {
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
   const [recipientDid, setRecipientDid] = useState('');
-  const [myDid, setMyDid] = useState('');
-  const [web5, setWeb5] = useState<any>(null);
   const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; languages: string[]; image: File | null }>({
     name: '',
     gender: '',
