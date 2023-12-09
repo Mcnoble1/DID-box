@@ -295,8 +295,12 @@ const deletePersonalDetails = async (recordId) => {
     if (response.records && response.records.length > 0) {
       const record = response.records[0];
       console.log(record)
-      const deleteResult = await record.delete();
-
+      const deleteResult = await web5.dwn.records.delete({
+        message: {
+          recordId: recordId
+        },
+      });
+      
       if (deleteResult.status.code === 202) {
         console.log('Personal Details deleted successfully');
         toast.success('Personal Details deleted successfully', {
