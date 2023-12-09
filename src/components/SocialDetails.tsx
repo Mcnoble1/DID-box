@@ -2,68 +2,39 @@ import React, { useState, useRef, useEffect } from 'react';
 
 const PersonalDetails = () => {
   const [usersData, setUsersData] = useState<User[]>(0);
-  const [workerToDeleteId, setWorkerToDeleteId] = useState<number | null>(null);
-  const [workersData, setWorkersData] = useState<Worker[]>([]);
+  const [userToDeleteId, setWorkerToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
 
   const [popupOpenMap, setPopupOpenMap] = useState<{ [key: number]: boolean }>({});
-  const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; whatsapp: string; area: string; block: string; address: string; nationality: string; category: string; service:string[]; languages: string[]; lengthOfService: string; familyInKuwait: string; petFriendly: string; image: File | null }>({
-    name: '',
-    gender: '',
-    phone: '',
-    whatsapp: '',
-    area: '',
-    address: '',
-    block: '',
-    nationality: '',
-    languages: [],
-    service: [],
-    category: '',
-    dateofbirth: '',
-    lengthOfService: '',
-    familyInKuwait: '',
-    petFriendly: '',
-    image: null,
+  const [formData, setFormData] = useState<{ username: string; platform: string; url: string;}>({
+    username: '',
+    platform: '',
+    url: '',
   });
 
   const popup = useRef<HTMLDivElement | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const togglePopup = (workerId: number) => {
-    workersData.map((worker) => { 
-      if (worker._id === workerId) {
+  const togglePopup = (userId: number) => {
+    usersData.map((user) => { 
+      if (user._id === userId) {
         setFormData({
-         name: worker.name,
-         gender: worker.gender,
-          phone: worker.phone,
-          whatsapp: worker.whatsapp,
-          area: worker.area,
-          block: worker.block,
-          address: worker.address,
-          nationality: worker.nationality,
-          dateofbirth: worker.dateofbirth,
-          languages: worker.languages,
-          service: worker.service,
-          category: worker.category,
-          lengthOfService: worker.lengthOfService,
-          familyInKuwait: worker.familyInKuwait,
-          petFriendly: worker.petFriendly,
-          image: null,
+         username: user.name,
+         platform: user.platform,
+          url: user.url,
         });
       }
     });
     setPopupOpenMap((prevMap) => ({
       ...prevMap,
-      [workerId]: !prevMap[workerId],
+      [userId]: !prevMap[userId],
     }));
   };
   
-// Function to close the popup for a specific worker
-const closePopup = (workerId: number) => {
+// Function to close the popup for a specific user
+const closePopup = (userId: number) => {
   setPopupOpenMap((prevMap) => ({
     ...prevMap,
-    [workerId]: false,
+    [userId]: false,
   }));
 };
 
@@ -111,8 +82,8 @@ const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>)
   }
 };
 
-const showDeleteConfirmation = (workerId: number) => {
-    setWorkerToDeleteId(workerId);
+const showDeleteConfirmation = (userId: number) => {
+    setWorkerToDeleteId(userId);
     setDeleteConfirmationVisible(true);
   };
 
@@ -121,15 +92,15 @@ const showDeleteConfirmation = (workerId: number) => {
     setDeleteConfirmationVisible(false);
   };
 
-  const handleEdit = (workerId: number ) => {
+  const handleEdit = (userId: number ) => {
 
     };
 
 
-  const handleDelete = (workerId: number) => {
+  const handleDelete = (userId: number) => {
     const config = {
       method: 'delete',
-      url: `https://madad.onrender.com/api/admin/worker/delete/${workerId}`,
+      url: `https://madad.onrender.com/api/admin/user/delete/${userId}`,
       headers: {
         'Authorization': `Bearer ${token}`, // Include the bearer token in the Authorization header
       },
@@ -208,7 +179,7 @@ const showDeleteConfirmation = (workerId: number) => {
                               <h2 className="text-xl font-semibold mb-4">Edit Worker</h2>
                               <div className="flex justify-end">
                                 <button
-                                  onClick={() => closePopup(worker._id)}
+                                  onClick={() => closePopup(user._id)}
                                   className="text-blue-500 hover:text-gray-700 focus:outline-none"
                                 >
                                   <svg
@@ -229,298 +200,76 @@ const showDeleteConfirmation = (workerId: number) => {
                               </div>
                             </div>
                             <form>
-                            <div className=" rounded-sm px-6.5 bg-white dark:border-strokedark dark:bg-boxdark">
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                  <div className="w-full xl:w-3/5">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Worker's Name
-                                      </label>
-                                      <div className={`relative ${formData.name ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"                                             
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        placeholder="Bam Bam"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-2/5">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Gender
-                                      </label>
-                                      <div className={`relative ${formData.gender ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="gender"
-                                        value={formData.gender}
-                                        onChange={handleInputChange}
-                                        placeholder="Male"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-2/5">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Date of Birth
-                                      </label>
-                                      <div className={`relative ${formData.dateofbirth ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text" 
-                                        maxLength={4}
-                                        name="dateofbirth"
-                                        value={formData.dateofbirth}
-                                        onChange={handleInputChange}
-                                        placeholder="1990"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Nationality
-                                      </label>
-                                      <div className={`relative ${formData.nationality ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="nationality"
-                                        value={formData.nationality}
-                                        onChange={handleInputChange}
-                                        placeholder="American"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Languages
-                                      </label>
-                                      
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Whatsapp
-                                      </label>
-                                      <div className={`relative ${formData.whatsapp ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="whatsapp"
-                                        value={formData.whatsapp}
-                                        onChange={handleInputChange}
-                                        placeholder="+23476543210"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Address
-                                      </label>
-                                      <div className={`relative ${formData.address ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="address"
-                                        value={formData.address}
-                                        onChange={handleInputChange}
-                                        placeholder="7 10 Marakesh Street"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Area
-                                      </label>
-                                      <div className={`relative ${formData.area ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="area"
-                                        value={formData.area}
-                                        onChange={handleInputChange}
-                                        placeholder="Kutana"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Block
-                                      </label>
-                                      <div className={`relative ${formData.block ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="block"
-                                        value={formData.block}
-                                        onChange={handleInputChange}
-                                        placeholder="4"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                        <label className="mb-2.5 block text-black dark:text-white">
-                                          Category
-                                        </label>
-                                        
-                                      </div>
-                                  
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                  <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Phone
-                                      </label>
-                                      <div className={`relative ${formData.phone ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        placeholder="+234123456789"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Length of Service
-                                      </label>
-                                      <div className={`relative ${formData.lengthOfService ? 'bg-light-blue' : ''}`}>
-                                      <select
-                                            name="lengthOfService"
-                                            value={formData.lengthOfService}
-                                            onChange={handleInputChange}
-                                            required
-                                            placeholder="Full Time"
-                                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                          >
-                                            <option value="">Select</option>
-                                            <option value="Full Time">Full Time</option>
-                                            <option value="Part Time">Part Time</option>
-                                          </select>
-                                          </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Family in Kuwait
-                                      </label>
-                                      <div className={`relative ${formData.familyInKuwait ? 'bg-light-blue' : ''}`}>
-                                      <select
-                                            name="familyInKuwait"
-                                            value={formData.familyInKuwait}
-                                            onChange={handleInputChange}
-                                            required
-                                            placeholder="Yes"
-                                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                          >
-                                            <option value="">Select</option>
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                          </select>
-                                          </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Petfriendly
-                                      </label>
-                                      <div className={`relative ${formData.petFriendly ? 'bg-light-blue' : ''}`}>
-                                      <select
-                                            name="petFriendly"
-                                            value={formData.petFriendly}
-                                            onChange={handleInputChange}
-                                            required
-                                            placeholder="Yes"
-                                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                          >
-                                            <option value="">Select</option>
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                          </select>
-                                        </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-3">
+                            <div className= "rounded-sm px-6.5 bg-white dark:border-strokedark dark:bg-boxdark">
+                                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                                <div className="w-full xl:w-1/2">
                                     <label className="mb-2.5 block text-black dark:text-white">
-                                      Worker Image
+                                      Social Platform
                                     </label>
-                                    <div
-                                      id="FileUpload"
-                                      className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border-2 border-dashed border-primary bg-gray py-4 px-4 dark:bg-meta-4 sm:py-7.5"
-                                    >
-                                      <input
-                                        name="image"
-                                        type="file"
-                                        accept="image/*"
-                                        ref={fileInputRef}
-                                        onChange={handleInputChange}
-                                        className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"
-                                      />
-                                      <div className="flex flex-col items-center justify-center space-y-3">
-                                        <span className="flex h-5 w-10 items-center justify-center rounded-full border border-stroke bg-white dark:border-strokedark dark:bg-boxdark">
-                                          <svg
-                                            width="16"
-                                            height="16"
-                                            viewBox="0 0 16 16"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                          >
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M1.99967 9.33337C2.36786 9.33337 2.66634 9.63185 2.66634 10V12.6667C2.66634 12.8435 2.73658 13.0131 2.8616 13.1381C2.98663 13.2631 3.1562 13.3334 3.33301 13.3334H12.6663C12.8431 13.3334 13.0127 13.2631 13.1377 13.1381C13.2628 13.0131 13.333 12.8435 13.333 12.6667V10C13.333 9.63185 13.6315 9.33337 13.9997 9.33337C14.3679 9.33337 14.6663 9.63185 14.6663 10V12.6667C14.6663 13.1971 14.4556 13.7058 14.0806 14.0809C13.7055 14.456 13.1968 14.6667 12.6663 14.6667H3.33301C2.80257 14.6667 2.29387 14.456 1.91879 14.0809C1.54372 13.7058 1.33301 13.1971 1.33301 12.6667V10C1.33301 9.63185 1.63148 9.33337 1.99967 9.33337Z"
-                                              fill="#3C50E0"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M7.5286 1.52864C7.78894 1.26829 8.21106 1.26829 8.4714 1.52864L11.8047 4.86197C12.0651 5.12232 12.0651 5.54443 11.8047 5.80478C11.5444 6.06513 11.1223 6.06513 10.8619 5.80478L8 2.94285L5.13807 5.80478C4.87772 6.06513 4.45561 6.06513 4.19526 5.80478C3.93491 5.54443 3.93491 5.12232 4.19526 4.86197L7.5286 1.52864Z"
-                                              fill="#3C50E0"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M7.99967 1.33337C8.36786 1.33337 8.66634 1.63185 8.66634 2.00004V10C8.66634 10.3682 8.36786 10.6667 7.99967 10.6667C7.63148 10.6667 7.33301 10.3682 7.33301 10V2.00004C7.33301 1.63185 7.63148 1.33337 7.99967 1.33337Z"
-                                              fill="#3C50E0"
-                                            />
-                                          </svg>
-                                        </span>
-                                        <p>
-                                          <span className="text-primary">
-                                          {selectedFileName ? selectedFileName : 'Click to add Image'}                            
-                                            </span> 
-                                        </p>
-                                      </div>
+                                    <div className={`relative ${formData.platform ? 'bg-light-blue' : ''}`}>
+                                    <select
+                                          name="platform"
+                                          value={formData.platform}
+                                          onChange={handleInputChange}
+                                          required
+                                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
+                                          <option value="">Select Platform</option>                        
+                                          <option value="Twitter">Twitter</option>
+                                          <option value="LinkedIn">LinkedIn</option>
+                                          <option value="Facebook">Facebook</option>
+                                          <option value="Github">Github</option>
+                                          <option value="Twitch">Twitch</option>
+                                          <option value="YouTube">YouTube</option>
+                                          <option value="TikTok">TikTok</option>
+                                          <option value="Instagram">Instagram</option>
+                                          <option value="Thread">Thread</option>
+                                          <option value="Reddit">Reddit</option>
+                                          <option value="Discord">Discord</option>
+                                          <option value="Slack">Slack</option>
+                                          <option value="StackOverflow">StackOverflow</option>
+                                        </select>
+                                        </div>
+                                  </div>
+
+                                  <div className="w-full xl:w-3/5">
+                                    <label className="mb-2.5 block text-black dark:text-white">
+                                      Username/Handle
+                                    </label>
+                                    <div className={`relative ${formData.username ? 'bg-light-blue' : ''}`}>
+                                    <input
+                                      type="text"
+                                      name="username"
+                                      required
+                                      value={formData.username}
+                                      onChange={handleInputChange}
+                                      placeholder="Mcnobledev"
+                                      className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                                     </div>
                                   </div>
                                 </div>
+
+                                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">                                   
+                                  <div className="w-full xl:w-2/2">
+                                    <label className="mb-2.5 block text-black dark:text-white">
+                                      URL
+                                    </label>
+                                    <div className={`relative ${formData.url ? 'bg-light-blue' : ''}`}>
+                                    <input
+                                      type="text"
+                                      name="url"
+                                      value={formData.url}
+                                      required
+                                      onChange={handleInputChange}
+                                      placeholder="https://twitter.com/xyz"
+                                      className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                                    </div>
+                                  </div>
+                                </div>
+
+                              </div>
                                 <button
                                   type="button"
-                                  onClick={() => handleEdit(worker._id)} 
+                                  onClick={() => handleEdit(user._id)} 
                                   // Close popup on second page
                                   disabled={loading}
                                   className="mr-5 lg:mb-5 inline-flex items-center justify-center gap-2.5 rounded-full bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
@@ -562,7 +311,7 @@ const showDeleteConfirmation = (workerId: number) => {
                             <button
                               onClick={() => {
                                 hideDeleteConfirmation();
-                                handleDelete(workerToDeleteId);
+                                handleDelete(userToDeleteId);
                               }}
                               className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
                             >

@@ -8,7 +8,8 @@ const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Configuration = lazy(() => import('../pages/Configuration'));
 const Education = lazy(() => import('../pages/Education'));
 const Entertainment = lazy(() => import('../pages/Entertainment'));
-const Sport = lazy(() => import('../pages/Sport'));
+const Chat = lazy(() => import('../pages/Chat'));
+const Notes = lazy(() => import('../pages/Notes'));
 const Financial = lazy(() => import('../pages/Financial'));
 const Professional = lazy(() => import('../pages/Professional'));
 const Health = lazy(() => import('../pages/Health'));
@@ -24,6 +25,16 @@ const coreRoutes = [
     component: Dashboard, 
   },
   {
+    path: '/notes', 
+    title: 'Notes',
+    component: Notes, 
+  }, 
+  {
+    path: '/chat', 
+    title: 'Chat',
+    component: Chat, 
+  },
+  {
     path: '/education', 
     title: 'Education',
     component: Education, 
@@ -32,11 +43,6 @@ const coreRoutes = [
     path: '/professional', 
     title: 'Professional',
     component: Professional, 
-  },
-  {
-    path: '/sport', 
-    title: 'Sport',
-    component: Sport, 
   },
   {
     path: '/reviews', 

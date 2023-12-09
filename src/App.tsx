@@ -5,10 +5,11 @@ import { Toaster } from 'react-hot-toast';
 import Health from './pages/Health';
 import Education from './pages/Education';
 import Entertainment from './pages/Entertainment';
-import Sport from './pages/Sport';
 import Reviews from './pages/Reviews';
 import Professional from './pages/Professional';
 import Social from './pages/Social';
+import Chat from './pages/Chat';
+import Notes from './pages/Notes';
 import Financial from './pages/Financial';
 import Dashboard from './pages/Dashboard';
 import Workers from './pages/Workers';
@@ -43,7 +44,8 @@ function App() {
         <Route path="/social" element={<Social />} />
         <Route path="/entertainment" element={<Entertainment />} />
         <Route path="/education" element={<Education />} />
-        <Route path="/sport" element={<Sport />} />
+        <Route path="/notes" element={<Notes />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/professional" element={<Professional />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
