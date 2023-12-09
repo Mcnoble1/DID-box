@@ -46,19 +46,19 @@ const ProfileCard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [personalDetails, setPersonalDetails] = useState<any[]>([]);
-  const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false);
-  const [sharePopupOpen, setSharePopupOpen] = useState(false);
-  const [shareLoading, setShareLoading] = useState(false);
+  
   const [recipientDid, setRecipientDid] = useState('');
-  const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; language: string;}>({
+  const [formData, setFormData] = useState<{ race: string, name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; email: string, maidenName: string, language: string;}>({
     name: '',
     gender: '',
     phone: '',
+    email: '',
     address: '',
     nationality: '',
     dateofbirth: '',
     language: "",
+    race: '',
+    maidenName: '',
     // image: null,
   });
 
@@ -306,10 +306,13 @@ const handleAddProfile = async (e: FormEvent) => {
   formdata.append('name', formData.name);
   formdata.append('gender', formData.gender);
   formdata.append('phone', formData.phone);  
+  formdata.append('email', formData.email);  
   formdata.append('nationality', formData.nationality);
-  // formdata.append('language', formData.language);  
+  formdata.append('language', formData.language);  
   formdata.append('dateofbirth', formData.dateofbirth);
   formdata.append('address', formData.address);
+  formdata.append('race', formData.race);
+  formdata.append('maidenName', formData.maidenName);
   // formdata.append("image", fileInputRef.current.files[0], fileInputRef.current.files[0]?.name);
 
 
@@ -321,7 +324,6 @@ const handleAddProfile = async (e: FormEvent) => {
     if (record) {
       const { status } = await record.send(myDid);
       console.log("Send record status in handleAddProfile", status);
-      await fetchPersonalDetails();
     } else {
       toast.error('Failed to create personal record', {
         position: toast.POSITION.TOP_RIGHT,
@@ -335,10 +337,13 @@ const handleAddProfile = async (e: FormEvent) => {
       name: '',
       gender: '',
       phone: '',
+      email: '',
       address: '',
       nationality: '',
       dateofbirth: '',
       language: '',
+      race: '',
+      maidenName: '',
       // image: null,
     });
 
@@ -391,96 +396,7 @@ const handleAddProfile = async (e: FormEvent) => {
     }
    }; 
 
-   const shareProfile = async (recordId: string) => {
-    setShareLoading(true);
-    try {
-      const response = await web5.dwn.records.query({
-        message: {
-          filter: {
-            recordId: recordId,
-          },
-        },
-      });
-
-      if (response.records && response.records.length > 0) {
-        const record = response.records[0];
-        const { status } = await record.send(recipientDid);
-        console.log('Send record status in shareProfile', status);
-        toast.success('Successfully shared personal record', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-        setShareLoading(false);
-        setSharePopupOpen(false);
-      } else {
-        console.error('No record found with the specified ID');
-        toast.error('Failed to share personal record', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-      }
-      setShareLoading(false);
-    } catch (err) {
-      console.error('Error in shareProfile:', err);
-      toast.error('Error in shareProfile. Please try again later.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 5000,
-      });
-      setShareLoading(false);
-    }
-  };
-
-  const fetchPersonalDetails = async () => {
-    setFetchDetailsLoading(true);
-    try {
-      const response = await web5.dwn.records.query({
-        from: myDid,
-        message: {
-          filter: {
-            message: {
-              // protocol: 'https://did-box.com',
-              // protocolPath: 'personalDetails',
-              // schema: 'https://did-box.com/schemas/personalDetails',
-            },
-          },
-        },
-      });
-      console.log('Personal Details:', response);
-
-      if (response.status.code === 200) {
-        const personalDetails = await Promise.all(
-          response.records.map(async (record) => {
-            const data = await record.data.json();
-            return {
-              ...data,
-              recordId: record.id,
-            };
-          })
-        );
-        setPersonalDetails(personalDetails);
-        toast.success('Successfully fetched personal details', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-        setFetchDetailsLoading(false);
-      } else {
-        console.error('No personal details found');
-        toast.error('Failed to fetch personal details', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-      }
-      setFetchDetailsLoading(false);
-    } catch (err) {
-      console.error('Error in fetchPersonalDetails:', err);
-      toast.error('Error in fetchPersonalDetails. Please try again later.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 5000,
-      });
-      setFetchDetailsLoading(false);
-    };
-  };
-
+ 
 
   return (
     <div className="w-full md:w-3/5 flex justify-between rounded-lg border border-stroke bg-white py-7.5 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -488,12 +404,6 @@ const handleAddProfile = async (e: FormEvent) => {
           <h4 className="text-2xl font-bold text-black dark:text-white">
             Personal Details
           </h4>
-          <button
-            
-            onClick={fetchPersonalDetails}
-            className="inline-flex mt-30 items-center justify-center rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover-bg-opacity-90 lg:px-8 xl:px-10">
-           Fetch Profile
-          </button>
           <button
             ref={trigger}
             onClick={() => setPopupOpen(!popupOpen)}
@@ -557,31 +467,29 @@ const handleAddProfile = async (e: FormEvent) => {
                               value={formData.gender}
                               onChange={handleInputChange}
                               required
-                              placeholder="Yes"
+                              placeholder="Male"
                               className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
                               <option value="">Select Gender</option>
-                              <option value="Yes">Male</option>
-                              <option value="No">Female</option>
+                              <option value="Male">Male</option>
+                              <option value="Female">Female</option>
                             </select>
                         </div>
                       </div>
 
-                      {/* <div className="w-full xl:w-3/5">
+                      <div className="w-full xl:w-3/5">
                         <label className="mb-2.5 block text-black dark:text-white">
                           Ddate of Birth
                         </label>
                         <div className={`relative ${formData.dateofbirth ? 'bg-light-blue' : ''}`}>
                         <input
                            type="date" 
-                           maxLength={4}
-                           step="1"
                           name="dateofbirth"
                           required
                           value={formData.dateofbirth}
                           onChange={handleInputChange}
                           className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                         </div>
-                      </div>  */}
+                      </div> 
                     </div>
 
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
@@ -607,8 +515,8 @@ const handleAddProfile = async (e: FormEvent) => {
                       </div>
 
                       <div className="w-full xl:w-1/2">
-                      <label className="mb-2.5 block text-black dark:text-white">Languages</label>
-                      <div className={`relative ${formData.language.length ? 'bg-light-blue' : ''}`}>
+                      <label className="mb-2.5 block text-black dark:text-white">Language</label>
+                      <div className={`relative ${formData.language ? 'bg-light-blue' : ''}`}>
                       <select
                         name="language"
                         value={formData.language}
@@ -679,18 +587,55 @@ const handleAddProfile = async (e: FormEvent) => {
                         </div>
                       </div>
 
-                      {/* <div className="w-full xl:w-1/2">
+                      <div className="w-full xl:w-1/2">
                         <label className="mb-2.5 block text-black dark:text-white">
-                          Address
+                          Mother's Maiden Name
                         </label>
-                        <div className={`relative ${formData.address ? 'bg-light-blue' : ''}`}>
+                        <div className={`relative ${formData.maidenName ? 'bg-light-blue' : ''}`}>
                         <input
                           type="text"
-                          name="address"
-                          value={formData.address}
+                          name="maidenName"
+                          value={formData.maidenName}
                           required
                           onChange={handleInputChange}
-                          placeholder="7 10 Marakesh Street"
+                          placeholder="Kathera"
+                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">                         
+                    <div className="w-full xl:w-1/2">
+                      <label className="mb-2.5 block text-black dark:text-white">Race</label>
+                      <div className={`relative ${formData.race ? 'bg-light-blue' : ''}`}>
+                      <select
+                        name="race"
+                        value={formData.race}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
+                        <option value="">Select Race</option>                        
+                        <option value="Black">Black</option>
+                        <option value="American">American</option>
+                        <option value="Latino">Latino</option>
+                        <option value="Hispanic">Hispanic</option>
+                        <option value="Asian">Asian</option>
+                      </select>
+                      </div>
+                    </div>
+
+                      {/* <div className="w-full xl:w-1/2">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Mother's Maiden Name
+                        </label>
+                        <div className={`relative ${formData.maidenName ? 'bg-light-blue' : ''}`}>
+                        <input
+                          type="text"
+                          name="maidenName"
+                          value={formData.maidenName}
+                          required
+                          onChange={handleInputChange}
+                          placeholder="Kathera"
                           className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                         </div>
                       </div> */}
