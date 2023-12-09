@@ -25,7 +25,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
   );
 
-  // close on click outside
   useEffect(() => {
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
@@ -41,7 +40,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
     return () => document.removeEventListener('click', clickHandler);
   });
 
-  // close if the esc key is pressed
   useEffect(() => {
     const keyHandler = ({ keyCode }: KeyboardEvent) => {
       if (!sidebarOpen || keyCode !== 27) return;
@@ -67,7 +65,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
-      {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <NavLink to="/dashboard" className="flex flex-row justify-between">
           <img src={Logo} alt="Logo" height={50} width={50} className='mr-5' />
@@ -99,16 +96,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           </svg>
         </button>
       </div>
-      {/* <!-- SIDEBAR HEADER --> */}
 
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
-        {/* <!-- Sidebar Menu --> */}
         <nav className="mt-5 py-4 px-4 lg:mt-9 lg:px-6">
-          {/* <!-- Menu Group --> */}
           <div>
             <ul className="mb-6 flex flex-col gap-1.5">
 
-             {/* <!-- Menu Item Dashboard --> */}
+         
              <li>
                 <NavLink
                   to="/dashboard"
@@ -120,116 +114,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Personal
                 </NavLink>
               </li>
-              {/* <!-- Menu Item Dashboard --> */}
 
-              {/* <!-- Menu Item Workers --> */}
-              <li>
-                <NavLink
-                  to="/education"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
-                    pathname.includes('education') && 'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
-                 Education
-                </NavLink>
-              </li>
-              {/* <!-- Menu Item Workers --> */}
-
-              {/* <!-- Menu Item Customers --> */}
-              <li>
-                <NavLink
-                  to="/health"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
-                    pathname.includes('health') &&
-                    'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                  Health
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/sport"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
-                    pathname.includes('sport') &&
-                    'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                  Sport
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/entertainment"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
-                    pathname.includes('entertainment') &&
-                    'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                 Entertainment
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/financial"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
-                    pathname.includes('financial') &&
-                    'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                  Financial
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/professional"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
-                    pathname.includes('professional') &&
-                    'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                  Professional
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/social"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
-                    pathname.includes('social') &&
-                    'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                 Social Media
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/customers"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
-                    pathname.includes('customers') &&
-                    'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                 Reviews
-                </NavLink>
-              </li>
-              {/* <!-- Menu Item Customerss --> */}
-
-              {/* <!-- Menu Item Categories --> */}
               <SidebarLinkGroup
                 activeCondition={
                   pathname === '/categories' || pathname.includes('categories')
@@ -322,8 +207,132 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   );
                 }}
               </SidebarLinkGroup>
-              {/* <!-- Menu Item Categories --> */}
+             
+              <li>
+                <NavLink
+                  to="/education"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
+                    pathname.includes('education') && 'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
+                 Education
+                </NavLink>
+              </li>
+             
+              <li>
+                <NavLink
+                  to="/health"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('health') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                  Health
+                </NavLink>
+              </li>
 
+              <li>
+                <NavLink
+                  to="/entertainment"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('entertainment') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                 Entertainment
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/financial"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('financial') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                  Financial
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/professional"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('professional') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                  Professional
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/social"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('social') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                 Social Media
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/education"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
+                    pathname.includes('education') && 'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
+                 Chat
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/education"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
+                    pathname.includes('education') && 'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
+                 Notes
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/education"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
+                    pathname.includes('education') && 'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
+                 Future Me
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/customers"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
+                    pathname.includes('customers') &&
+                    'border-r-4 dark:bg-meta-4'
+                  }`}
+                >
+                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                 Reviews
+                </NavLink>
+              </li>
             </ul>
           </div>
 
