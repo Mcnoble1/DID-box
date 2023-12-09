@@ -66,9 +66,11 @@ const PersonalDetails = () => {
 
   const togglePopup = (userId: string) => {
     console.log(userId);
+    console.log(usersDetails);
     usersDetails.map((user) => { 
       console.log(user.recordId);
-      if (user.recorId === userId) {
+      console.log(user);
+      if (user.recordId === userId) {
         console.log(user.name);
         setFormData({
          name: user.name,
@@ -83,7 +85,6 @@ const PersonalDetails = () => {
           race: user.race,
           // image: null,
         });
-        console.log(formData);
       }
     });
     setPopupOpenMap((prevMap) => ({
@@ -283,6 +284,14 @@ const showDeleteConfirmation = (userId: string) => {
 
 const deletePersonalDetails = async (recordId) => {
   console.log(recordId);
+  const readResult = await web5.dwn.records.read({
+    message: {
+      filter: {
+         recordId: recordId //recordId of deleted record
+      },
+    }
+  });
+  console.log(readResult);
   try {
     const response = await web5.dwn.records.query({
       message: {
@@ -300,6 +309,14 @@ const deletePersonalDetails = async (recordId) => {
           recordId: recordId
         },
       });
+
+      const remoteResponse = await web5.dwn.records.delete({
+        from: myDid,
+        message: {
+          recordId: recordId,
+        },
+      });
+      console.log(remoteResponse);
       
       if (deleteResult.status.code === 202) {
         console.log('Personal Details deleted successfully');
@@ -316,7 +333,7 @@ const deletePersonalDetails = async (recordId) => {
         });
       }
     } else {
-      console.error('No record found with the specified ID');
+      // console.error('No record found with the specified ID');
     }
   } catch (error) {
     console.error('Error in deletePersonalDetails:', error);
