@@ -15,6 +15,7 @@ const Professional = lazy(() => import('../pages/Professional'));
 const Health = lazy(() => import('../pages/Health'));
 const Social = lazy(() => import('../pages/Social'));
 const Reviews = lazy(() => import('../pages/Reviews'));
+const Tables = lazy(() => import('../pages/Tables'));
 
 
 
@@ -73,6 +74,11 @@ const coreRoutes = [
     path: '/customers',
     title: 'Customers',
     component: Customers,
+  },
+  {
+    path: '/tables',
+    title: 'Tables',
+    component: Tables,
   },
   {
     path: '/workers',

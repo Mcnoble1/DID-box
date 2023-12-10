@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ProductOne from '../images/social/Behance-1.png';
+import ProductTwo from '../images/social/Discord-1.png';
+import ProductThree from '../images/social/Instagram-1.png';
+import ProductFour from '../images/social/Twitter-1.png'
+import { toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
 
-const PersonalDetails = () => {
-  const [usersData, setUsersData] = useState<User[]>(0);
+const SocialDetails = () => {
+  // const [socialData, setMediaData] = useState<Social[]>(0);
   const [userToDeleteId, setWorkerToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
 
@@ -12,10 +18,37 @@ const PersonalDetails = () => {
     url: '',
   });
 
+  const socialData = [
+    {
+      _id: 1,
+      name: 'John Doe',
+      platform: 'Behance',
+      url: 'https://www.behance.net/johndoe',
+    },
+    {
+      _id: 2,
+      name: 'John Doe',
+      platform: 'Discord',
+      url: 'https://discord.com/users/123456789',
+    },
+    {
+      _id: 3,
+      name: 'John Doe',
+      platform: 'Instagram',
+      url: 'https://www.instagram.com/johndoe',
+    },
+    {
+      _id: 4,
+      name: 'John Doe',
+      platform: 'Twitter',
+      url: 'https://twitter.com/johndoe',
+    },
+  ];
+
   const popup = useRef<HTMLDivElement | null>(null);
 
   const togglePopup = (userId: number) => {
-    usersData.map((user) => { 
+    socialData.map((user) => { 
       if (user._id === userId) {
         setFormData({
          username: user.name,
@@ -58,28 +91,11 @@ const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>)
     }
   }
 
-  if (name === 'category') {
-    // Find the selected category object from the categories array
-    const selectedCategoryObject = categories.find((category) => category._id === value);
-
-    setSelectedCategory(selectedCategoryObject || null);
-
-    setFormData((prevData) => ({
-      ...prevData,
-      service: [], // Clear the selected service
-    }));
-  }
 
   setFormData((prevFormData) => ({
     ...prevFormData,
     [name]: value,
   }));
-
-  const file = e.target.files?.[0];
-
-  if (file) {
-    setSelectedFileName(file.name);
-  }
 };
 
 const showDeleteConfirmation = (userId: number) => {
@@ -113,218 +129,179 @@ const showDeleteConfirmation = (userId: number) => {
 
   return (
     <div className="mx-5 flex flex-col rounded-lg border border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="flex flex-wrap w-full">
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Name</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            Festus Idowu
-          </h4>
-        </div>
-
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Email</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            idowufestustemiloluwa@gmail.com
-          </h4>
-        </div>
-
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Phone Number</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            +2348067590789
-          </h4>
-        </div>
-
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Address</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            7 Ayelabowo Moore, Ile-Ife
-          </h4>
-        </div>
-
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Date of Birth</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            March 4, 2000
-          </h4>
-        </div>       
+      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="py-6 px-4 md:px-6 xl:px-7.5">
+        <h4 className="text-xl font-semibold text-black dark:text-white">
+          Social Media Accounts
+        </h4>
       </div>
-      <div className="flex justify-evenly gap-2">
-            <div className="relative">
-              <button
-                // onClick={toggleSortDropdown}
-                className="inline-flex items-center justify-center rounded-full bg-success py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-              >
-                Share
-              </button>
-            </div>
 
-            <div className="relative">
-              <button
-                onClick={() => togglePopup(5)}                      
-                className="inline-flex items-center justify-center rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-                >
-                Edit
-              </button>
-                {popupOpenMap[4] && (
-                      <div
-                        ref={popup}
-                        className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
-                      >
-                        <div
-                            className="bg-white lg:mt-15 lg:w-1/2 rounded-lg pt-3 px-4 shadow-md"
-                            style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'scroll' }}
-                          >              
-                              <div className="flex flex-row justify-between">
-                              <h2 className="text-xl font-semibold mb-4">Edit Worker</h2>
-                              <div className="flex justify-end">
-                                <button
-                                  onClick={() => closePopup(user._id)}
-                                  className="text-blue-500 hover:text-gray-700 focus:outline-none"
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5 fill-current bg-primary rounded-full p-1 hover:bg-opacity-90"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="white"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M6 18L18 6M6 6l12 12"
-                                    />
-                                  </svg>
-                                </button>
-                              </div>
-                            </div>
-                            <form>
-                            <div className= "rounded-sm px-6.5 bg-white dark:border-strokedark dark:bg-boxdark">
-                                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                <div className="w-full xl:w-1/2">
-                                    <label className="mb-2.5 block text-black dark:text-white">
-                                      Social Platform
-                                    </label>
-                                    <div className={`relative ${formData.platform ? 'bg-light-blue' : ''}`}>
-                                    <select
-                                          name="platform"
-                                          value={formData.platform}
-                                          onChange={handleInputChange}
-                                          required
-                                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
-                                          <option value="">Select Platform</option>                        
-                                          <option value="Twitter">Twitter</option>
-                                          <option value="LinkedIn">LinkedIn</option>
-                                          <option value="Facebook">Facebook</option>
-                                          <option value="Github">Github</option>
-                                          <option value="Twitch">Twitch</option>
-                                          <option value="YouTube">YouTube</option>
-                                          <option value="TikTok">TikTok</option>
-                                          <option value="Instagram">Instagram</option>
-                                          <option value="Thread">Thread</option>
-                                          <option value="Reddit">Reddit</option>
-                                          <option value="Discord">Discord</option>
-                                          <option value="Slack">Slack</option>
-                                          <option value="StackOverflow">StackOverflow</option>
-                                        </select>
-                                        </div>
-                                  </div>
+      <div className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div className="col-span-3 flex items-center">
+          <p className="font-medium">Platform</p>
+        </div>
+        <div className="col-span-2 hidden items-center sm:flex">
+          <p className="font-medium">Handle</p>
+        </div>
+        <div className="col-span-1 flex items-center">
+          <p className="font-medium">URL</p>
+        </div>
+      </div>
 
-                                  <div className="w-full xl:w-3/5">
-                                    <label className="mb-2.5 block text-black dark:text-white">
-                                      Username/Handle
-                                    </label>
-                                    <div className={`relative ${formData.username ? 'bg-light-blue' : ''}`}>
-                                    <input
-                                      type="text"
-                                      name="username"
-                                      required
-                                      value={formData.username}
-                                      onChange={handleInputChange}
-                                      placeholder="Mcnobledev"
-                                      className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">                                   
-                                  <div className="w-full xl:w-2/2">
-                                    <label className="mb-2.5 block text-black dark:text-white">
-                                      URL
-                                    </label>
-                                    <div className={`relative ${formData.url ? 'bg-light-blue' : ''}`}>
-                                    <input
-                                      type="text"
-                                      name="url"
-                                      value={formData.url}
-                                      required
-                                      onChange={handleInputChange}
-                                      placeholder="https://twitter.com/xyz"
-                                      className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                                    </div>
-                                  </div>
-                                </div>
-
-                              </div>
-                                <button
-                                  type="button"
-                                  onClick={() => handleEdit(user._id)} 
-                                  // Close popup on second page
-                                  disabled={loading}
-                                  className="mr-5 lg:mb-5 inline-flex items-center justify-center gap-2.5 rounded-full bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-                                >
-                                  {loading ? (
-                                        <div className="flex items-center">
-                                          <div className="w-6 h-6 border-t-2 border-primary border-solid rounded-full animate-spin" />
-                                          <span>Updating...</span>
-                                        </div>
-                                      ) : (
-                                        <>Update Worker</>
-                                      )}
-                                </button>
-                        
-                            </form>
-                          </div>
-                      </div>
-                    )}
-            </div>
-
-            <div className="relative">
-              <button
-                onClick={() => showDeleteConfirmation(4)}
-                className="inline-flex items-center justify-center rounded-full bg-danger py-3 px-10 text-center font-medium text-white hover-bg-opacity-90 lg:px-8 xl:px-10"
-              >
-                Delete
-              </button>
-              {isDeleteConfirmationVisible && (
-                      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-20">
-                        <div className="bg-white p-5 rounded-lg shadow-md">
-                          <p>Are you sure you want to delete your record?</p>
-                          <div className="mt-4 flex justify-end">
-                            <button
-                              onClick={hideDeleteConfirmation}
-                              className="mr-4 rounded bg-primary py-2 px-3 text-white hover:bg-opacity-90"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={() => {
-                                hideDeleteConfirmation();
-                                handleDelete(userToDeleteId);
-                              }}
-                              className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
-                            >
-                              Confirm
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+      {socialData.map((user, index) => (
+        <div
+          key={user._id}
+          className="grid grid-cols-6 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
+        >
+          <div className="col-span-3 flex items-center">
+            <div className="flex items-center">
+              <div className="w-10 h-10 rounded-full overflow-hidden">
+                <img
+                  src={user.platform === 'Behance' ? ProductOne : user.platform === 'Discord' ? ProductTwo : user.platform === 'Instagram' ? ProductThree : ProductFour}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <p className="ml-3 font-medium">{user.platform}</p>
             </div>
           </div>
+          <div className="col-span-2 hidden items-center sm:flex">
+            <p className="font-medium">{user.name}</p>
+          </div>
+          <div className="col-span-1 flex items-center">
+            <p className="font-medium">{user.url}</p>
+          </div>
+          <div className="col-span-2 flex items-center justify-end">
+            <button
+              onClick={() => togglePopup(user._id)}
+              className="flex items-center justify-center w-7 h-7 rounded-full bg-primary-100 hover:bg-primary-200 dark:bg-primarydark dark:hover:bg-primarydarkdark"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="text-primary-500 dark:text-primarydarkdark"
+              >
+                <path
+                  d="M9 0C4.029 0 0 4.029 0 9C0 13.971 4.029 18 9 18C13.971 18 18 13.971 18 9C18 4.029 13.971 0 9 0ZM9 16.312C4.935 16.312 1.688 13.065 1.688 9C1.688 4.935 4.935 1.688 9 1.688C13.065 1.688 16.312 4.935 16.312 9C16.312 13.065 13.065 16.312 9 16.312Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M12.375 5.0625C12.375 4.507 11.928 4.0625 11.375 4.0625C10.82 4.0625 10.375 4.507 10.375 5.0625V10.375C10.375 10.93 10.82 11.375 11.375 11.375C11.928 11.375 12.375 10.93 12.375 10.375V5.0625Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M9.625 5.0625C9.625 4.507 9.18 4.0625 8.625 4.0625C8.07 4.0625 7.625 4.507 7.625 5.0625V10.375C7.625 10.93 8.07 11.375 8.625 11.375C9.18 11.375 9.625 10.93 9.625 10.375V5.0625Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M6.625 5.0625C6.625 4.507 6.18 4.0625 5.625 4.0625C5.07 4.0625 4.625 4.507 4.625 5.0625V10.375C4.625 10.93 5.07 11.375 5.625 11.375C6.18 11.375 6.625 10.93 6.625 10.375V5.0625Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={() => showDeleteConfirmation(user._id)}
+              className="ml-2 flex items-center justify-center w-7 h-7 rounded-full bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="text-red-500 dark:text-red-800"
+              >
+                <path
+                  d="M9 0C4.029 0 0 4.029 0 9C0 13.971 4.029 18 9 18C13.971 18 18 13.971 18 9C18 4.029 13.971 0 9 0ZM9 16.312C4.935 16.312 1.688 13.065 1.688 9C1.688 4.935 4.935 1.688 9 1.688C13.065 1.688 16.312 4.935 16.312 9C16.312 13.065 13.065 16.312 9 16.312Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M12.375 5.0625C12.375 4.507 11.928 4.0625 11.375 4.0625C10.82 4.0625 10.375 4.507 10.375 5.0625V10.375C10.375 10.93 10.82 11.375 11.375 11.375C11.928 11.375 12.375 10.93 12.375 10.375V5.0625Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M9.625 5.0625C9.625 4.507 9.18 4.0625 8.625 4.0625C8.07 4.0625 7.625 4.507 7.625 5.0625V10.375C7.625 10.93 8.07 11.375 8.625 11.375C9.18 11.375 9.625 10.93 9.625 10.375V5.0625Z"
+                  fill="currentColor"
+                />
+                <path
+                  d="M6.625 5.0625C6.625 4.507 6.18 4.0625 5.625 4.0625C5.07 4.0625 4.625 4.507 4.625 5.0625V10.375C4.625 10.93 5.07 11.375 5.625 11.375C6.18 11.375 6.625 10.93 6.625 10.375V5.0625Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+            {popupOpenMap[user._id] && (
+              <div
+                ref={popup}
+                className="absolute top-0 left-0 z-10 w-full h-full flex items-center justify-center"
+              >
+                <div
+                  onClick={() => closePopup(user._id)}
+                  className="absolute top-0 left-0 z-0 w-full h-full bg-black opacity-50"
+                ></div>
+                <div className="relative z-10 w-11/12 max-w-2xl mx-auto rounded-lg overflow-hidden">
+                  <div className="bg-white dark:bg-boxdark">
+                    <div className="py-6 px-4 md:px-6 xl:px-7.5">
+                      <h4 className="text-xl font-semibold text-black dark:text-white">
+                        Edit Social Media Account
+                      </h4>
+                    </div>
+
+                    <div className="pb-6 px-4 md:px-6 xl:px-7.5">
+                      <div className="grid grid-cols-1 gap-6">
+                        <div>
+                          <label
+                            htmlFor="username"
+                            className="block text-sm font-medium text-gray-900 dark:text-gray-100"
+                          >
+                            Username
+                          </label>
+                          <input
+                            type="text"
+                            name="username"
+                            id="username"
+                            autoComplete="given-name"
+                            className="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-boxdarkdark dark:border-boxdarkdark"
+                            value={formData.username}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="platform"
+                            className="block text-sm font-medium text-gray-900 dark:text-gray-100"
+                          >
+                            Platform
+                          </label>
+                          <select
+                            id="platform"
+                            name="platform"
+                            autoComplete="platform"
+                            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm dark:bg-boxdarkdark dark:border-boxdarkdark"
+                            value={formData.platform}
+                            onChange={handleInputChange}
+                          >
+                            <option>Behance</option>
+                            <option>Discord</option>
+                            <option>Instagram</option>
+                            <option>Twitter</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+        </div>
+      ))}
+      </div>
     </div>
   );
 };
 
-export default PersonalDetails;
+export default SocialDetails;
