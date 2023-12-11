@@ -233,7 +233,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li>
 
-              <li>
+              {/* <li>
                 <NavLink
                   to="/entertainment"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
@@ -244,9 +244,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
                  Entertainment
                 </NavLink>
-              </li>
+              </li> */}
 
-              <li>
+              {/* <li>
                 <NavLink
                   to="/financial"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
@@ -257,7 +257,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
                   Financial
                 </NavLink>
-              </li>
+              </li> */}
 
               <li>
                 <NavLink
@@ -321,7 +321,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li>
 
-              <li>
+              {/* <li>
                 <NavLink
                   to="/customers"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
@@ -332,7 +332,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
                  Reviews
                 </NavLink>
-              </li>
+              </li> */}
             </ul>
           </div>
 

@@ -59,6 +59,116 @@ const ProfileCard = () => {
     }));
   };
   
+  const profileProtocolDefinition = () => {
+    return {
+      protocol: "https://did-box.com",
+      published: true,
+      types: {
+        personalDetails: {
+          schema: "https://did-box.com/schemas/personalDetails",
+          dataFormats: ["application/json"],
+        },
+        healthDetails: {
+          schema: "https://did-box.com/schemas/healthDetails",
+          dataFormats: ["application/json"],
+        },
+        educationDetails: {
+          schema: "https://did-box.com/schemas/educationDetails",
+          dataFormats: ["application/json"],
+        },
+        professionDetails: {
+          schema: "https://did-box.com/schemas/workDetails",
+          dataFormats: ["application/json"],
+        },
+        financialDetails: {
+          schema: "https://did-box.com/schemas/financialDetails",
+          dataFormats: ["application/json"],
+        },
+        sportDetails: {
+          schema: "https://did-box.com/schemas/sportDetails",
+          dataFormats: ["application/json"],
+        },
+        socialDetails: {
+          schema: "https://did-box.com/schemas/socialDetails",
+          dataFormats: ["application/json"],
+        },
+        entertainmentDetails: {
+          schema: "https://did-box.com/schemas/entertainmentDetails",
+          dataFormats: ["application/json"],
+        },
+        reviewDetails: {
+          schema: "https://did-box.com/schemas/reviewDetails",
+          dataFormats: ["application/json"],
+        },
+        otherDetails: {
+          schema: "https://did-box.com/schemas/otherDetails",
+          dataFormats: ["application/json"],
+        },
+      },
+      structure: {
+        personalDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "personalDetails", can: "read" },
+          ],
+        },
+        healthDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "healthDetails", can: "read" },
+          ],
+        },
+        educationDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "educationDetails", can: "read" },
+          ],
+        },
+        professionDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "professionDetails", can: "read" },
+          ],
+        },
+        financialDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "financialDetails", can: "read" },
+          ],
+        },
+        sportDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "sportDetails", can: "read" },
+          ],
+        },
+        socialDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "socialDetails", can: "read" },
+          ],
+        },
+        entertainmentDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "entertainmentDetails", can: "read" },
+          ],
+        },
+        reviewDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "reviewDetails", can: "read" },
+          ],
+        },
+        otherDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "otherDetails", can: "read" },
+          ],
+        },
+      },
+    };
+  };
     
 const handleAddProfile = async (e: FormEvent) => {
   e.preventDefault();
