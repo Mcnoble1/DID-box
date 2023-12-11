@@ -14,10 +14,8 @@ import Financial from './pages/Financial';
 import Dashboard from './pages/Dashboard';
 import Workers from './pages/Workers';
 import Customers from './pages/Customers';
-import Transportation from './pages/Categories/Transportation';
 import Others from './pages/Categories/Others';
 import Homepage from './pages/Homepage';
-import Configuration from './pages/Configuration';
 import Loader from './common/Loader';
 import routes from './routes';
 
@@ -49,10 +47,8 @@ function App() {
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/professional" element={<Professional />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/configuration" element={<Configuration />} />
         <Route path="/workers" element={<Workers />} />
         <Route path="/customers" element={<Customers />} />
-        <Route path="/categories/transportation" element={<Transportation />} />
         <Route path="/categories/others" element={<Others />} />
         <Route element={<DefaultLayout />}>
           <Route element={<Dashboard />} />

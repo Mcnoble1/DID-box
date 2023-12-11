@@ -1,7 +1,33 @@
-import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
+import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
 import Select from 'react-select';
 import Image from '../images/user/7.png';
-const ProfileCard = () => {
+import { toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
+import '../pages/signin.css';
+const ProfessionalCard = () => {
+  const [web5, setWeb5] = useState(null);
+  const [myDid, setMyDid] = useState(null);
+
+  useEffect(() => {
+
+    const initWeb5 = async () => {
+      // @ts-ignore
+      const { Web5 } = await import('@web5/api/browser');
+      
+      try {
+        const { web5, did } = await Web5.connect({ 
+          sync: '5s', 
+        });
+        setWeb5(web5);
+        setMyDid(did);
+      } catch (error) {
+        console.error('Error initializing Web5:', error);
+      }
+    };
+
+    initWeb5();
+    
+}, []);
   
   const [popupOpen, setPopupOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
@@ -9,27 +35,194 @@ const ProfileCard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-
-  const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; languages: string[]; image: File | null }>({
+  const [formData, setFormData] = useState<{ name: string; company: string; bio: string; role: string; startDate: string; endDate: string; image: File | null }>({
     name: '',
-    gender: '',
-    phone: '',
-    address: '',
-    nationality: '',
-    dateofbirth: '',
-    languages: [],
+    bio: '',
+    role: '',
+    startDate: '',
+    endDate: '',
+    company: '',
     image: null,
   });
 
-  function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void {
-    throw new Error('Function not implemented.');
-  }
+  const profileProtocolDefinition = () => {
+    return {
+      protocol: "https://did-box.com",
+      published: true,
+      types: {
+        professionalDetails: {
+          schema: "https://did-box.com/schemas/professionalDetails",
+          dataFormats: ["application/json"],
+        },
+        healthDetails: {
+          schema: "https://did-box.com/schemas/healthDetails",
+          dataFormats: ["application/json"],
+        },
+        educationDetails: {
+          schema: "https://did-box.com/schemas/educationDetails",
+          dataFormats: ["application/json"],
+        },
+      },
+      structure: {
+        professionalDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "professionalDetails", can: "read" },
+          ],
+        },
+        healthDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "healthDetails", can: "read" },
+          ],
+        },
+        educationDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "educationDetails", can: "read" },
+          ],
+        },
+      },
+    };
+  };
 
-  function handleAddProfile(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
-    throw new Error('Function not implemented.');
-  }
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+  
+    const file = e.target.files?.[0];
+  
+      if (file) {
+        setSelectedFileName(file.name);
+      }
+  
+      if (name === 'phone' ) {
+        const phoneRegex = /^[+]?[0-9\b]+$/;
+          
+        if (!value.match(phoneRegex) && value !== '') {
+          return;
+        }
+      } else if (name === 'name' || name === 'nationality' || name === 'language') {
+        const letterRegex = /^[A-Za-z\s]+$/;
+        if (!value.match(letterRegex) && value !== '') {
+          return;
+        }
+      }
+  
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleAddProfile = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true); 
+  
+    const requiredFields = ['name', 'gender', 'phone', 'nationality', 'language', 'address'];
+    const emptyFields = requiredFields.filter((field) => !formData[field]);
+  
+    if (emptyFields.length > 0) {
+      toast.error('Please fill in all required fields.', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+      requiredFields.forEach((field) => {
+        if (!formData[field]) {
+          const inputElement = document.querySelector(`[name="${field}"]`);
+          if (inputElement) {
+            inputElement.parentElement?.classList.add('error-outline');
+          }
+        }
+      });
+      setLoading(false);
+      return; 
+    }
+      
+    const formdata = new FormData();
+    formdata.append('name', formData.name);
+    formdata.append('bio', formData.bio);
+    formdata.append('role', formData.role);  
+    formdata.append('company', formData.company);  
+    formdata.append('startDate', formData.startDate);
+    formdata.append('endDate', formData.endDate);  
+    // formdata.append("image", fileInputRef.current.files[0], fileInputRef.current.files[0]?.name);
+  
+  
+    try {
+      let record;
+      console.log(formData);
+      record = await writeProfileToDwn(formData);
+  
+      if (record) {
+        const { status } = await record.send(myDid);
+        console.log("Send record status in handleAddProfile", status);
+      } else {
+        toast.error('Failed to create professional record', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000, 
+          });
+          setLoading(false);
+        throw new Error('Failed to create professional record');       
+      }
+  
+      setFormData({
+        name: '',
+        bio: '',
+        role: '',
+        startDate: '',
+        endDate: '',
+        company: '',
+        image: null,
+      });
+  
+      setPopupOpen(false);
+      toast.success('Successfully created professional record', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+  
+      setLoading(false);
+  
+    } catch (err) {
+        console.error('Error in handleAddProfile:', err);
+        toast.error('Error in handleAddProfile. Please try again later.', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 5000, // Adjust the duration as needed
+        });
+        setLoading(false);
+      } 
+  };
+  
+     const writeProfileToDwn = async (profileData) => {
+      try {
+        const professionalProtocol = profileProtocolDefinition();
+        const { record, status } = await web5.dwn.records.write({
+          data: profileData,
+          message: {
+            protocol: professionalProtocol.protocol,
+            protocolPath: 'professionalDetails',
+            schema: professionalProtocol.types.professionalDetails.schema,
+            recipient: myDid,
+          },
+        });
+  
+        if (status === 200) {
+          return { ...profileData, recordId: record.id}
+        } 
+        console.log('Successfully wrote professional details to DWN:', record);
+        toast.success('Professional Details written to DWN', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000, 
+        });
+        return record;
+      } catch (err) {
+        console.error('Failed to write professional details to DWN:', err);
+        toast.error('Failed to write professional details to DWN. Please try again later.', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000,
+        });
+      }
+     }; 
 
   return (
     <div className="w-full md:w-3/5 flex justify-between rounded-lg border border-stroke bg-white py-7.5 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -73,144 +266,104 @@ const ProfileCard = () => {
                     </div>
                     <form>
                     <div className= "rounded-sm px-6.5 bg-white dark:border-strokedark dark:bg-boxdark">
+
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                    <div className="w-full xl:w-3/5">
+                    <div className="w-full xl:w-2/2">
                         <label className="mb-2.5 block text-black dark:text-white">
-                          Name
+                          Bio
                         </label>
-                        <div className={`relative ${formData.name ? 'bg-light-blue' : ''}`}>
+                        <div className={`relative ${formData.bio ? 'bg-light-blue' : ''}`}>
+                        <textarea
+                          name="bio"
+                          required
+                          value={formData.bio}
+                          onChange={handleInputChange}
+                          placeholder="Enter your Bio"
+                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                    <div className="w-full xl:w-1/2">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Company
+                        </label>
+                        <div className={`relative ${formData.company ? 'bg-light-blue' : ''}`}>
                         <input
                           type="text"
-                          name="name"
+                          name="company"
                           required
-                          value={formData.name}
+                          value={formData.company}
                           onChange={handleInputChange}
-                          placeholder="Bam Bam"
+                          placeholder="TBD"
                           className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                         </div>
                       </div>
 
-                      <div className="w-full xl:w-3/5">
+                      <div className="w-full xl:w-1/2">
                         <label className="mb-2.5 block text-black dark:text-white">
-                          Gender
+                          Role
                         </label>
-                        <div className={`relative ${formData.gender ? 'bg-light-blue' : ''}`}>
-                        <select
-                              name="gender"
-                              value={formData.gender}
-                              onChange={handleInputChange}
-                              required
-                              placeholder="Yes"
-                              className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
-                              <option value="">Select Gender</option>
-                              <option value="Yes">Male</option>
-                              <option value="No">Female</option>
-                            </select>
+                        <div className={`relative ${formData.role ? 'bg-light-blue' : ''}`}>
+                        <input
+                          type="role"
+                          name="role"
+                          value={formData.role}
+                          required
+                          onChange={handleInputChange}
+                          placeholder="Software Engineer"
+                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                         </div>
                       </div>
+                    </div>
 
-                      <div className="w-full xl:w-3/5">
+                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">                                         
+                     <div className="w-full xl:w-1/2">
                         <label className="mb-2.5 block text-black dark:text-white">
-                          Ddate of Birth
+                          Start Date
                         </label>
-                        <div className={`relative ${formData.dateofbirth ? 'bg-light-blue' : ''}`}>
+                        <div className={`relative ${formData.startDate ? 'bg-light-blue' : ''}`}>
                         <input
                            type="date" 
-                           maxLength={4}
-                           step="1"
-                          name="dateofbirth"
+                          name="startDate"
                           required
-                          value={formData.dateofbirth}
+                          value={formData.startDate}
                           onChange={handleInputChange}
                           className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                         </div>
-                      </div>
-                    </div>
+                      </div> 
 
-                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                       <div className="w-full xl:w-1/2">
                         <label className="mb-2.5 block text-black dark:text-white">
-                          Nationality
+                          End Date
                         </label>
-                        <div className={`relative ${formData.nationality ? 'bg-light-blue' : ''}`}>
-                        <select
-                              name="nationality"
-                              value={formData.nationality}
-                              onChange={handleInputChange}
-                              required
-                              className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
-                              <option value="">Select Nationality</option>                        
-                              <option value="Nigeria">Nigeria</option>
-                              <option value="Ghana">Ghana</option>
-                              <option value="Kenya">Kenya</option>
-                              <option value="South Africa">South Africa</option>
-                              <option value="Others">Others</option>
-                            </select>
-                            </div>
-                      </div>
-
-                      <div className="w-full xl:w-1/2">
-                      <label className="mb-2.5 block text-black dark:text-white">Languages</label>
-                      <div className={`relative ${formData.languages.length ? 'bg-light-blue' : ''}`}>
-                        <Select
-                          isMulti
-                          name="languages"
-                          closeMenuOnSelect={false}
-                          value={formData.languages.map((lang) => ({ label: lang, value: lang }))}
-                          onChange={(selectedOptions) => {
-                            const selectedLanguages = selectedOptions.map((option) => option.value);
-                            setFormData((prevData) => ({
-                              ...prevData,
-                              languages: selectedLanguages,
-                            }));
-                          }}
-                          options={[
-                            { label: 'English', value: 'English' },
-                            { label: 'Spanish', value: 'Spanish' },
-                            { label: 'French', value: 'French' },
-                            { label: 'German', value: 'German' },
-                            { label: 'Chinese', value: 'Chinese' },
-                            { label: 'Japanese', value: 'Japanese' },
-                          ]}
-                          placeholder="Select language(s)"
-                        />
-                      </div>
-                    </div>
-
-
-
+                        <div className={`relative ${formData.endDate ? 'bg-light-blue' : ''}`}>
+                        <input
+                           type="date" 
+                          name="endDate"
+                          required
+                          value={formData.endDate}
+                          onChange={handleInputChange}
+                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                        </div>
+                      </div> 
                     </div>
 
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                                            
                       <div className="w-full xl:w-1/2">
                         <label className="mb-2.5 block text-black dark:text-white">
-                          Phone
+                          Name
                         </label>
-                        <div className={`relative ${formData.phone ? 'bg-light-blue' : ''}`}>
+                        <div className={`relative ${formData.name ? 'bg-light-blue' : ''}`}>
                         <input
-                          type="text"
-                          name="phone"
-                          value={formData.phone}
+                          type="name"
+                          name="name"
+                          value={formData.name}
                           required
                           onChange={handleInputChange}
-                          placeholder="+234123456789"
-                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                        </div>
-                      </div>
-
-                      <div className="w-full xl:w-1/2">
-                        <label className="mb-2.5 block text-black dark:text-white">
-                          Address
-                        </label>
-                        <div className={`relative ${formData.address ? 'bg-light-blue' : ''}`}>
-                        <input
-                          type="text"
-                          name="address"
-                          value={formData.address}
-                          required
-                          onChange={handleInputChange}
-                          placeholder="7 10 Marakesh Street"
+                          placeholder="Idowu Festus"
                           className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                         </div>
                       </div>
@@ -298,4 +451,4 @@ const ProfileCard = () => {
   );
 };
 
-export default ProfileCard;
+export default ProfessionalCard;

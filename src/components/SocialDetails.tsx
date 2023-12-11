@@ -4,6 +4,7 @@ import Discord from '../images/social/Discord-1.png';
 import Instagram from '../images/social/Instagram-1.png';
 import Twitter from '../images/social/Twitter-1.png'
 import Facebook from '../images/social/Facebook-1.png'
+import GitHub from '../images/social/GitHub-1.png'
 import X from '../images/social/X-1.png'
 import Whatsapp from '../images/social/Whatsapp-1.png'
 import Slack from '../images/social/Slack-1.png'
@@ -15,7 +16,7 @@ import Tiktok from '../images/social/Tiktok-1.png'
 import Youtube from '../images/social/Youtube-1.png'
 import Skype from '../images/social/Skype-1.png'
 import Line from '../images/social/Line-1.png'
-
+  
 
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 

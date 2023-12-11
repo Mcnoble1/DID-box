@@ -65,11 +65,7 @@ const PersonalDetails = () => {
   };
 
   const togglePopup = (userId: string) => {
-    console.log(userId);
-    console.log(usersDetails);
     usersDetails.map((user) => { 
-      console.log(user.recordId);
-      console.log(user);
       if (user.recordId === userId) {
         console.log(user.name);
         setFormData({
@@ -93,8 +89,7 @@ const PersonalDetails = () => {
     }));
   };
   
-// Function to close the popup for a specific user
-const closePopup = (userId: number) => {
+const closePopup = (userId: string) => {
   setPopupOpenMap((prevMap) => ({
     ...prevMap,
     [userId]: false,
@@ -283,15 +278,6 @@ const showDeleteConfirmation = (userId: string) => {
 
 
 const deletePersonalDetails = async (recordId) => {
-  console.log(recordId);
-  const readResult = await web5.dwn.records.read({
-    message: {
-      filter: {
-         recordId: recordId //recordId of deleted record
-      },
-    }
-  });
-  console.log(readResult);
   try {
     const response = await web5.dwn.records.query({
       message: {
@@ -326,8 +312,8 @@ const deletePersonalDetails = async (recordId) => {
         });
         setUsersDetails(prevPersonalDetails => prevPersonalDetails.filter(message => message.recordId !== recordId));
       } else {
-        console.error('Error deleting message:', deleteResult.status);
-        toast.error('Error deleting donation:', {
+        console.error('Error deleting record:', deleteResult.status);
+        toast.error('Error deleting record:', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
         });
@@ -888,8 +874,6 @@ const deletePersonalDetails = async (recordId) => {
           </div>
         </div>
       </div>
-      
-      
       ))}
       </div>
       ) : (

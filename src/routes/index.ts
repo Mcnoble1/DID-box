@@ -1,11 +1,9 @@
 import { lazy } from 'react';
 
-const Transportation = lazy(() => import('../pages/Categories/Transportation'));
 const Others = lazy(() => import('../pages/Categories/Others'));
 const Workers = lazy(() => import('../pages/Workers'));
 const Customers = lazy(() => import('../pages/Customers'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
-const Configuration = lazy(() => import('../pages/Configuration'));
 const Education = lazy(() => import('../pages/Education'));
 const Entertainment = lazy(() => import('../pages/Entertainment'));
 const Chat = lazy(() => import('../pages/Chat'));
@@ -86,19 +84,9 @@ const coreRoutes = [
     component: Workers,
   },
   {
-    path: '/categories/transportation',
-    title: 'Transportation',
-    component: Transportation,
-  },
-  {
     path: '/categories/others',
     title: 'All Categories',
     component: Others,
-  },
-  {
-    path: '/configuration',
-    title: 'Configuration',
-    component: Configuration,
   },
 ];
 
