@@ -1,7 +1,7 @@
 import React, { useState, useRef, ChangeEvent, FormEvent, useEffect } from 'react';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
-const PersonalDetails = () => {
+const EducationDetails = () => {
 
   const [web5, setWeb5] = useState(null);
   const [myDid, setMyDid] = useState(null);
@@ -16,20 +16,29 @@ const PersonalDetails = () => {
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false);
   const [popupOpenMap, setPopupOpenMap] = useState<{ [key: number]: boolean }>({});
-  const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; language: string; email: string; race: string; maidenName: string;}>({
-    name: '',
-    gender: '',
-    phone: '',
-    email: '',
-    address: '',
-    nationality: '',
-    dateofbirth: '',
-    language: "",
-    race: '',
-    maidenName: '',
-    // image: null,
-  });
-
+  const [formData, setFormData] = useState<{ university: string; uniLocation: string; uniCountry: string; degree: string; fieldOfStudy: string; uniStartDate: string; uniEndDate: string; highSchool: string; hsLocation: string; hsMajor: string; hsCert: string; hsCountry: string; hsStartDate: string; hsEndDate: string; pSchool: string; pLocation: string; pCountry: string; pStartDate: string; pEndDate: string; communities: string; publications: string; }>({
+    university: '',
+    degree: '',
+    fieldOfStudy: '',
+    uniLocation: '',
+    uniCountry: '',
+    uniStartDate: '',
+    uniEndDate: '',
+    highSchool: '',
+    hsLocation: '',
+    hsMajor: '',
+    hsCountry: '',
+    hsStartDate: '',
+    hsCert: '',
+    hsEndDate: '',
+    pSchool: '',
+    pLocation: '',
+    pCountry: '',
+    pStartDate: '',
+    pEndDate: '',
+    communities: '',
+    publications: '',
+  }); 
   const [showDetails, setShowDetails] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const popup = useRef<HTMLDivElement | null>(null); 
@@ -69,17 +78,27 @@ const PersonalDetails = () => {
       if (user.recordId === userId) {
         console.log(user.name);
         setFormData({
-         name: user.name,
-         gender: user.gender,
-          phone: user.phone,
-          email: user.email,
-          address: user.address,
-          nationality: user.nationality,
-          dateofbirth: user.dateofbirth,
-          language: user.language,
-          maidenName: user.maidenName,
-          race: user.race,
-          // image: null,
+          university: user.university,
+          degree: user.degree,
+          fieldOfStudy: user.fieldOfStudy,
+          uniLocation: user.uniLocation,
+          uniCountry: user.uniCountry,
+          uniStartDate: user.uniStartDate,
+          uniEndDate: user.uniEndDate,
+          highSchool: user.highSchool,
+          hsLocation: user.hsLocation,
+          hsMajor: user.hsMajor,
+          hsCountry: user.hsCountry,
+          hsStartDate: user.hsStartDate,
+          hsEndDate: user.hsEndDate,
+          hsCert: user.hsCert,
+          pSchool: user.pSchool,
+          pLocation: user.pLocation,
+          pCountry: user.pCountry,
+          pStartDate: user.pStartDate,
+          pEndDate: user.pEndDate,
+          communities: user.communities,
+          publications: user.publications,
         });
       }
     });
@@ -96,7 +115,7 @@ const closePopup = (userId: string) => {
   }));
 };
 
-const fetchPersonalDetails = async () => {
+const fetchEducationDetails = async () => {
   setFetchDetailsLoading(true);
   try {
     const response = await web5.dwn.records.query({
@@ -104,15 +123,15 @@ const fetchPersonalDetails = async () => {
       message: {
         filter: {
             protocol: 'https://did-box.com',
-            protocolPath: 'personalDetails',
-            // schema: 'https://did-box.com/schemas/personalDetails',
+            protocolPath: 'educationDetails',
+            // schema: 'https://did-box.com/schemas/educationDetails',
         },
       },
     });
-    console.log('Personal Details:', response);
+    console.log('Education Details:', response);
 
     if (response.status.code === 200) {
-      const personalDetails = await Promise.all(
+      const educationDetails = await Promise.all(
         response.records.map(async (record) => {
           const data = await record.data.json();
           console.log(data);
@@ -122,24 +141,24 @@ const fetchPersonalDetails = async () => {
           };
         })
       );
-      setUsersDetails(personalDetails);
-      console.log(personalDetails);
-      toast.success('Successfully fetched personal details', {
+      setUsersDetails(educationDetails);
+      console.log(educationDetails);
+      toast.success('Successfully fetched education details', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
       setFetchDetailsLoading(false);
     } else {
-      console.error('No personal details found');
-      toast.error('Failed to fetch personal details', {
+      console.error('No education details found');
+      toast.error('Failed to fetch education details', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
     }
     setFetchDetailsLoading(false);
   } catch (err) {
-    console.error('Error in fetchPersonalDetails:', err);
-    toast.error('Error in fetchPersonalDetails. Please try again later.', {
+    console.error('Error in fetchEducationDetails:', err);
+    toast.error('Error in fetchEducationDetails. Please try again later.', {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 5000,
     });
@@ -148,7 +167,7 @@ const fetchPersonalDetails = async () => {
 };
 
 
-const sharePersonalDetails = async (recordId: string) => {
+const shareEducationDetails = async (recordId: string) => {
   setShareLoading(true);
   try {
     const response = await web5.dwn.records.query({
@@ -163,7 +182,7 @@ const sharePersonalDetails = async (recordId: string) => {
       const record = response.records[0];
       const { status } = await record.send(recipientDid);
       console.log('Send record status in shareProfile', status);
-      toast.success('Successfully shared personal record', {
+      toast.success('Successfully shared education record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
@@ -171,7 +190,7 @@ const sharePersonalDetails = async (recordId: string) => {
       setSharePopupOpen(false);
     } else {
       console.error('No record found with the specified ID');
-      toast.error('Failed to share personal record', {
+      toast.error('Failed to share education record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
@@ -190,15 +209,7 @@ const sharePersonalDetails = async (recordId: string) => {
 const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
   const { name, value } = e.target;
 
-  if (name === 'phone') {
-    // Use a regular expression to allow only phone numbers starting with a plus
-    const phoneRegex = /^[+]?[0-9\b]+$/;
-      
-    if (!value.match(phoneRegex) && value !== '') {
-      // If the input value doesn't match the regex and it's not an empty string, do not update the state
-      return;
-    }
-  } else if (name === 'name' || name === 'nationality' ) {
+   if (name === 'name' || name === 'nationality' ) {
     // Use a regular expression to allow only letters and spaces
     const letterRegex = /^[A-Za-z\s]+$/;
     if (!value.match(letterRegex) && value !== '') {
@@ -229,7 +240,7 @@ const showDeleteConfirmation = (userId: string) => {
     setDeleteConfirmationVisible(false);
   };
 
-  const updatePersonalDetails = async (recordId, data) => {
+  const updateEducationDetails = async (recordId, data) => {
     setUpdateLoading(true);
   try {
     const response = await web5.dwn.records.query({
@@ -245,11 +256,11 @@ const showDeleteConfirmation = (userId: string) => {
       const updateResult = await record.update(data);
 
       if (updateResult.status.code === 202) {
-        toast.success('Personal Details updated successfully.', {
+        toast.success('Education Details updated successfully.', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
         });
-        setUsersDetails(prevPersonalDetails => prevPersonalDetails.map(message => message.recordId === recordId ? { ...message, ...data } : message));
+        setUsersDetails(prevEducationDetails => prevEducationDetails.map(message => message.recordId === recordId ? { ...message, ...data } : message));
         setUpdateLoading(false);
       } else {
         console.error('Error updating message:', updateResult.status);
@@ -267,8 +278,8 @@ const showDeleteConfirmation = (userId: string) => {
       });
     }
   } catch (error) {
-    console.error('Error in updatePersonalDetail:', error);
-    toast.error('Error in updatePersonalDetail:', {
+    console.error('Error in updateEducationDetail:', error);
+    toast.error('Error in updateEducationDetail:', {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 3000, 
     });
@@ -277,7 +288,7 @@ const showDeleteConfirmation = (userId: string) => {
 };
 
 
-const deletePersonalDetails = async (recordId) => {
+const deleteEducationDetails = async (recordId) => {
   try {
     const response = await web5.dwn.records.query({
       message: {
@@ -305,12 +316,12 @@ const deletePersonalDetails = async (recordId) => {
       console.log(remoteResponse);
       
       if (deleteResult.status.code === 202) {
-        console.log('Personal Details deleted successfully');
-        toast.success('Personal Details deleted successfully', {
+        console.log('Education Details deleted successfully');
+        toast.success('Education Details deleted successfully', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
         });
-        setUsersDetails(prevPersonalDetails => prevPersonalDetails.filter(message => message.recordId !== recordId));
+        setUsersDetails(prevEducationDetails => prevEducationDetails.filter(message => message.recordId !== recordId));
       } else {
         console.error('Error deleting record:', deleteResult.status);
         toast.error('Error deleting record:', {
@@ -322,7 +333,7 @@ const deletePersonalDetails = async (recordId) => {
       // console.error('No record found with the specified ID');
     }
   } catch (error) {
-    console.error('Error in deletePersonalDetails:', error);
+    console.error('Error in deleteEducationDetails:', error);
   }
 };
 
@@ -332,7 +343,7 @@ const deletePersonalDetails = async (recordId) => {
     <div className="lg:mx-5 flex flex-col rounded-lg border break-words border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
      <div className="flex flex-row mb-5 items-center gap-4 justify-end">
       <button 
-        onClick={fetchPersonalDetails}
+        onClick={fetchEducationDetails}
         className=" items-center  rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover-bg-opacity-90">
         {fetchDetailsLoading ? (
           <div className="flex items-center">
@@ -356,75 +367,157 @@ const deletePersonalDetails = async (recordId) => {
       <div className="flex flex-row flex-wrap justify-evenly gap-2">
       {usersDetails.map((user, index) => (
       <div className="flex flex-wrap w-full" key={index}>
-        <div className='w-1/2 mb-5' >
-          <span className="text-xl">Name</span>
+        <div className='w-full mb-5 font-medium text-black text-xl'>University Education</div>
+        <div className='w-1/3 mb-5' >
+          <span className="text-xl">University</span>
           <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            {showDetails ? user.name : '********'}
+            {showDetails ? user.university : '********'}
           </h4>
         </div>
 
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Email</span>
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Location</span>
           <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            {showDetails ? user.email : '********'}
+            {showDetails ? user.uniLocation : '********'}
           </h4>
         </div>
 
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Phone Number</span>
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Country</span>
           <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            {showDetails ? user.phone : '********'}
+            {showDetails ? user.uniCountry : '********'}
           </h4>
         </div>
 
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Address</span>
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Degree</span>
           <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            {showDetails ? user.address : '********'}
+            {showDetails ? user.degree : '********'}
           </h4>
         </div>
 
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Date of Birth</span>
-          <h4 className={`text-xl mt-1 font-medium text-black dark:text-white}`}>
-            {showDetails ? user.dateofbirth : '********'}
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Field of Study</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.fieldOfStudy : '********'}
           </h4>
-        </div> 
+        </div>
 
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Nationality</span>
-          <h4 className={`text-xl mt-1 font-medium text-black dark:text-white}`}>
-            {showDetails ? user.nationality : '********'}
-          </h4>
-        </div> 
+        
 
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Languages</span>
-          <h4 className={`text-xl mt-1 font-medium text-black dark:text-white}`}>
-            {showDetails ? user.language : '********'}
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Start Date</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.uniStartDate : '********'}
           </h4>
-        </div> 
+        </div>
 
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Mother's Maiden Name</span>
-          <h4 className={`text-xl mt-1 font-medium text-black dark:text-white}`}>
-            {showDetails ? user.maidenName : '********'}
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">End Date</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.uniEndDate : '********'}
           </h4>
-        </div> 
+        </div>
 
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Gender</span>
-          <h4 className={`text-xl mt-1 font-medium text-black dark:text-white}`}>
-            {showDetails ? user.gender : '********'}
+        <div className='w-full mt-10 mb-5 font-medium text-black text-xl'>High School Education</div>
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">High School</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.highSchool : '********'}
           </h4>
-        </div> 
+        </div>
 
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Race</span>
-          <h4 className={`text-xl mt-1 font-medium text-black dark:text-white}`}>
-            {showDetails ? user.race : '********'}
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Location</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.hsLocation : '********'}
           </h4>
-        </div> 
+        </div>
+
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Country</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.hsCountry : '********'}
+          </h4>
+        </div>
+
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Certificate</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.hsCert : '********'}
+          </h4>
+        </div>
+
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Major</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.hsMajor : '********'}
+          </h4>
+        </div>
+        
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Start Date</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.hsStartDate : '********'}
+          </h4>
+        </div>
+
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">End Date</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.hsEndDate : '********'}
+          </h4>
+        </div>
+
+        <div className='w-full mb-5 mt-10 font-medium text-black text-xl'>Primary Education</div>
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">School</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.pSchool : '********'}
+          </h4>
+        </div>
+
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Location</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.pLocation : '********'}
+          </h4>
+        </div>
+
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Country</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.pCountry : '********'}
+          </h4>
+        </div>
+
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">Start Date</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.pStartDate : '********'}
+          </h4>
+        </div>
+
+        <div className='w-1/3 mb-5'>
+          <span className="text-xl">End Date</span>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.pEndDate : '********'}
+          </h4>
+        </div>
+
+        <div className='w-full mb-5 mt-10 font-medium text-black text-xl'>Communities</div>
+        <div className='w-1/2 mb-5'>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.communities : '********'}
+          </h4>
+        </div>
+
+        <div className='w-full mb-5 mt-10 font-medium text-black text-xl'>Publications</div>
+        <div className='w-1/2 mb-5'>
+          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
+            {showDetails ? user.publications : '********'}
+          </h4>
+        </div>
 
         <div className='w-full flex flex-row justify-evenly mb-5'>
           <div className="relative">
@@ -449,7 +542,7 @@ const deletePersonalDetails = async (recordId) => {
                       data-wow-delay=".15s
                       ">        
                         <div className="flex flex-row justify-between ">
-                          <h2 className="text-xl font-semibold mb-4">Share Personal Details</h2>
+                          <h2 className="text-xl font-semibold mb-4">Share Education Details</h2>
                           <div className="flex justify-end">
                             <button
                               onClick={() => setSharePopupOpen(false)}
@@ -500,7 +593,7 @@ const deletePersonalDetails = async (recordId) => {
                       <div className="w-full px-4">
                         <button 
                           type="button"
-                          onClick={() => sharePersonalDetails(user.recordId)}
+                          onClick={() => shareEducationDetails(user.recordId)}
                           disabled={shareLoading}
                           className="rounded-lg bg-primary py-4 px-9 text-base font-medium text-white transition duration-300 ease-in-out hover:bg-opacity-80 hover:shadow-signUp">
                           {shareLoading ? (
@@ -562,18 +655,137 @@ const deletePersonalDetails = async (recordId) => {
                             </div>
                           </div>
                           <form>
-                          <div className= "rounded-sm px-6.5 bg-white dark:border-strokedark dark:bg-boxdark">
+                            <div className= "rounded-sm px-6.5 bg-white dark:border-strokedark dark:bg-boxdark">
+                              <h3 className="mb-2.5 block font-semibold dark:text-white">University Education</h3>
+                            <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                            <div className="w-full xl:w-3/5">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Name
+                          </label>
+                          <div className={`relative ${formData.university ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="university"
+                            required
+                            value={formData.university}
+                            onChange={handleInputChange}
+                            placeholder="Obafemi Awolowo University"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
+
+                        <div className="w-full xl:w-3/5">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Place
+                          </label>
+                          <div className={`relative ${formData.uniLocation ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="uniLocation"
+                            required
+                            value={formData.uniLocation}
+                            onChange={handleInputChange}
+                            placeholder="Lagos"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
+
+                        <div className="w-full xl:w-3/5">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Country
+                          </label>
+                          <div className={`relative ${formData.uniCountry ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="uniCountry"
+                            required
+                            value={formData.uniCountry}
+                            onChange={handleInputChange}
+                            placeholder="Nigeria"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div className="w-full xl:w-1/2">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Start Date
+                          </label>
+                          <div className={`relative ${formData.uniStartDate ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="date" 
+                            name="uniStartDate"
+                            required
+                            value={formData.uniStartDate}
+                            onChange={handleInputChange}
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div> 
+
+                        <div className="w-full xl:w-1/2">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            End Date
+                          </label>
+                          <div className={`relative ${formData.uniEndDate ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="date" 
+                            name="uniEndDate"
+                            required
+                            value={formData.uniEndDate}
+                            onChange={handleInputChange}
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div> 
+                      </div>
+
+                      <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                                            
+                        <div className="w-full xl:w-1/2">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Degree
+                          </label>
+                          <div className={`relative ${formData.degree ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="degree"
+                            value={formData.degree}
+                            required
+                            onChange={handleInputChange}
+                            placeholder="Bachelor's Degree"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
+
+                        <div className="w-full xl:w-1/2">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Course of Study
+                          </label>
+                          <div className={`relative ${formData.fieldOfStudy ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="fieldOfStudy"
+                            value={formData.fieldOfStudy}
+                            required
+                            onChange={handleInputChange}
+                            placeholder="Computer Engineering"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
+                      </div>
+
+                      <h3 className="mb-2.5 mt-10 block font-semibold dark:text-white">High School Education</h3>
                       <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
                       <div className="w-full xl:w-3/5">
                           <label className="mb-2.5 block text-black dark:text-white">
                             Name
                           </label>
-                          <div className={`relative ${formData.name ? 'bg-light-blue' : ''}`}>
+                          <div className={`relative ${formData.highSchool ? 'bg-light-blue' : ''}`}>
                           <input
                             type="text"
-                            name="name"
+                            name="highSchool"
                             required
-                            value={formData.name}
+                            value={formData.highSchool}
                             onChange={handleInputChange}
                             placeholder="Bam Bam"
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
@@ -582,33 +794,63 @@ const deletePersonalDetails = async (recordId) => {
 
                         <div className="w-full xl:w-3/5">
                           <label className="mb-2.5 block text-black dark:text-white">
-                            Gender
+                            Place
                           </label>
-                          <div className={`relative ${formData.gender ? 'bg-light-blue' : ''}`}>
-                          <select
-                                name="gender"
-                                value={formData.gender}
-                                onChange={handleInputChange}
-                                required
-                                placeholder="Male"
-                                className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                              </select>
+                          <div className={`relative ${formData.hsLocation ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="hsLocation"
+                            required
+                            value={formData.hsLocation}
+                            onChange={handleInputChange}
+                            placeholder="Lagos"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                           </div>
                         </div>
 
                         <div className="w-full xl:w-3/5">
                           <label className="mb-2.5 block text-black dark:text-white">
-                            Ddate of Birth
+                            Country
                           </label>
-                          <div className={`relative ${formData.dateofbirth ? 'bg-light-blue' : ''}`}>
+                          <div className={`relative ${formData.hsCountry ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="hsCountry"
+                            required
+                            value={formData.hsCountry}
+                            onChange={handleInputChange}
+                            placeholder="Nigeria"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div className="w-full xl:w-1/2">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Start Date
+                          </label>
+                          <div className={`relative ${formData.hsStartDate ? 'bg-light-blue' : ''}`}>
                           <input
                             type="date" 
-                            name="dateofbirth"
+                            name="hsStartDate"
                             required
-                            value={formData.dateofbirth}
+                            value={formData.hsStartDate}
+                            onChange={handleInputChange}
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div> 
+
+                        <div className="w-full xl:w-1/2">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            End Date
+                          </label>
+                          <div className={`relative ${formData.hsEndDate ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="date" 
+                            name="hsEndDate"
+                            required
+                            value={formData.hsEndDate}
                             onChange={handleInputChange}
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                           </div>
@@ -616,154 +858,166 @@ const deletePersonalDetails = async (recordId) => {
                       </div>
 
                       <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                        <div className="w-full xl:w-1/2">
+                                            
+                      <div className="w-full xl:w-1/2">
                           <label className="mb-2.5 block text-black dark:text-white">
-                            Nationality
+                            Major
                           </label>
-                          <div className={`relative ${formData.nationality ? 'bg-light-blue' : ''}`}>
+                          <div className={`relative ${formData.hsMajor ? 'bg-light-blue' : ''}`}>
                           <select
-                                name="nationality"
-                                value={formData.nationality}
+                                name="hsMajor"
+                                value={formData.hsMajor}
                                 onChange={handleInputChange}
                                 required
                                 className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
-                                <option value="">Select Nationality</option>                        
-                                <option value="Nigeria">Nigeria</option>
-                                <option value="Ghana">Ghana</option>
-                                <option value="Kenya">Kenya</option>
-                                <option value="South Africa">South Africa</option>
-                                <option value="Others">Others</option>
+                                <option value="">Select Major</option>                        
+                                <option value="Sciences">Sciences</option>
+                                <option value="Arts">Arts</option>
+                                <option value="Social Sciences">Social Sciences</option>
                               </select>
                               </div>
                         </div>
 
                         <div className="w-full xl:w-1/2">
-                        <label className="mb-2.5 block text-black dark:text-white">Language</label>
-                        <div className={`relative ${formData.language ? 'bg-light-blue' : ''}`}>
-                        <select
-                          name="language"
-                          value={formData.language}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
-                          <option value="">Select Language</option>                        
-                          <option value="English">English</option>
-                          <option value="Spanish">Spanish</option>
-                          <option value="German">German</option>
-                          <option value="Yoruba">Yoruba</option>
-                          <option value="Igbo">Igbo</option>
-                        </select>
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Certificate
+                          </label>
+                          <div className={`relative ${formData.hsCert ? 'bg-light-blue' : ''}`}>
+                          <select
+                                name="hsCert"
+                                value={formData.hsCert}
+                                onChange={handleInputChange}
+                                required
+                                className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
+                                <option value="">Select Certificate</option>                        
+                                <option value="WASSCE">WASSCE</option>
+                                <option value="NECO">NECO</option>
+                              </select>
+                              </div>
                         </div>
                       </div>
+
+                      <h3 className="mb-2.5 block mt-10 font-semibold dark:text-white">Primary Education</h3>
+                      <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div className="w-full xl:w-3/5">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Name
+                          </label>
+                          <div className={`relative ${formData.pSchool ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="pSchool"
+                            required
+                            value={formData.pSchool}
+                            onChange={handleInputChange}
+                            placeholder="Crescent Schools"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
+
+                        <div className="w-full xl:w-3/5">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Place
+                          </label>
+                          <div className={`relative ${formData.pLocation ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="pLocation"
+                            required
+                            value={formData.pLocation}
+                            onChange={handleInputChange}
+                            placeholder="Lagos"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
+
+                        <div className="w-full xl:w-3/5">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Country
+                          </label>
+                          <div className={`relative ${formData.pCountry ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="pCountry"
+                            required
+                            value={formData.pCountry}
+                            onChange={handleInputChange}
+                            placeholder="Nigeria"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                            
-                        <div className="w-full xl:w-1/2">
-                          <label className="mb-2.5 block text-black dark:text-white">
-                            Phone
-                          </label>
-                          <div className={`relative ${formData.phone ? 'bg-light-blue' : ''}`}>
-                          <input
-                            type="text"
-                            name="phone"
-                            value={formData.phone}
-                            required
-                            onChange={handleInputChange}
-                            placeholder="+234123456789"
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                          </div>
-                        </div>
-
-                        <div className="w-full xl:w-1/2">
-                          <label className="mb-2.5 block text-black dark:text-white">
-                            Address
-                          </label>
-                          <div className={`relative ${formData.address ? 'bg-light-blue' : ''}`}>
-                          <input
-                            type="text"
-                            name="address"
-                            value={formData.address}
-                            required
-                            onChange={handleInputChange}
-                            placeholder="7 10 Marakesh Street"
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                            
-                        <div className="w-full xl:w-1/2">
-                          <label className="mb-2.5 block text-black dark:text-white">
-                            Email
-                          </label>
-                          <div className={`relative ${formData.email ? 'bg-light-blue' : ''}`}>
-                          <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            required
-                            onChange={handleInputChange}
-                            placeholder="xyz@xyz.com"
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                          </div>
-                        </div>
-
-                        <div className="w-full xl:w-1/2">
-                          <label className="mb-2.5 block text-black dark:text-white">
-                            Mother's Maiden Name
-                          </label>
-                          <div className={`relative ${formData.maidenName ? 'bg-light-blue' : ''}`}>
-                          <input
-                            type="text"
-                            name="maidenName"
-                            value={formData.maidenName}
-                            required
-                            onChange={handleInputChange}
-                            placeholder="Kathera"
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">                         
                       <div className="w-full xl:w-1/2">
-                        <label className="mb-2.5 block text-black dark:text-white">Race</label>
-                        <div className={`relative ${formData.race ? 'bg-light-blue' : ''}`}>
-                        <select
-                          name="race"
-                          value={formData.race}
-                          onChange={handleInputChange}
-                          required
-                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
-                          <option value="">Select Race</option>                        
-                          <option value="Black">Black</option>
-                          <option value="American">American</option>
-                          <option value="Latino">Latino</option>
-                          <option value="Hispanic">Hispanic</option>
-                          <option value="Asian">Asian</option>
-                        </select>
-                        </div>
-                      </div>
-
-                        {/* <div className="w-full xl:w-1/2">
                           <label className="mb-2.5 block text-black dark:text-white">
-                            Mother's Maiden Name
+                            Start Date
                           </label>
-                          <div className={`relative ${formData.maidenName ? 'bg-light-blue' : ''}`}>
+                          <div className={`relative ${formData.pStartDate ? 'bg-light-blue' : ''}`}>
                           <input
-                            type="text"
-                            name="maidenName"
-                            value={formData.maidenName}
+                            type="date" 
+                            name="pStartDate"
                             required
+                            value={formData.pStartDate}
                             onChange={handleInputChange}
-                            placeholder="Kathera"
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                           </div>
-                        </div> */}
+                        </div> 
+
+                        <div className="w-full xl:w-1/2">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            End Date
+                          </label>
+                          <div className={`relative ${formData.pEndDate ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="date" 
+                            name="pEndDate"
+                            required
+                            value={formData.pEndDate}
+                            onChange={handleInputChange}
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div> 
                       </div>
 
+                      <h3 className="mb-2.5 block mt-10 font-semibold dark:text-white">Professional Societies, Community Engagements or International Affairs</h3>
+                      <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div className="w-full xl:w-full">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Name
+                          </label>
+                          <div className={`relative ${formData.communities ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="communities"
+                            required
+                            value={formData.communities}
+                            onChange={handleInputChange}
+                            placeholder="Nigerian Society of Engineers"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>     
+                      </div>
+
+                      <h3 className="mb-2.5 block mt-10 font-semibold dark:text-white">Written Publications</h3>
+                      <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                      <div className="w-full xl:w-full">
+                          <label className="mb-2.5 block text-black dark:text-white">
+                            Name
+                          </label>
+                          <div className={`relative ${formData.publications ? 'bg-light-blue' : ''}`}>
+                          <input
+                            type="text"
+                            name="publications"
+                            required
+                            value={formData.publications}
+                            onChange={handleInputChange}
+                            placeholder="Engineering Journal"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                          </div>
+                        </div>
+                      </div>
+        
                       <div className="mb-4.5 flex flex-col gap-3">
                         <label className="mb-2.5 block text-black dark:text-white">
                         Image
@@ -818,11 +1072,11 @@ const deletePersonalDetails = async (recordId) => {
                       </div>
 
                 
-                    </div>
-                      </form>
+                            </div>
+                          </form>
                         <button
                           type="button"
-                          onClick={() => updatePersonalDetails(user.recordId, formData)}
+                          onClick={() => updateEducationDetails(user.recordId, formData)}
                           disabled={updateLoading}
                           className={`mr-5 mb-5 inline-flex items-center justify-center gap-2.5 rounded-full bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 ${updateLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
@@ -861,7 +1115,7 @@ const deletePersonalDetails = async (recordId) => {
                     <button
                       onClick={() => {
                         hideDeleteConfirmation();
-                        deletePersonalDetails(user.recordId);
+                        deleteEducationDetails(user.recordId);
                       }}
                       className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
                     >
@@ -888,4 +1142,4 @@ const deletePersonalDetails = async (recordId) => {
   );
 };
 
-export default PersonalDetails;
+export default EducationDetails;
