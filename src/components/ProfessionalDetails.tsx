@@ -93,7 +93,7 @@ const fetchProfessionalDetails = async () => {
       message: {
         filter: {
             protocol: 'https://did-box.com',
-            protocolPath: 'professionalDetails',
+            protocolPath: 'professionDetails',
             // schema: 'https://did-box.com/schemas/professionalDetails',
         },
       },

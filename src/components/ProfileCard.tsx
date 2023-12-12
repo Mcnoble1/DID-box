@@ -46,9 +46,7 @@ const ProfileCard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  
-  const [recipientDid, setRecipientDid] = useState('');
-  const [formData, setFormData] = useState<{ race: string, name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; email: string, maidenName: string, language: string;}>({
+    const [formData, setFormData] = useState<{ race: string, name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; email: string, maidenName: string, language: string;}>({
     name: '',
     gender: '',
     phone: '',

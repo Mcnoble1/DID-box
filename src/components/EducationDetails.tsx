@@ -209,14 +209,14 @@ const shareEducationDetails = async (recordId: string) => {
 const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
   const { name, value } = e.target;
 
-   if (name === 'name' || name === 'nationality' ) {
-    // Use a regular expression to allow only letters and spaces
-    const letterRegex = /^[A-Za-z\s]+$/;
-    if (!value.match(letterRegex) && value !== '') {
-      // If the input value doesn't match the regex and it's not an empty string, do not update the state
-      return;
-    }
-  }
+  //  if (name === 'name' || name === 'nationality' ) {
+  //   // Use a regular expression to allow only letters and spaces
+  //   const letterRegex = /^[A-Za-z\s]+$/;
+  //   if (!value.match(letterRegex) && value !== '') {
+  //     // If the input value doesn't match the regex and it's not an empty string, do not update the state
+  //     return;
+  //   }
+  // }
 
   setFormData((prevFormData) => ({
     ...prevFormData,

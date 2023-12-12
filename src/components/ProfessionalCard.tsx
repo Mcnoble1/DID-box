@@ -35,14 +35,14 @@ const ProfessionalCard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [formData, setFormData] = useState<{ name: string; company: string; bio: string; role: string; startDate: string; endDate: string; image: File | null }>({
+  const [formData, setFormData] = useState<{ name: string; company: string; bio: string; role: string; startDate: string; endDate: string; }>({
     name: '',
     bio: '',
     role: '',
     startDate: '',
     endDate: '',
     company: '',
-    image: null,
+    // image: null,
   });
 
   const profileProtocolDefinition = () => {
@@ -50,24 +50,48 @@ const ProfessionalCard = () => {
       protocol: "https://did-box.com",
       published: true,
       types: {
-        professionalDetails: {
-          schema: "https://did-box.com/schemas/professionalDetails",
+        educationDetails: {
+          schema: "https://did-box.com/schemas/educationDetails",
           dataFormats: ["application/json"],
         },
         healthDetails: {
           schema: "https://did-box.com/schemas/healthDetails",
           dataFormats: ["application/json"],
         },
-        educationDetails: {
-          schema: "https://did-box.com/schemas/educationDetails",
+        professionDetails: {
+          schema: "https://did-box.com/schemas/professionDetails",
+          dataFormats: ["application/json"],
+        },
+        financialDetails: {
+          schema: "https://did-box.com/schemas/financialDetails",
+          dataFormats: ["application/json"],
+        },
+        sportDetails: {
+          schema: "https://did-box.com/schemas/sportDetails",
+          dataFormats: ["application/json"],
+        },
+        socialDetails: {
+          schema: "https://did-box.com/schemas/socialDetails",
+          dataFormats: ["application/json"],
+        },
+        entertainmentDetails: {
+          schema: "https://did-box.com/schemas/entertainmentDetails",
+          dataFormats: ["application/json"],
+        },
+        reviewDetails: {
+          schema: "https://did-box.com/schemas/reviewDetails",
+          dataFormats: ["application/json"],
+        },
+        otherDetails: {
+          schema: "https://did-box.com/schemas/otherDetails",
           dataFormats: ["application/json"],
         },
       },
       structure: {
-        professionalDetails: {
+        educationDetails: {
           $actions: [
             { who: "anyone", can: "write" },
-            { who: "author", of: "professionalDetails", can: "read" },
+            { who: "author", of: "educationDetails", can: "read" },
           ],
         },
         healthDetails: {
@@ -76,10 +100,46 @@ const ProfessionalCard = () => {
             { who: "author", of: "healthDetails", can: "read" },
           ],
         },
-        educationDetails: {
+        professionDetails: {
           $actions: [
             { who: "anyone", can: "write" },
-            { who: "author", of: "educationDetails", can: "read" },
+            { who: "author", of: "professionDetails", can: "read" },
+          ],
+        },
+        financialDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "financialDetails", can: "read" },
+          ],
+        },
+        sportDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "sportDetails", can: "read" },
+          ],
+        },
+        socialDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "socialDetails", can: "read" },
+          ],
+        },
+        entertainmentDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "entertainmentDetails", can: "read" },
+          ],
+        },
+        reviewDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "reviewDetails", can: "read" },
+          ],
+        },
+        otherDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "otherDetails", can: "read" },
           ],
         },
       },
@@ -118,25 +178,25 @@ const ProfessionalCard = () => {
     e.preventDefault();
     setLoading(true); 
   
-    const requiredFields = ['name', 'gender', 'phone', 'nationality', 'language', 'address'];
-    const emptyFields = requiredFields.filter((field) => !formData[field]);
+    // const requiredFields = ['name', 'gender', 'phone', 'nationality', 'language', 'address'];
+    // const emptyFields = requiredFields.filter((field) => !formData[field]);
   
-    if (emptyFields.length > 0) {
-      toast.error('Please fill in all required fields.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000, 
-      });
-      requiredFields.forEach((field) => {
-        if (!formData[field]) {
-          const inputElement = document.querySelector(`[name="${field}"]`);
-          if (inputElement) {
-            inputElement.parentElement?.classList.add('error-outline');
-          }
-        }
-      });
-      setLoading(false);
-      return; 
-    }
+    // if (emptyFields.length > 0) {
+    //   toast.error('Please fill in all required fields.', {
+    //     position: toast.POSITION.TOP_RIGHT,
+    //     autoClose: 3000, 
+    //   });
+    //   requiredFields.forEach((field) => {
+    //     if (!formData[field]) {
+    //       const inputElement = document.querySelector(`[name="${field}"]`);
+    //       if (inputElement) {
+    //         inputElement.parentElement?.classList.add('error-outline');
+    //       }
+    //     }
+    //   });
+    //   setLoading(false);
+    //   return; 
+    // }
       
     const formdata = new FormData();
     formdata.append('name', formData.name);
@@ -152,7 +212,7 @@ const ProfessionalCard = () => {
       let record;
       console.log(formData);
       record = await writeProfileToDwn(formData);
-  
+      console.log(record);
       if (record) {
         const { status } = await record.send(myDid);
         console.log("Send record status in handleAddProfile", status);
@@ -172,7 +232,7 @@ const ProfessionalCard = () => {
         startDate: '',
         endDate: '',
         company: '',
-        image: null,
+        // image: null,
       });
   
       setPopupOpen(false);
@@ -195,16 +255,17 @@ const ProfessionalCard = () => {
   
      const writeProfileToDwn = async (profileData) => {
       try {
-        const professionalProtocol = profileProtocolDefinition();
+        const professionProtocol = profileProtocolDefinition();
         const { record, status } = await web5.dwn.records.write({
           data: profileData,
           message: {
-            protocol: professionalProtocol.protocol,
-            protocolPath: 'professionalDetails',
-            schema: professionalProtocol.types.professionalDetails.schema,
+            protocol: professionProtocol.protocol,
+            protocolPath: 'professionDetails',
+            schema: professionProtocol.types.professionDetails.schema,
             recipient: myDid,
           },
         });
+        console.log(record);
   
         if (status === 200) {
           return { ...profileData, recordId: record.id}
