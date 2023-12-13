@@ -47,106 +47,115 @@ const PictureCard = () => {
 //   };
 // }, [imageURLs]);
 
-  const profileProtocolDefinition = () => {
-    return {
-      protocol: "https://did-box.com",
-      published: true,
-      types: {
-        personalDetails: {
-          schema: "https://did-box.com/schemas/personalDetails",
-          dataFormats: ["application/json"],
-        },
-        healthDetails: {
-          schema: "https://did-box.com/schemas/healthDetails",
-          dataFormats: ["application/json"],
-        },
-        educationDetails: {
-          schema: "https://did-box.com/schemas/educationDetails",
-          dataFormats: ["application/json"],
-        },
-        professionDetails: {
-          schema: "https://did-box.com/schemas/workDetails",
-          dataFormats: ["application/json"],
-        },
-        socialDetails: {
-          schema: "https://did-box.com/schemas/socialDetails",
-          dataFormats: ["application/json"],
-        },
-        letterDetails: {
-          schema: "https://did-box.com/schemas/letterDetails",
-          dataFormats: ["application/json"],
-        },
-        pictureDetails: {
-          schema: "https://did-box.com/schemas/pictureDetails",
-          dataFormats: ['image/jpg', 'image/png', 'image/jpeg', 'image/gif']
-        },
-        videoDetails: {
-          schema: "https://did-box.com/schemas/videoDetails",
-          dataFormats: ["video/mp4", "video/mpeg", "video/ogg", "video/quicktime", "video/webm", "video/x-ms-wmv"],
-        },
-        documentDetails: {
-          schema: "https://did-box.com/schemas/documentDetails",
-          dataFormats: ['application/octet-stream', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-        },
+const profileProtocolDefinition = () => {
+  return {
+    protocol: "https://did-box.com",
+    published: true,
+    types: {
+      personalDetails: {
+        schema: "https://did-box.com/schemas/personalDetails",
+        dataFormats: ["application/json"],
       },
-      structure: {
-        personalDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "personalDetails", can: "read" },
-          ],
-        },
-        healthDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "healthDetails", can: "read" },
-          ],
-        },
-        educationDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "educationDetails", can: "read" },
-          ],
-        },
-        professionDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "professionDetails", can: "read" },
-          ],
-        },
-        socialDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "socialDetails", can: "read" },
-          ],
-        },
-        letterDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "letterDetails", can: "read" },
-          ],
-        },
-        pictureDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "pictureDetails", can: "read" },
-          ],
-        },
-        videoDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "videoDetails", can: "read" },
-          ],
-        },
-        documentDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "documentDetails", can: "read" },
-          ],
-        },
+      healthDetails: {
+        schema: "https://did-box.com/schemas/healthDetails",
+        dataFormats: ["application/json"],
       },
-    };
+      educationDetails: {
+        schema: "https://did-box.com/schemas/educationDetails",
+        dataFormats: ["application/json"],
+      },
+      professionDetails: {
+        schema: "https://did-box.com/schemas/workDetails",
+        dataFormats: ["application/json"],
+      },
+      socialDetails: {
+        schema: "https://did-box.com/schemas/socialDetails",
+        dataFormats: ["application/json"],
+      },
+      letterDetails: {
+        schema: "https://did-box.com/schemas/letterDetails",
+        dataFormats: ["application/json"],
+      },
+      pictureDetails: {
+        schema: "https://did-box.com/schemas/pictureDetails",
+        dataFormats: ['image/jpg', 'image/png', 'image/jpeg', 'image/gif']
+      },
+      videoDetails: {
+        schema: "https://did-box.com/schemas/videoDetails",
+        dataFormats: ["video/mp4", "video/mpeg", "video/ogg", "video/quicktime", "video/webm", "video/x-ms-wmv"],
+      },
+      documentDetails: {
+        schema: "https://did-box.com/schemas/documentDetails",
+        dataFormats: ['application/octet-stream', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+      },
+    },
+    structure: {
+      personalDetails: {
+        $actions: [
+          { who: "anyone", can: "write" },
+          { who: "author", of: "personalDetails", can: "read" },
+          { who: "recipient", of: "personalDetails", can: "read" },
+        ],
+      },
+      healthDetails: {
+        $actions: [
+          { who: "anyone", can: "write" },
+          { who: "author", of: "healthDetails", can: "read" },
+          { who: "recipient", of: "healthDetails", can: "read" },
+        ],
+      },
+      educationDetails: {
+        $actions: [
+          { who: "anyone", can: "write" },
+          { who: "author", of: "educationDetails", can: "read" },
+          { who: "recipient", of: "educationDetails", can: "read" },
+        ],
+      },
+      professionDetails: {
+        $actions: [
+          { who: "anyone", can: "write" },
+          { who: "author", of: "professionDetails", can: "read" },
+          { who: "recipient", of: "professionDetails", can: "read" },
+        ],
+      },
+      socialDetails: {
+        $actions: [
+          { who: "anyone", can: "write" },
+          { who: "author", of: "socialDetails", can: "read" },
+          { who: "recipient", of: "socialDetails", can: "read" },
+        ],
+      },
+      letterDetails: {
+        $actions: [
+          { who: "anyone", can: "write" },
+          { who: "author", of: "letterDetails", can: "read" },
+          { who: "recipient", of: "letterDetails", can: "read" },
+        ],
+      },
+      pictureDetails: {
+        $actions: [
+          { who: "anyone", can: "write" },
+          { who: "author", of: "pictureDetails", can: "read" },
+          { who: "recipient", of: "pictureDetails", can: "read"}
+        ],
+      },
+      videoDetails: {
+        $actions: [
+          { who: "anyone", can: "write" },
+          { who: "author", of: "videoDetails", can: "read" },
+          { who: "recipient", of: "videoDetails", can: "read" },
+        ],
+      },
+      documentDetails: {
+        $actions: [
+          { who: "anyone", can: "write" },
+          { who: "author", of: "documentDetails", can: "read" },
+          { who: "recipient", of: "documentDetails", can: "read"}
+        ],
+      },
+    },
   };
+};
 
   // const handleImageInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
   //     const imageFile = event.target.files[0];

@@ -90,54 +90,63 @@ const LetterCard = () => {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "personalDetails", can: "read" },
+            { who: "recipient", of: "personalDetails", can: "read" },
           ],
         },
         healthDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "healthDetails", can: "read" },
+            { who: "recipient", of: "healthDetails", can: "read" },
           ],
         },
         educationDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "educationDetails", can: "read" },
+            { who: "recipient", of: "educationDetails", can: "read" },
           ],
         },
         professionDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "professionDetails", can: "read" },
+            { who: "recipient", of: "professionDetails", can: "read" },
           ],
         },
         socialDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "socialDetails", can: "read" },
+            { who: "recipient", of: "socialDetails", can: "read" },
           ],
         },
         letterDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "letterDetails", can: "read" },
+            { who: "recipient", of: "letterDetails", can: "read" },
           ],
         },
         pictureDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "pictureDetails", can: "read" },
+            { who: "recipient", of: "pictureDetails", can: "read"}
           ],
         },
         videoDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "videoDetails", can: "read" },
+            { who: "recipient", of: "videoDetails", can: "read" },
           ],
         },
         documentDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "documentDetails", can: "read" },
+            { who: "recipient", of: "documentDetails", can: "read"}
           ],
         },
       },

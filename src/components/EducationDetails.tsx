@@ -631,7 +631,7 @@ const deleteEducationDetails = async (recordId) => {
                           style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'scroll' }}
                         >              
                             <div className="flex flex-row justify-between">
-                            <h2 className="text-xl font-semibold mb-4">Edit User Details</h2>
+                            <h2 className="text-xl font-semibold mb-4">Edit Education Details</h2>
                             <div className="flex justify-end">
                               <button
                                 onClick={() => closePopup(user.recordId)}
