@@ -232,7 +232,18 @@ const LetterCard = () => {
       } 
   };
   
+  
+
      const writeLetterToDwn = async (letterData) => {
+      const dateToFormat = new Date(formData.publishedDate);
+
+      // if (isNaN(dateToFormat.getTime())) {
+      //   console.error('Invalid date');
+      // } else {
+        // Format the date and time in YYYY-MM-DDThh:mm:ss.ssssssZ format
+        const formattedDate = dateToFormat.toISOString().replace(/\.\d{3}Z$/, '.000000Z');
+        console.log(formattedDate);
+      // }
       try {
         const letterProtocol = profileProtocolDefinition();
         const { record, status } = await web5.dwn.records.write({
@@ -242,6 +253,8 @@ const LetterCard = () => {
             protocolPath: 'letterDetails',
             schema: letterProtocol.types.letterDetails.schema,
             recipient: myDid,
+            published: true,
+            datePublished: formattedDate,
           },
         });
         console.log(record);
