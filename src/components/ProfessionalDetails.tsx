@@ -16,14 +16,14 @@ const ProfessionalDetails = () => {
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false)
   const [popupOpenMap, setPopupOpenMap] = useState<{ [key: number]: boolean }>({});
-  const [formData, setFormData] = useState<{ name: string; company: string; bio: string; role: string; startDate: string; endDate: string; image: File | null }>({
+  const [formData, setFormData] = useState<{ name: string; company: string; bio: string; role: string; startDate: string; endDate: string; }>({
     name: '',
     bio: '',
     role: '',
     startDate: '',
     endDate: '',
     company: '',
-    image: null,
+    // image: null,
   });
 
   const [showDetails, setShowDetails] = useState(false);
@@ -60,7 +60,6 @@ const toggleDetails = () => {
 const togglePopup = (userId: string) => {
   usersDetails.map((user) => { 
     if (user.recordId === userId) {
-      console.log(user.name);
       setFormData({
        name: user.name,
        bio: user.bio,
@@ -94,7 +93,7 @@ const fetchProfessionalDetails = async () => {
         filter: {
             protocol: 'https://did-box.com',
             protocolPath: 'professionDetails',
-            // schema: 'https://did-box.com/schemas/professionalDetails',
+            // schema: 'https://did-box.com/schemas/workDetails',
         },
       },
     });
@@ -180,15 +179,7 @@ const shareProfessionalDetails = async (recordId: string) => {
 const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
   const { name, value } = e.target;
 
-  if (name === 'phone' || name === 'whatsapp') {
-    // Use a regular expression to allow only phone numbers starting with a plus
-    const phoneRegex = /^[+]?[0-9\b]+$/;
-      
-    if (!value.match(phoneRegex) && value !== '') {
-      // If the input value doesn't match the regex and it's not an empty string, do not update the state
-      return;
-    }
-  } else if (name === 'name' || name === 'nationality' || name === 'area') {
+  if (name === 'name' || name === 'company' || name === 'role') {
     // Use a regular expression to allow only letters and spaces
     const letterRegex = /^[A-Za-z\s]+$/;
     if (!value.match(letterRegex) && value !== '') {
@@ -232,8 +223,8 @@ const showDeleteConfirmation = (userId: string) => {
 
     if (response.records && response.records.length > 0) {
       const record = response.records[0];
-      const updateResult = await record.update(data);
-
+      const updateResult = await record.update({data: data});
+      togglePopup(recordId)
       if (updateResult.status.code === 202) {
         toast.success('Professional Details updated successfully.', {
           position: toast.POSITION.TOP_RIGHT,

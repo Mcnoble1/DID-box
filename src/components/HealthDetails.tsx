@@ -79,7 +79,6 @@ const HealthDetails = () => {
   const togglePopup = (userId: string) => {
     usersDetails.map((user) => { 
       if (user.recordId === userId) {
-        console.log(user.name);
         setFormData({
           name: user.name,
           dateOfBirth: user.dateOfBirth,
@@ -258,8 +257,8 @@ const showDeleteConfirmation = (userId: string) => {
 
     if (response.records && response.records.length > 0) {
       const record = response.records[0];
-      const updateResult = await record.update(data);
-
+      const updateResult = await record.update({data: data});
+      togglePopup(recordId)
       if (updateResult.status.code === 202) {
         toast.success('Health Details updated successfully.', {
           position: toast.POSITION.TOP_RIGHT,
@@ -787,7 +786,7 @@ const deleteHealthDetails = async (recordId) => {
                         </label>
                         <div className={`relative ${formData.bloodGroup ? 'bg-light-blue' : ''}`}>
                         <select
-                              name="hsMajor"
+                              name="bloodGroup"
                               value={formData.bloodGroup}
                               onChange={handleInputChange}
                               required
@@ -808,7 +807,7 @@ const deleteHealthDetails = async (recordId) => {
                         </label>
                         <div className={`relative ${formData.genotype ? 'bg-light-blue' : ''}`}>
                         <select
-                              name="hsMajor"
+                              name="genotype"
                               value={formData.genotype}
                               onChange={handleInputChange}
                               required

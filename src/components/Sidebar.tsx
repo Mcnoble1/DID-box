@@ -3,10 +3,17 @@ import { NavLink, useLocation } from 'react-router-dom';
 import Logo from '../images/logo/logo.png';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
+import { faCircleUser, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
-import { faSlack } from '@fortawesome/free-brands-svg-icons';
-import { faTableColumns } from '@fortawesome/free-solid-svg-icons';
+import { faBook } from '@fortawesome/free-solid-svg-icons';
+import { faFile } from '@fortawesome/free-solid-svg-icons';
+import { faVideo } from '@fortawesome/free-solid-svg-icons';
+import { faImages } from '@fortawesome/free-solid-svg-icons';
+import { faHospital } from '@fortawesome/free-solid-svg-icons';
+import { faPerson } from '@fortawesome/free-solid-svg-icons';
+import { faNoteSticky } from '@fortawesome/free-solid-svg-icons';
+import { faTwitter } from '@fortawesome/free-brands-svg-icons';
+
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -110,7 +117,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     pathname.includes('dashboard') && 'border-r-4 dark:bg-meta-4'
                   }`}
                 >
-                   <FontAwesomeIcon icon={faSlack} style={{color: "#ffffff",}} />
+                   <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
                   Personal
                 </NavLink>
               </li>
@@ -137,7 +144,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                       <FontAwesomeIcon icon={faTableColumns} />
+                       <FontAwesomeIcon icon={faFile} />
                         File Manager
                         <svg
                           className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
@@ -157,7 +164,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                           />
                         </svg>
                       </NavLink>
-                      {/* <!-- Dropdown Menu Start --> */}
                       <div
                         className={`translate transform overflow-hidden ${
                           !open && 'hidden'
@@ -166,43 +172,45 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
                             <NavLink
-                              to="/categories/transportation"
+                              to="/files/pictures"
                               className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
-                                (pathname === '/categories' ||
-                                  pathname.includes('transportation')) &&
+                                (pathname === '/files' ||
+                                  pathname.includes('pictures')) &&
                                 'border-r-4 dark:bg-meta-4'
                               }`}
                             >
+                          <FontAwesomeIcon icon={faImages} style={{color: "#ffffff",}} />
                               Pictures
                             </NavLink>
                           </li>
                           <li>
                             <NavLink
-                              to="/categories/others"
+                              to="/files/videos"
                               className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
-                                (pathname === '/categories' ||
-                                  pathname.includes('others')) &&
+                                (pathname === '/files' ||
+                                  pathname.includes('videos')) &&
                                 'border-r-4 dark:bg-meta-4'
                               }`}
                             >
+                             <FontAwesomeIcon icon={faVideo} style={{color: "#ffffff",}} />
                               Videos
                             </NavLink>
                           </li>
                           <li>
                             <NavLink
-                              to="/categories/others"
+                              to="/files/documents"
                               className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
-                                (pathname === '/categories' ||
-                                  pathname.includes('others')) &&
+                                (pathname === '/files' ||
+                                  pathname.includes('documents')) &&
                                 'border-r-4 dark:bg-meta-4'
                               }`}
                             >
+                              <FontAwesomeIcon icon={faFileAlt} style={{color: "#ffffff",}} />
                               Documents
                             </NavLink>
                           </li>
                         </ul>
                       </div>
-                      {/* <!-- Dropdown Menu End --> */}
                     </React.Fragment>
                   );
                 }}
@@ -215,7 +223,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     pathname.includes('education') && 'border-r-4 dark:bg-meta-4'
                   }`}
                 >
-                  <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
+                  <FontAwesomeIcon icon={faBook} style={{color: "#ffffff",}} />
                  Education
                 </NavLink>
               </li>
@@ -228,7 +236,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     'border-r-4 dark:bg-meta-4'
                   }`}
                 >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                  <FontAwesomeIcon icon={faHospital} style={{color: "#fcfcfc",}} />
                   Health
                 </NavLink>
               </li>
@@ -267,7 +275,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     'border-r-4 dark:bg-meta-4'
                   }`}
                 >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                  <FontAwesomeIcon icon={faPerson} style={{color: "#fcfcfc",}} />
                   Professional
                 </NavLink>
               </li>
@@ -280,59 +288,22 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     'border-r-4 dark:bg-meta-4'
                   }`}
                 >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
+                  <FontAwesomeIcon icon={faTwitter} style={{color: "#fcfcfc",}} />
                  Social Media
                 </NavLink>
               </li>
 
               <li>
                 <NavLink
-                  to="/education"
+                  to="/letters"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
-                    pathname.includes('education') && 'border-r-4 dark:bg-meta-4'
+                    pathname.includes('letters') && 'border-r-4 dark:bg-meta-4'
                   }`}
                 >
-                  <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
-                 Chat
+                  <FontAwesomeIcon icon={faNoteSticky} style={{color: "#ffffff",}} />
+                 Letters
                 </NavLink>
               </li>
-
-              <li>
-                <NavLink
-                  to="/education"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
-                    pathname.includes('education') && 'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
-                 Notes
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/education"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 dark:hover:bg-meta-4 ${
-                    pathname.includes('education') && 'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faCircleUser} style={{color: "#ffffff",}} />
-                 Future Me
-                </NavLink>
-              </li>
-
-              {/* <li>
-                <NavLink
-                  to="/customers"
-                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
-                    pathname.includes('customers') &&
-                    'border-r-4 dark:bg-meta-4'
-                  }`}
-                >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                 Reviews
-                </NavLink>
-              </li> */}
             </ul>
           </div>
 

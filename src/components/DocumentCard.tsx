@@ -4,7 +4,7 @@ import Image from '../images/user/7.png';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import '../pages/signin.css';
-const ProfessionalCard = () => {
+const DocumentCard = () => {
   const [web5, setWeb5] = useState(null);
   const [myDid, setMyDid] = useState(null);
 
@@ -35,13 +35,11 @@ const ProfessionalCard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [formData, setFormData] = useState<{ name: string; company: string; bio: string; role: string; startDate: string; endDate: string; }>({
-    name: '',
-    bio: '',
-    role: '',
-    startDate: '',
-    endDate: '',
-    company: '',
+  const [formData, setFormData] = useState<{ title: string; content: string; timestamp: string; publishedDate: string; }>({
+    title: '',
+    publishedDate: '',
+    content: '',
+    timestamp: '',
     // image: null,
   });
 
@@ -155,88 +153,70 @@ const ProfessionalCard = () => {
         setSelectedFileName(file.name);
       }
   
-      if (name === 'phone' ) {
-        const phoneRegex = /^[+]?[0-9\b]+$/;
-          
-        if (!value.match(phoneRegex) && value !== '') {
-          return;
-        }
-      } else if (name === 'name' || name === 'nationality' || name === 'language') {
-        const letterRegex = /^[A-Za-z\s]+$/;
-        if (!value.match(letterRegex) && value !== '') {
-          return;
-        }
-      }
-  
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
 
-  const handleAddProfile = async (e: FormEvent) => {
+  const handleAddDocument = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true); 
   
-    // const requiredFields = ['name', 'gender', 'phone', 'nationality', 'language', 'address'];
-    // const emptyFields = requiredFields.filter((field) => !formData[field]);
+    const requiredFields = ['title', 'content', 'publishedDate'];
+    const emptyFields = requiredFields.filter((field) => !formData[field]);
   
-    // if (emptyFields.length > 0) {
-    //   toast.error('Please fill in all required fields.', {
-    //     position: toast.POSITION.TOP_RIGHT,
-    //     autoClose: 3000, 
-    //   });
-    //   requiredFields.forEach((field) => {
-    //     if (!formData[field]) {
-    //       const inputElement = document.querySelector(`[name="${field}"]`);
-    //       if (inputElement) {
-    //         inputElement.parentElement?.classList.add('error-outline');
-    //       }
-    //     }
-    //   });
-    //   setLoading(false);
-    //   return; 
-    // }
+    if (emptyFields.length > 0) {
+      toast.error('Please fill in all required fields.', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+      requiredFields.forEach((field) => {
+        if (!formData[field]) {
+          const inputElement = document.querySelector(`[name="${field}"]`);
+          if (inputElement) {
+            inputElement.parentElement?.classList.add('error-outline');
+          }
+        }
+      });
+      setLoading(false);
+      return; 
+    }
       
     const formdata = new FormData();
-    formdata.append('name', formData.name);
-    formdata.append('bio', formData.bio);
-    formdata.append('role', formData.role);  
-    formdata.append('company', formData.company);  
-    formdata.append('startDate', formData.startDate);
-    formdata.append('endDate', formData.endDate);  
-    // formdata.append("image", fileInputRef.current.files[0], fileInputRef.current.files[0]?.name);
-  
-  
+    const currentDate = new Date().toLocaleDateString();
+    const currentTime = new Date().toLocaleTimeString();
+    const timestamp = `${currentDate} ${currentTime}`;
+    formdata.append("title", formData.title);
+    formdata.append("content", formData.content);
+    formdata.append("publishedDate", formData.publishedDate);
+    formdata.append("timestamp", timestamp);
     try {
       let record;
       console.log(formData);
-      record = await writeProfileToDwn(formData);
+      record = await writeDocumentToDwn(formData);
       console.log(record);
       if (record) {
         const { status } = await record.send(myDid);
-        console.log("Send record status in handleAddProfile", status);
+        console.log("Send record status in handleAddDocument", status);
       } else {
-        toast.error('Failed to create professional record', {
+        toast.error('Failed to create documental record', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
           });
           setLoading(false);
-        throw new Error('Failed to create professional record');       
+        throw new Error('Failed to create document record');       
       }
   
       setFormData({
-        name: '',
-        bio: '',
-        role: '',
-        startDate: '',
-        endDate: '',
-        company: '',
-        // image: null,
+        title: '',
+        publishedDate: '',
+        content: '',
+        timestamp: '',
       });
   
       setPopupOpen(false);
-      toast.success('Successfully created professional record', {
+      toast.success('Successfully created document record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000, 
       });
@@ -244,8 +224,8 @@ const ProfessionalCard = () => {
       setLoading(false);
   
     } catch (err) {
-        console.error('Error in handleAddProfile:', err);
-        toast.error('Error in handleAddProfile. Please try again later.', {
+        console.error('Error in handleAddDocument:', err);
+        toast.error('Error in handleAddDocument. Please try again later.', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 5000, // Adjust the duration as needed
         });
@@ -253,32 +233,32 @@ const ProfessionalCard = () => {
       } 
   };
   
-     const writeProfileToDwn = async (profileData) => {
+     const writeDocumentToDwn = async (documentData) => {
       try {
-        const professionProtocol = profileProtocolDefinition();
+        const documentProtocol = profileProtocolDefinition();
         const { record, status } = await web5.dwn.records.write({
-          data: profileData,
+          data: documentData,
           message: {
-            protocol: professionProtocol.protocol,
-            protocolPath: 'professionDetails',
-            schema: professionProtocol.types.professionDetails.schema,
+            protocol: documentProtocol.protocol,
+            protocolPath: 'documentDetails',
+            schema: documentProtocol.types.documentDetails.schema,
             recipient: myDid,
           },
         });
         console.log(record);
   
         if (status === 200) {
-          return { ...profileData, recordId: record.id}
+          return { ...documentData, recordId: record.id}
         } 
-        console.log('Successfully wrote professional details to DWN:', record);
-        toast.success('Professional Details written to DWN', {
+        console.log('Successfully wrote documental details to DWN:', record);
+        toast.success('Document Details written to DWN', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
         });
         return record;
       } catch (err) {
-        console.error('Failed to write professional details to DWN:', err);
-        toast.error('Failed to write professional details to DWN. Please try again later.', {
+        console.error('Failed to write document details to DWN:', err);
+        toast.error('Failed to write document details to DWN. Please try again later.', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000,
         });
@@ -289,13 +269,13 @@ const ProfessionalCard = () => {
     <div className="w-full md:w-3/5 flex justify-between rounded-lg border border-stroke bg-white py-7.5 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
        <div className="">
           <h4 className="text-2xl font-bold text-black dark:text-white">
-            Professional Details
+            Document Details
           </h4>
           <button
             ref={trigger}
             onClick={() => setPopupOpen(!popupOpen)}
             className="inline-flex mt-30 items-center justify-center rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover-bg-opacity-90 lg:px-8 xl:px-10">
-            Add Profile
+            Add Document
           </button>
           {popupOpen && (
                 <div
@@ -307,7 +287,7 @@ const ProfessionalCard = () => {
                     style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'scroll' }}
                   >
                     <div className="flex flex-row justify-between">
-                      <h2 className="text-xl font-semibold mb-4">Add Professional Details</h2>
+                      <h2 className="text-xl font-semibold mb-4">Upload Document</h2>
                       <div className="flex justify-end">
                         <button
                           onClick={() => setPopupOpen(false)} 
@@ -327,112 +307,9 @@ const ProfessionalCard = () => {
                     </div>
                     <form>
                     <div className= "rounded-sm px-6.5 bg-white dark:border-strokedark dark:bg-boxdark">
-
-                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                    <div className="w-full xl:w-2/2">
-                        <label className="mb-2.5 block text-black dark:text-white">
-                          Bio
-                        </label>
-                        <div className={`relative ${formData.bio ? 'bg-light-blue' : ''}`}>
-                        <textarea
-                          name="bio"
-                          required
-                          value={formData.bio}
-                          onChange={handleInputChange}
-                          placeholder="Enter your Bio"
-                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                    <div className="w-full xl:w-1/2">
-                        <label className="mb-2.5 block text-black dark:text-white">
-                          Company
-                        </label>
-                        <div className={`relative ${formData.company ? 'bg-light-blue' : ''}`}>
-                        <input
-                          type="text"
-                          name="company"
-                          required
-                          value={formData.company}
-                          onChange={handleInputChange}
-                          placeholder="TBD"
-                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                        </div>
-                      </div>
-
-                      <div className="w-full xl:w-1/2">
-                        <label className="mb-2.5 block text-black dark:text-white">
-                          Role
-                        </label>
-                        <div className={`relative ${formData.role ? 'bg-light-blue' : ''}`}>
-                        <input
-                          type="role"
-                          name="role"
-                          value={formData.role}
-                          required
-                          onChange={handleInputChange}
-                          placeholder="Software Engineer"
-                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">                                         
-                     <div className="w-full xl:w-1/2">
-                        <label className="mb-2.5 block text-black dark:text-white">
-                          Start Date
-                        </label>
-                        <div className={`relative ${formData.startDate ? 'bg-light-blue' : ''}`}>
-                        <input
-                           type="date" 
-                          name="startDate"
-                          required
-                          value={formData.startDate}
-                          onChange={handleInputChange}
-                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                        </div>
-                      </div> 
-
-                      <div className="w-full xl:w-1/2">
-                        <label className="mb-2.5 block text-black dark:text-white">
-                          End Date
-                        </label>
-                        <div className={`relative ${formData.endDate ? 'bg-light-blue' : ''}`}>
-                        <input
-                           type="date" 
-                          name="endDate"
-                          required
-                          value={formData.endDate}
-                          onChange={handleInputChange}
-                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                        </div>
-                      </div> 
-                    </div>
-
-                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                           
-                      <div className="w-full xl:w-1/2">
-                        <label className="mb-2.5 block text-black dark:text-white">
-                          Name
-                        </label>
-                        <div className={`relative ${formData.name ? 'bg-light-blue' : ''}`}>
-                        <input
-                          type="name"
-                          name="name"
-                          value={formData.name}
-                          required
-                          onChange={handleInputChange}
-                          placeholder="Idowu Festus"
-                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="mb-4.5 flex flex-col gap-3">
                       <label className="mb-2.5 block text-black dark:text-white">
-                      Image
+                      Document
                       </label>
                       <div
                         id="FileUpload"
@@ -440,7 +317,7 @@ const ProfessionalCard = () => {
                       >
                         <input
                           type="file"
-                          accept="image/*"
+                          accept='application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                           ref={fileInputRef}
                           onChange={handleInputChange}
                           className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"
@@ -476,29 +353,27 @@ const ProfessionalCard = () => {
                           </span>
                           <p>
                             <span className="text-primary">
-                            {selectedFileName ? selectedFileName : 'Click to add Image'}                            
+                            {selectedFileName ? selectedFileName : 'Click to add Document'}                            
                               </span> 
                           </p>
                         </div>
                       </div>
-                    </div>
-
-              
+                    </div>            
                   </div>
                     </form>
                       <button
                         type="button"
-                        onClick={handleAddProfile}
+                        onClick={handleAddDocument}
                         disabled={loading}
                         className={`mr-5 mb-5 inline-flex items-center justify-center gap-2.5 rounded-full bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
                         {loading ? (
                           <div className="flex items-center">
                             <div className="spinner"></div>
-                            <span className="pl-1">Creating...</span>
+                            <span className="pl-1">Sending...</span>
                           </div>
                         ) : (
-                          <>Add Details</>
+                          <>Send Document</>
                         )}
                       </button>
                   </div>
@@ -512,4 +387,4 @@ const ProfessionalCard = () => {
   );
 };
 
-export default ProfessionalCard;
+export default DocumentCard;

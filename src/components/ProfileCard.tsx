@@ -121,29 +121,25 @@ const ProfileCard = () => {
           schema: "https://did-box.com/schemas/workDetails",
           dataFormats: ["application/json"],
         },
-        financialDetails: {
-          schema: "https://did-box.com/schemas/financialDetails",
-          dataFormats: ["application/json"],
-        },
-        sportDetails: {
-          schema: "https://did-box.com/schemas/sportDetails",
-          dataFormats: ["application/json"],
-        },
         socialDetails: {
           schema: "https://did-box.com/schemas/socialDetails",
           dataFormats: ["application/json"],
         },
-        entertainmentDetails: {
-          schema: "https://did-box.com/schemas/entertainmentDetails",
+        letterDetails: {
+          schema: "https://did-box.com/schemas/letterDetails",
           dataFormats: ["application/json"],
         },
-        reviewDetails: {
-          schema: "https://did-box.com/schemas/reviewDetails",
-          dataFormats: ["application/json"],
+        pictureDetails: {
+          schema: "https://did-box.com/schemas/pictureDetails",
+          dataFormats: ['image/jpg', 'image/png', 'image/jpeg', 'image/gif']
         },
-        otherDetails: {
-          schema: "https://did-box.com/schemas/otherDetails",
-          dataFormats: ["application/json"],
+        videoDetails: {
+          schema: "https://did-box.com/schemas/videoDetails",
+          dataFormats: ["video/mp4", "video/mpeg", "video/ogg", "video/quicktime", "video/webm", "video/x-ms-wmv"],
+        },
+        documentDetails: {
+          schema: "https://did-box.com/schemas/documentDetails",
+          dataFormats: ['application/octet-stream', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
         },
       },
       structure: {
@@ -171,40 +167,34 @@ const ProfileCard = () => {
             { who: "author", of: "professionDetails", can: "read" },
           ],
         },
-        financialDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "financialDetails", can: "read" },
-          ],
-        },
-        sportDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "sportDetails", can: "read" },
-          ],
-        },
         socialDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "socialDetails", can: "read" },
           ],
         },
-        entertainmentDetails: {
+        letterDetails: {
           $actions: [
             { who: "anyone", can: "write" },
-            { who: "author", of: "entertainmentDetails", can: "read" },
+            { who: "author", of: "letterDetails", can: "read" },
           ],
         },
-        reviewDetails: {
+        pictureDetails: {
           $actions: [
             { who: "anyone", can: "write" },
-            { who: "author", of: "reviewDetails", can: "read" },
+            { who: "author", of: "pictureDetails", can: "read" },
           ],
         },
-        otherDetails: {
+        videoDetails: {
           $actions: [
             { who: "anyone", can: "write" },
-            { who: "author", of: "otherDetails", can: "read" },
+            { who: "author", of: "videoDetails", can: "read" },
+          ],
+        },
+        documentDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "documentDetails", can: "read" },
           ],
         },
       },

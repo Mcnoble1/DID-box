@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar.tsx';
 import Header from '../components/Header.tsx';
-import NotesCard from '../components/ProfileCard.tsx';
+import LetterCard from '../components/LetterCard.tsx';
 import DidCard from '../components/DidCard.tsx';
-import NotesDetails from '../components/PersonalDetails.tsx';
+import LetterDetails from '../components/LetterDetails.tsx';
 
-const Dashboard = () => {
+const Letters = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -17,12 +17,12 @@ const Dashboard = () => {
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <div className="flex flex-row flex-wrap justify-evenly gap-5 md:gap-0">
-                <NotesCard />
+                <LetterCard />
                 <DidCard />
               </div>
 
               <div className="mt-4">
-                <NotesDetails />
+                <LetterDetails />
               </div>
             </div>
           </main>
@@ -32,7 +32,7 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Letters;
 
 
 

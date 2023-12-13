@@ -215,8 +215,8 @@ const showDeleteConfirmation = (userId: string) => {
 
     if (response.records && response.records.length > 0) {
       const record = response.records[0];
-      const updateResult = await record.update(data);
-
+      const updateResult = await record.update( {data: data});
+      togglePopup(recordId)
       if (updateResult.status.code === 202) {
         toast.success('Social Details updated successfully.', {
           position: toast.POSITION.TOP_RIGHT,
