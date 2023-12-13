@@ -10,19 +10,14 @@ const PictureDetails = () => {
   const [recipientDid, setRecipientDid] = useState("");
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
-  const [updateLoading, setUpdateLoading] = useState(false);
   const [userToDeleteId, setUserToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false)
-  const [popupOpenMap, setPopupOpenMap] = useState<{ [key: number]: boolean }>({});
-  const [formData, setFormData] = useState<{ timestamp: string; title: string; content: string; publishedDate: string; }>({
-    title: '',
-    publishedDate: '',
-    content: '',
-    timestamp: '',
-    // image: null,
+  const [formData, setFormData] = useState<{ image: File | null }>({
+    image: null,
   });
+    // const [imageDataURL, setImageDataURL] = useState<string | null>(null);
 
   const [showDetails, setShowDetails] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
@@ -55,30 +50,42 @@ const toggleDetails = () => {
   setShowDetails((prevShowDetails) => !prevShowDetails);
 };
 
-const togglePopup = (userId: string) => {
-  usersDetails.map((user) => { 
-    if (user.recordId === userId) {
-      setFormData({
-        title: user.title,
-        content: user.content,
-        publishedDate: user.publishedDate,
-        timestamp: user.timestamp,
-        // image: null,
-      });
-    }
-  });
-  setPopupOpenMap((prevMap) => ({
-    ...prevMap,
-    [userId]: !prevMap[userId],
-  }));
-};
-  
-const closePopup = (userId: string) => {
-  setPopupOpenMap((prevMap) => ({
-    ...prevMap,
-    [userId]: false,
-  }));
-};
+// Get images from DWN
+
+        // const imagerecords = await web5.dwn.records.query({
+        //   from: myDid,
+        //   message: {
+        //     filter: {
+        //       protocol: "https://shege.xyz",
+        //       protocolPath: "image",
+        //     },
+        //   },
+        // });
+        // console.log('imagerecords', imagerecords);
+
+
+        // imagerecords.records.forEach(async (imageRec) => {
+        //   console.log('this is the each image record', imageRec);
+        //   // Get the blob of the image data
+        //   const imageId = imageRec.id
+        //   console.log(imageId)
+        //    const {record, status }= await web5.dwn.records.read({
+        //     from: myDid,
+        //     message: {
+        //        filter: {
+        //         recordId: imageId,
+        //        },
+        //     },
+        //     });
+        //   console.log ({record, status})
+        //   const imageresult = await record.data.blob();
+        //   console.log(imageresult)
+        //   const imageid = await record.contextId;  
+        //   console.log(imageid)         
+        //   const imageUrl = URL.createObjectURL(imageresult);
+        //   console.log(imageUrl)
+        //   setImageURLs(prevImageURLs => [...prevImageURLs, imageUrl]);
+        // })
 
 const fetchPictureDetails = async () => {
   setFetchDetailsLoading(true);
@@ -170,22 +177,6 @@ const sharePictureDetails = async (recordId: string) => {
   }
 };
 
-
-const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  const { name, value } = e.target;
-
-  setFormData((prevFormData) => ({
-    ...prevFormData,
-    [name]: value,
-  }));
-
-  const file = e.target.files?.[0];
-
-  if (file) {
-    setSelectedFileName(file.name);
-  }
-};
-
 const showDeleteConfirmation = (userId: string) => {
     setUserToDeleteId(userId);
     setDeleteConfirmationVisible(true);
@@ -195,53 +186,6 @@ const showDeleteConfirmation = (userId: string) => {
     setUserToDeleteId(null);
     setDeleteConfirmationVisible(false);
   };
-
-  const updatePictureDetails = async (recordId, data) => {
-    setUpdateLoading(true);
-  try {
-    const response = await web5.dwn.records.query({
-      message: {
-        filter: {
-          recordId: recordId,
-        },
-      },
-    });
-
-    if (response.records && response.records.length > 0) {
-      const record = response.records[0];
-      const updateResult = await record.update({data: data});
-      togglePopup(recordId)
-      if (updateResult.status.code === 202) {
-        toast.success('Picture Details updated successfully.', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000, 
-        });
-        setUsersDetails(prevPictureDetails => prevPictureDetails.map(message => message.recordId === recordId ? { ...message, ...data } : message));
-        setUpdateLoading(false);
-      } else {
-        console.error('Error updating message:', updateResult.status);
-        toast.error('Error updating campaign', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000, 
-        });
-        setUpdateLoading(false);
-      }
-    } else {
-      console.error('No record found with the specified ID');
-      toast.error('No record found with the specified ID', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000, 
-      });
-    }
-  } catch (error) {
-    console.error('Error in updatePictureDetail:', error);
-    toast.error('Error in updatePictureDetail:', {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 3000, 
-    });
-    setUpdateLoading(false);
-  }
-};
 
 
 const deletePictureDetails = async (recordId) => {
@@ -326,6 +270,9 @@ const deletePictureDetails = async (recordId) => {
          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
            {showDetails ? user.image : '********'}
          </h4>
+         {/* <div className="w-full mb-5 text-xs text-gray-500 dark:text-gray-400">
+          <Image src={imageURLs[index]} alt="campaign image" width={100} height={100} />                           
+        </div>  */}
        </div>
 
        <div className='w-full flex flex-row justify-evenly mb-5'>

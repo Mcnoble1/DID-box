@@ -10,19 +10,14 @@ const DocumentDetails = () => {
   const [recipientDid, setRecipientDid] = useState("");
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
-  const [updateLoading, setUpdateLoading] = useState(false);
   const [userToDeleteId, setUserToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false)
-  const [popupOpenMap, setPopupOpenMap] = useState<{ [key: number]: boolean }>({});
-  const [formData, setFormData] = useState<{ timestamp: string; title: string; content: string; publishedDate: string; }>({
-    title: '',
-    publishedDate: '',
-    content: '',
-    timestamp: '',
-    // image: null,
+  const [formData, setFormData] = useState<{ document: File | null }>({
+    document: null,
   });
+    // const [imageDataURL, setImageDataURL] = useState<string | null>(null);
 
   const [showDetails, setShowDetails] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
@@ -53,31 +48,6 @@ const DocumentDetails = () => {
   
 const toggleDetails = () => {
   setShowDetails((prevShowDetails) => !prevShowDetails);
-};
-
-const togglePopup = (userId: string) => {
-  usersDetails.map((user) => { 
-    if (user.recordId === userId) {
-      setFormData({
-        title: user.title,
-        content: user.content,
-        publishedDate: user.publishedDate,
-        timestamp: user.timestamp,
-        // image: null,
-      });
-    }
-  });
-  setPopupOpenMap((prevMap) => ({
-    ...prevMap,
-    [userId]: !prevMap[userId],
-  }));
-};
-  
-const closePopup = (userId: string) => {
-  setPopupOpenMap((prevMap) => ({
-    ...prevMap,
-    [userId]: false,
-  }));
 };
 
 const fetchDocumentDetails = async () => {
@@ -170,22 +140,6 @@ const shareDocumentDetails = async (recordId: string) => {
   }
 };
 
-
-const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  const { name, value } = e.target;
-
-  setFormData((prevFormData) => ({
-    ...prevFormData,
-    [name]: value,
-  }));
-
-  const file = e.target.files?.[0];
-
-  if (file) {
-    setSelectedFileName(file.name);
-  }
-};
-
 const showDeleteConfirmation = (userId: string) => {
     setUserToDeleteId(userId);
     setDeleteConfirmationVisible(true);
@@ -195,53 +149,6 @@ const showDeleteConfirmation = (userId: string) => {
     setUserToDeleteId(null);
     setDeleteConfirmationVisible(false);
   };
-
-  const updateDocumentDetails = async (recordId, data) => {
-    setUpdateLoading(true);
-  try {
-    const response = await web5.dwn.records.query({
-      message: {
-        filter: {
-          recordId: recordId,
-        },
-      },
-    });
-
-    if (response.records && response.records.length > 0) {
-      const record = response.records[0];
-      const updateResult = await record.update({data: data});
-      togglePopup(recordId)
-      if (updateResult.status.code === 202) {
-        toast.success('Document Details updated successfully.', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000, 
-        });
-        setUsersDetails(prevDocumentDetails => prevDocumentDetails.map(message => message.recordId === recordId ? { ...message, ...data } : message));
-        setUpdateLoading(false);
-      } else {
-        console.error('Error updating message:', updateResult.status);
-        toast.error('Error updating campaign', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000, 
-        });
-        setUpdateLoading(false);
-      }
-    } else {
-      console.error('No record found with the specified ID');
-      toast.error('No record found with the specified ID', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000, 
-      });
-    }
-  } catch (error) {
-    console.error('Error in updateDocumentDetail:', error);
-    toast.error('Error in updateDocumentDetail:', {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 3000, 
-    });
-    setUpdateLoading(false);
-  }
-};
 
 
 const deleteDocumentDetails = async (recordId) => {

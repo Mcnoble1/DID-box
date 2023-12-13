@@ -35,12 +35,8 @@ const DocumentCard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [formData, setFormData] = useState<{ title: string; content: string; timestamp: string; publishedDate: string; }>({
-    title: '',
-    publishedDate: '',
-    content: '',
-    timestamp: '',
-    // image: null,
+  const [formData, setFormData] = useState<{ document: File | null }>({
+    document: null,
   });
 
   const profileProtocolDefinition = () => {
@@ -163,11 +159,11 @@ const DocumentCard = () => {
     e.preventDefault();
     setLoading(true); 
   
-    const requiredFields = ['title', 'content', 'publishedDate'];
+    const requiredFields = ['document'];
     const emptyFields = requiredFields.filter((field) => !formData[field]);
   
     if (emptyFields.length > 0) {
-      toast.error('Please fill in all required fields.', {
+      toast.error('Please add a document.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000, 
       });
@@ -184,13 +180,7 @@ const DocumentCard = () => {
     }
       
     const formdata = new FormData();
-    const currentDate = new Date().toLocaleDateString();
-    const currentTime = new Date().toLocaleTimeString();
-    const timestamp = `${currentDate} ${currentTime}`;
-    formdata.append("title", formData.title);
-    formdata.append("content", formData.content);
-    formdata.append("publishedDate", formData.publishedDate);
-    formdata.append("timestamp", timestamp);
+    formdata.append('document', formData.document as File);
     try {
       let record;
       console.log(formData);
@@ -209,10 +199,7 @@ const DocumentCard = () => {
       }
   
       setFormData({
-        title: '',
-        publishedDate: '',
-        content: '',
-        timestamp: '',
+        document: null,
       });
   
       setPopupOpen(false);

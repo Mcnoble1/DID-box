@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
-const DocumentDetails = () => {
+const VideoDetails = () => {
   
   const [web5, setWeb5] = useState(null);
   const [myDid, setMyDid] = useState(null);
@@ -10,19 +10,14 @@ const DocumentDetails = () => {
   const [recipientDid, setRecipientDid] = useState("");
   const [sharePopupOpen, setSharePopupOpen] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
-  const [updateLoading, setUpdateLoading] = useState(false);
   const [userToDeleteId, setUserToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false)
-  const [popupOpenMap, setPopupOpenMap] = useState<{ [key: number]: boolean }>({});
-  const [formData, setFormData] = useState<{ timestamp: string; title: string; content: string; publishedDate: string; }>({
-    title: '',
-    publishedDate: '',
-    content: '',
-    timestamp: '',
-    // image: null,
+  const [formData, setFormData] = useState<{ video: File | null }>({
+    video: null,
   });
+    // const [imageDataURL, setImageDataURL] = useState<string | null>(null);
 
   const [showDetails, setShowDetails] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
@@ -55,32 +50,8 @@ const toggleDetails = () => {
   setShowDetails((prevShowDetails) => !prevShowDetails);
 };
 
-const togglePopup = (userId: string) => {
-  usersDetails.map((user) => { 
-    if (user.recordId === userId) {
-      setFormData({
-        title: user.title,
-        content: user.content,
-        publishedDate: user.publishedDate,
-        timestamp: user.timestamp,
-        // image: null,
-      });
-    }
-  });
-  setPopupOpenMap((prevMap) => ({
-    ...prevMap,
-    [userId]: !prevMap[userId],
-  }));
-};
-  
-const closePopup = (userId: string) => {
-  setPopupOpenMap((prevMap) => ({
-    ...prevMap,
-    [userId]: false,
-  }));
-};
 
-const fetchDocumentDetails = async () => {
+const fetchVideoDetails = async () => {
   setFetchDetailsLoading(true);
   try {
     const response = await web5.dwn.records.query({
@@ -88,14 +59,14 @@ const fetchDocumentDetails = async () => {
       message: {
         filter: {
             protocol: 'https://did-box.com',
-            protocolPath: 'documentDetails',
+            protocolPath: 'videoDetails',
         },
       },
     });
-    console.log('Document Details:', response);
+    console.log('Video Details:', response);
 
     if (response.status.code === 200) {
-      const documentDetails = await Promise.all(
+      const videoDetails = await Promise.all(
         response.records.map(async (record) => {
           const data = await record.data.json();
           console.log(data);
@@ -105,24 +76,24 @@ const fetchDocumentDetails = async () => {
           };
         })
       );
-      setUsersDetails(documentDetails);
-      console.log(documentDetails);
-      toast.success('Successfully fetched document details', {
+      setUsersDetails(videoDetails);
+      console.log(videoDetails);
+      toast.success('Successfully fetched video details', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
       setFetchDetailsLoading(false);
     } else {
-      console.error('No document details found');
-      toast.error('Failed to fetch document details', {
+      console.error('No video details found');
+      toast.error('Failed to fetch video details', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
     }
     setFetchDetailsLoading(false);
   } catch (err) {
-    console.error('Error in fetchDocumentDetails:', err);
-    toast.error('Error in fetchDocumentDetails. Please try again later.', {
+    console.error('Error in fetchVideoDetails:', err);
+    toast.error('Error in fetchVideoDetails. Please try again later.', {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 5000,
     });
@@ -131,7 +102,7 @@ const fetchDocumentDetails = async () => {
 };
 
 
-const shareDocumentDetails = async (recordId: string) => {
+const shareVideoDetails = async (recordId: string) => {
   setShareLoading(true);
   try {
     const response = await web5.dwn.records.query({
@@ -145,8 +116,8 @@ const shareDocumentDetails = async (recordId: string) => {
     if (response.records && response.records.length > 0) {
       const record = response.records[0];
       const { status } = await record.send(recipientDid);
-      console.log('Send record status in shareDocument', status);
-      toast.success('Successfully shared document record', {
+      console.log('Send record status in shareVideo', status);
+      toast.success('Successfully shared video record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
@@ -154,7 +125,7 @@ const shareDocumentDetails = async (recordId: string) => {
       setSharePopupOpen(false);
     } else {
       console.error('No record found with the specified ID');
-      toast.error('Failed to share document record', {
+      toast.error('Failed to share video record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
@@ -170,22 +141,6 @@ const shareDocumentDetails = async (recordId: string) => {
   }
 };
 
-
-const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  const { name, value } = e.target;
-
-  setFormData((prevFormData) => ({
-    ...prevFormData,
-    [name]: value,
-  }));
-
-  const file = e.target.files?.[0];
-
-  if (file) {
-    setSelectedFileName(file.name);
-  }
-};
-
 const showDeleteConfirmation = (userId: string) => {
     setUserToDeleteId(userId);
     setDeleteConfirmationVisible(true);
@@ -196,55 +151,9 @@ const showDeleteConfirmation = (userId: string) => {
     setDeleteConfirmationVisible(false);
   };
 
-  const updateDocumentDetails = async (recordId, data) => {
-    setUpdateLoading(true);
-  try {
-    const response = await web5.dwn.records.query({
-      message: {
-        filter: {
-          recordId: recordId,
-        },
-      },
-    });
-
-    if (response.records && response.records.length > 0) {
-      const record = response.records[0];
-      const updateResult = await record.update({data: data});
-      togglePopup(recordId)
-      if (updateResult.status.code === 202) {
-        toast.success('Document Details updated successfully.', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000, 
-        });
-        setUsersDetails(prevDocumentDetails => prevDocumentDetails.map(message => message.recordId === recordId ? { ...message, ...data } : message));
-        setUpdateLoading(false);
-      } else {
-        console.error('Error updating message:', updateResult.status);
-        toast.error('Error updating campaign', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000, 
-        });
-        setUpdateLoading(false);
-      }
-    } else {
-      console.error('No record found with the specified ID');
-      toast.error('No record found with the specified ID', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000, 
-      });
-    }
-  } catch (error) {
-    console.error('Error in updateDocumentDetail:', error);
-    toast.error('Error in updateDocumentDetail:', {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 3000, 
-    });
-    setUpdateLoading(false);
-  }
-};
 
 
-const deleteDocumentDetails = async (recordId) => {
+const deleteVideoDetails = async (recordId) => {
   try {
     const response = await web5.dwn.records.query({
       message: {
@@ -272,12 +181,12 @@ const deleteDocumentDetails = async (recordId) => {
       console.log(remoteResponse);
       
       if (deleteResult.status.code === 202) {
-        console.log('Document Details deleted successfully');
-        toast.success('Document Details deleted successfully', {
+        console.log('Video Details deleted successfully');
+        toast.success('Video Details deleted successfully', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
         });
-        setUsersDetails(prevDocumentDetails => prevDocumentDetails.filter(message => message.recordId !== recordId));
+        setUsersDetails(prevVideoDetails => prevVideoDetails.filter(message => message.recordId !== recordId));
       } else {
         console.error('Error deleting record:', deleteResult.status);
         toast.error('Error deleting record:', {
@@ -289,7 +198,7 @@ const deleteDocumentDetails = async (recordId) => {
       // console.error('No record found with the specified ID');
     }
   } catch (error) {
-    console.error('Error in deleteDocumentDetails:', error);
+    console.error('Error in deleteVideoDetails:', error);
   }
 };
 
@@ -298,7 +207,7 @@ const deleteDocumentDetails = async (recordId) => {
     <div className="lg:mx-5 flex flex-col rounded-lg border break-words border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
     <div className="flex flex-row mb-5 items-center gap-4 justify-end">
      <button 
-       onClick={fetchDocumentDetails}
+       onClick={fetchVideoDetails}
        className=" items-center  rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover-bg-opacity-90">
        {fetchDetailsLoading ? (
          <div className="flex items-center">
@@ -351,7 +260,7 @@ const deleteDocumentDetails = async (recordId) => {
                    <button
                      onClick={() => {
                        hideDeleteConfirmation();
-                       deleteDocumentDetails(user.recordId);
+                       deleteVideoDetails(user.recordId);
                      }}
                      className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
                    >
@@ -377,4 +286,4 @@ const deleteDocumentDetails = async (recordId) => {
   );
 };
 
-export default DocumentDetails;
+export default VideoDetails;

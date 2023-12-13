@@ -35,12 +35,8 @@ const VideoCard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [formData, setFormData] = useState<{ title: string; content: string; timestamp: string; publishedDate: string; }>({
-    title: '',
-    publishedDate: '',
-    content: '',
-    timestamp: '',
-    // image: null,
+  const [formData, setFormData] = useState<{ video: File | null }>({
+    video: null,
   });
 
   const profileProtocolDefinition = () => {
@@ -162,11 +158,11 @@ const VideoCard = () => {
     e.preventDefault();
     setLoading(true); 
   
-    const requiredFields = ['title', 'content', 'publishedDate'];
+    const requiredFields = ['video'];
     const emptyFields = requiredFields.filter((field) => !formData[field]);
   
     if (emptyFields.length > 0) {
-      toast.error('Please fill in all required fields.', {
+      toast.error('Please add a video file.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000, 
       });
@@ -183,13 +179,7 @@ const VideoCard = () => {
     }
       
     const formdata = new FormData();
-    const currentDate = new Date().toLocaleDateString();
-    const currentTime = new Date().toLocaleTimeString();
-    const timestamp = `${currentDate} ${currentTime}`;
-    formdata.append("title", formData.title);
-    formdata.append("content", formData.content);
-    formdata.append("publishedDate", formData.publishedDate);
-    formdata.append("timestamp", timestamp);
+    formdata.append('video', formData.video as File);
     try {
       let record;
       console.log(formData);
@@ -208,10 +198,7 @@ const VideoCard = () => {
       }
   
       setFormData({
-        title: '',
-        publishedDate: '',
-        content: '',
-        timestamp: '',
+        video: null,
       });
   
       setPopupOpen(false);

@@ -35,13 +35,17 @@ const PictureCard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [formData, setFormData] = useState<{ title: string; content: string; timestamp: string; publishedDate: string; }>({
-    title: '',
-    publishedDate: '',
-    content: '',
-    timestamp: '',
-    // image: null,
+  const [formData, setFormData] = useState<{ image: File | null }>({
+    image: null,
   });
+
+
+  // useEffect(() => {
+//   return () => {
+//     // Revoke the Blob URL to free up resources
+//     URL.revokeObjectURL(imageURLs.map((imageURL) => imageURL));
+//   };
+// }, [imageURLs]);
 
   const profileProtocolDefinition = () => {
     return {
@@ -144,6 +148,15 @@ const PictureCard = () => {
     };
   };
 
+  // const handleImageInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     const imageFile = event.target.files[0];
+  //     const filereader = new FileReader();
+  //     filereader.readAsArrayBuffer(imageFile);
+  //     filereader.addEventListener('load', function () {
+  //     imageData = filereader.result;
+  //   })
+  // };
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
   
@@ -159,15 +172,63 @@ const PictureCard = () => {
     }));
   };
 
+  
+// const writeImageToDwn = async (imageDataFile) => {
+//   const imageblob = new Blob([imageDataFile], { type: 'image/jpeg' });
+
+//   try {
+//   const fundraiseProtocol = fundraiseProtocolDefinition();
+//   const { record, status } = await web5.dwn.records.create({
+//     data: imageblob,
+//     message: {
+//         protocol: fundraiseProtocol.protocol,
+//         schema: fundraiseProtocol.types.image.schema,
+//         dataFormat: 'image/jpeg',
+//         protocolPath: "image",
+//         // parentId: contextId,
+//         // contextId: contextId,
+//         published: true,
+//     },
+//   });
+//   // const { status: imagestatus } = await record.send(myDid);
+//   // console.log(imagestatus);
+//   console.log("imagerecord:", {record, status})
+//   if (status.code === 200) {
+//     return { ...imageblob, recordId: record.id };
+//   }
+
+//   toast.success('Image Data written to DWN', {
+//     position: toast.POSITION.TOP_RIGHT,
+//     autoClose: 3000, 
+//   });
+//     return record;
+// } catch (error) {
+//   console.log(error)
+
+//   toast.error('Error writing image data to DWN', {
+//     position: toast.POSITION.TOP_RIGHT,
+//     autoClose: 3000, 
+//   });
+// }
+
+// };
+
+
+// const conId = record.id;
+
+    // if (imageData) {
+    //   writeImageToDwn(imageData);
+    // }
+
   const handleAddPicture = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true); 
-  
-    const requiredFields = ['title', 'content', 'publishedDate'];
+
+    const requiredFields = ['image'];
     const emptyFields = requiredFields.filter((field) => !formData[field]);
   
     if (emptyFields.length > 0) {
-      toast.error('Please fill in all required fields.', {
+      toast.error('Please add an image.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000, 
       });
@@ -184,13 +245,8 @@ const PictureCard = () => {
     }
       
     const formdata = new FormData();
-    const currentDate = new Date().toLocaleDateString();
-    const currentTime = new Date().toLocaleTimeString();
-    const timestamp = `${currentDate} ${currentTime}`;
-    formdata.append("title", formData.title);
-    formdata.append("content", formData.content);
-    formdata.append("publishedDate", formData.publishedDate);
-    formdata.append("timestamp", timestamp);
+    // formdata.append('image', fileInputRef.current?.files?.[0] as Blob);
+    
     try {
       let record;
       console.log(formData);
@@ -209,10 +265,7 @@ const PictureCard = () => {
       }
   
       setFormData({
-        title: '',
-        publishedDate: '',
-        content: '',
-        timestamp: '',
+        image: null,
       });
   
       setPopupOpen(false);
