@@ -4,19 +4,14 @@ import { Toaster } from 'react-hot-toast';
 
 import Health from './pages/Health';
 import Education from './pages/Education';
-import Entertainment from './pages/Entertainment';
-import Sport from './pages/Sport';
-import Reviews from './pages/Reviews';
 import Professional from './pages/Professional';
 import Social from './pages/Social';
-import Financial from './pages/Financial';
+import Letters from './pages/Letters';
 import Dashboard from './pages/Dashboard';
-import Workers from './pages/Workers';
-import Customers from './pages/Customers';
-import Transportation from './pages/Categories/Transportation';
-import Others from './pages/Categories/Others';
+import Pictures from './pages/Files/Pictures';
+import Videos from './pages/Files/Videos';
+import Documents from './pages/Files/Documents';
 import Homepage from './pages/Homepage';
-import Configuration from './pages/Configuration';
 import Loader from './common/Loader';
 import routes from './routes';
 
@@ -38,20 +33,15 @@ function App() {
       <Routes>
         <Route path="/" index element={<Homepage />} />
         <Route path="/homepage" index element={<Homepage />} />
-        <Route path="/financial" element={<Financial />} />
         <Route path="/health" element={<Health />} />
         <Route path="/social" element={<Social />} />
-        <Route path="/entertainment" element={<Entertainment />} />
         <Route path="/education" element={<Education />} />
-        <Route path="/sport" element={<Sport />} />
-        <Route path="/reviews" element={<Reviews />} />
+        <Route path="/letters" element={<Letters />} />
         <Route path="/professional" element={<Professional />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/configuration" element={<Configuration />} />
-        <Route path="/workers" element={<Workers />} />
-        <Route path="/customers" element={<Customers />} />
-        <Route path="/categories/transportation" element={<Transportation />} />
-        <Route path="/categories/others" element={<Others />} />
+        <Route path="/files/pictures" element={<Pictures />} />
+        <Route path="/files/videos" element={<Videos />} />
+        <Route path="/files/documents" element={<Documents />} />
         <Route element={<DefaultLayout />}>
           <Route element={<Dashboard />} />
           {routes.map(({ path, component: Component }) => (

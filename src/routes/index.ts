@@ -1,19 +1,14 @@
 import { lazy } from 'react';
 
-const Transportation = lazy(() => import('../pages/Categories/Transportation'));
-const Others = lazy(() => import('../pages/Categories/Others'));
-const Workers = lazy(() => import('../pages/Workers'));
-const Customers = lazy(() => import('../pages/Customers'));
+const Pictures = lazy(() => import('../pages/Files/Pictures'));
+const Videos = lazy(() => import('../pages/Files/Videos'));
+const Documents = lazy(() => import('../pages/Files/Documents'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
-const Configuration = lazy(() => import('../pages/Configuration'));
 const Education = lazy(() => import('../pages/Education'));
-const Entertainment = lazy(() => import('../pages/Entertainment'));
-const Sport = lazy(() => import('../pages/Sport'));
-const Financial = lazy(() => import('../pages/Financial'));
+const Letters = lazy(() => import('../pages/Letters'));
 const Professional = lazy(() => import('../pages/Professional'));
 const Health = lazy(() => import('../pages/Health'));
 const Social = lazy(() => import('../pages/Social'));
-const Reviews = lazy(() => import('../pages/Reviews'));
 
 
 
@@ -24,6 +19,11 @@ const coreRoutes = [
     component: Dashboard, 
   },
   {
+    path: '/letters', 
+    title: 'Letters',
+    component: Letters, 
+  }, 
+  {
     path: '/education', 
     title: 'Education',
     component: Education, 
@@ -32,16 +32,6 @@ const coreRoutes = [
     path: '/professional', 
     title: 'Professional',
     component: Professional, 
-  },
-  {
-    path: '/sport', 
-    title: 'Sport',
-    component: Sport, 
-  },
-  {
-    path: '/reviews', 
-    title: 'Reviews',
-    component: Reviews, 
   },
   {
     path: '/health', 
@@ -54,39 +44,19 @@ const coreRoutes = [
     component: Social, 
   },
   {
-    path: '/entertainment',
-    title: 'Entertainment',
-    component: Entertainment,
+    path: '/pictures',
+    title: 'Pictures',
+    component: Pictures,
   },
   {
-    path: '/financial',
-    title: 'Financial',
-    component: Financial,
+    path: '/videos',
+    title: 'Videos',
+    component: Videos,
   },
   {
-    path: '/customers',
-    title: 'Customers',
-    component: Customers,
-  },
-  {
-    path: '/workers',
-    title: 'Workers',
-    component: Workers,
-  },
-  {
-    path: '/categories/transportation',
-    title: 'Transportation',
-    component: Transportation,
-  },
-  {
-    path: '/categories/others',
-    title: 'All Categories',
-    component: Others,
-  },
-  {
-    path: '/configuration',
-    title: 'Configuration',
-    component: Configuration,
+    path: '/documents',
+    title: 'Documents',
+    component: Documents,
   },
 ];
 

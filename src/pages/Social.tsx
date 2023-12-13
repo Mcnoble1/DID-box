@@ -22,7 +22,7 @@ const Social = () => {
               </div>
 
               <div className="mt-4">
-                {/* <SocialDetails /> */}
+                <SocialDetails />
               </div>
             </div>
           </main>

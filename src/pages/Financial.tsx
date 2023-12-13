@@ -22,7 +22,7 @@ const Financial = () => {
               </div>
 
               <div className="mt-4">
-                {/* <FinancialDetails /> */}
+                <FinancialDetails />
               </div>
             </div>
           </main>

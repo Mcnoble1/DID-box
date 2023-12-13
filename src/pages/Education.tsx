@@ -22,7 +22,7 @@ const Education = () => {
               </div>
 
               <div className="mt-4">
-                {/* <EducationDetails /> */}
+                <EducationDetails />
               </div>
             </div>
           </main>

@@ -1,118 +1,108 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
+import Behance from '../images/social/Behance-1.png';
+import Discord from '../images/social/Discord-1.png';
+import Instagram from '../images/social/Instagram-1.png';
+import Twitter from '../images/social/Twitter-1.png'
+import Facebook from '../images/social/Facebook-1.png'
+import GitHub from '../images/social/GitHub-1.png'
+import X from '../images/social/X-1.png'
+import Whatsapp from '../images/social/Whatsapp-1.png'
+import Slack from '../images/social/Slack-1.png'
+import Twitch from '../images/social/Twitch-1.png'
+import LinkedIn from '../images/social/LinkedIn-1.png'
+import Snapchat from '../images/social/Snapchat-1.png'
+import Telegram from '../images/social/Telegram-1.png'
+import Tiktok from '../images/social/Tiktok-1.png'
+import Youtube from '../images/social/Youtube-1.png'
+import Skype from '../images/social/Skype-1.png'
+import Line from '../images/social/Line-1.png'
+  
 
-const PersonalDetails = () => {
-  const [usersData, setUsersData] = useState<User[]>(0);
-  const [workerToDeleteId, setWorkerToDeleteId] = useState<number | null>(null);
-  const [workersData, setWorkersData] = useState<Worker[]>([]);
+import { toast } from 'react-toastify'; 
+import 'react-toastify/dist/ReactToastify.css'; 
+
+const SocialDetails = () => {
+  const [web5, setWeb5] = useState(null);
+  const [myDid, setMyDid] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [socialData, setSocialData] = useState<Social[]>([]);
+  const [userToDeleteId, setWorkerToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
-
+  const [recipientDid, setRecipientDid] = useState("");
+  const [sharePopupOpen, setSharePopupOpen] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
   const [popupOpenMap, setPopupOpenMap] = useState<{ [key: number]: boolean }>({});
-  const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; whatsapp: string; area: string; block: string; address: string; nationality: string; category: string; service:string[]; languages: string[]; lengthOfService: string; familyInKuwait: string; petFriendly: string; image: File | null }>({
-    name: '',
-    gender: '',
-    phone: '',
-    whatsapp: '',
-    area: '',
-    address: '',
-    block: '',
-    nationality: '',
-    languages: [],
-    service: [],
-    category: '',
-    dateofbirth: '',
-    lengthOfService: '',
-    familyInKuwait: '',
-    petFriendly: '',
-    image: null,
+  const [formData, setFormData] = useState<{ username: string; platform: string; url: string;}>({
+    username: '',
+    platform: '',
+    url: '',
   });
 
-  const popup = useRef<HTMLDivElement | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
 
-  const togglePopup = (workerId: number) => {
-    workersData.map((worker) => { 
-      if (worker._id === workerId) {
+    const initWeb5 = async () => {
+      // @ts-ignore
+      const { Web5 } = await import('@web5/api/browser');
+      
+      try {
+        const { web5, did } = await Web5.connect({ 
+          sync: '5s', 
+        });
+        setWeb5(web5);
+        setMyDid(did);
+        console.log(web5);
+      } catch (error) {
+        console.error('Error initializing Web5:', error);
+      }
+    };
+
+    initWeb5();
+    
+}, []);
+
+  const popup = useRef<HTMLDivElement | null>(null);
+
+  const togglePopup = (userId: string) => {
+    socialData.map((user) => { 
+      if (user.recordId === userId) {
         setFormData({
-         name: worker.name,
-         gender: worker.gender,
-          phone: worker.phone,
-          whatsapp: worker.whatsapp,
-          area: worker.area,
-          block: worker.block,
-          address: worker.address,
-          nationality: worker.nationality,
-          dateofbirth: worker.dateofbirth,
-          languages: worker.languages,
-          service: worker.service,
-          category: worker.category,
-          lengthOfService: worker.lengthOfService,
-          familyInKuwait: worker.familyInKuwait,
-          petFriendly: worker.petFriendly,
-          image: null,
+         username: user.username,
+         platform: user.platform,
+          url: user.url,
         });
       }
     });
     setPopupOpenMap((prevMap) => ({
       ...prevMap,
-      [workerId]: !prevMap[workerId],
+      [userId]: !prevMap[userId],
     }));
   };
   
-// Function to close the popup for a specific worker
-const closePopup = (workerId: number) => {
+// Function to close the popup for a specific user
+const closePopup = (userId: number) => {
   setPopupOpenMap((prevMap) => ({
     ...prevMap,
-    [workerId]: false,
+    [userId]: false,
   }));
 };
 
 const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
   const { name, value } = e.target;
 
-  if (name === 'phone' || name === 'whatsapp') {
-    // Use a regular expression to allow only phone numbers starting with a plus
-    const phoneRegex = /^[+]?[0-9\b]+$/;
-      
-    if (!value.match(phoneRegex) && value !== '') {
-      // If the input value doesn't match the regex and it's not an empty string, do not update the state
-      return;
-    }
-  } else if (name === 'name' || name === 'nationality' || name === 'area') {
-    // Use a regular expression to allow only letters and spaces
-    const letterRegex = /^[A-Za-z\s]+$/;
-    if (!value.match(letterRegex) && value !== '') {
-      // If the input value doesn't match the regex and it's not an empty string, do not update the state
-      return;
-    }
-  }
-
-  if (name === 'category') {
-    // Find the selected category object from the categories array
-    const selectedCategoryObject = categories.find((category) => category._id === value);
-
-    setSelectedCategory(selectedCategoryObject || null);
-
-    setFormData((prevData) => ({
-      ...prevData,
-      service: [], // Clear the selected service
-    }));
-  }
-
   setFormData((prevFormData) => ({
     ...prevFormData,
     [name]: value,
   }));
-
-  const file = e.target.files?.[0];
-
-  if (file) {
-    setSelectedFileName(file.name);
-  }
 };
 
-const showDeleteConfirmation = (workerId: number) => {
-    setWorkerToDeleteId(workerId);
+const toggleDetails = () => {
+  setShowDetails((prevShowDetails) => !prevShowDetails);
+};
+
+const showDeleteConfirmation = (userId: string) => {
+    setWorkerToDeleteId(userId);
     setDeleteConfirmationVisible(true);
   };
 
@@ -121,461 +111,438 @@ const showDeleteConfirmation = (workerId: number) => {
     setDeleteConfirmationVisible(false);
   };
 
-  const handleEdit = (workerId: number ) => {
-
+  const fetchSocialDetails = async () => {
+    setFetchDetailsLoading(true);
+    try {
+      const response = await web5.dwn.records.query({
+        from: myDid,
+        message: {
+          filter: {
+              protocol: 'https://did-box.com',
+              protocolPath: 'socialDetails',
+              // schema: 'https://did-box.com/schemas/socialDetails',
+          },
+        },
+      });
+      console.log('Social Details:', response);
+  
+      if (response.status.code === 200) {
+        const socialDetails = await Promise.all(
+          response.records.map(async (record) => {
+            const data = await record.data.json();
+            console.log(data);
+            return {
+              ...data,
+              recordId: record.id,
+            };
+          })
+        );
+        setSocialData(socialDetails);
+        console.log(socialDetails);
+        toast.success('Successfully fetched social details', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000,
+        });
+        setFetchDetailsLoading(false);
+      } else {
+        console.error('No social details found');
+        toast.error('Failed to fetch social details', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000,
+        });
+      }
+      setFetchDetailsLoading(false);
+    } catch (err) {
+      console.error('Error in fetchSocialDetails:', err);
+      toast.error('Error in fetchSocialDetails. Please try again later.', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 5000,
+      });
+      setFetchDetailsLoading(false);
     };
+  };
 
+  const shareSocialDetails = async (recordId: string) => {
+    setShareLoading(true);
+    try {
+      const response = await web5.dwn.records.query({
+        message: {
+          filter: {
+            recordId: recordId,
+          },
+        },
+      });
+  
+      if (response.records && response.records.length > 0) {
+        const record = response.records[0];
+        const { status } = await record.send(recipientDid);
+        console.log('Send record status in shareProfile', status);
+        toast.success('Successfully shared social record', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000,
+        });
+        setShareLoading(false);
+        setSharePopupOpen(false);
+      } else {
+        console.error('No record found with the specified ID');
+        toast.error('Failed to share social record', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000,
+        });
+      }
+      setShareLoading(false);
+    } catch (err) {
+      console.error('Error in shareProfile:', err);
+      toast.error('Error in shareProfile. Please try again later.', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 5000,
+      });
+      setShareLoading(false);
+    }
+  };
 
-  const handleDelete = (workerId: number) => {
-    const config = {
-      method: 'delete',
-      url: `https://madad.onrender.com/api/admin/worker/delete/${workerId}`,
-      headers: {
-        'Authorization': `Bearer ${token}`, // Include the bearer token in the Authorization header
+  
+  const updateSocialDetails = async (recordId, data) => {
+    setUpdateLoading(true);
+  try {
+    const response = await web5.dwn.records.query({
+      message: {
+        filter: {
+          recordId: recordId,
+        },
       },
-    };
-  }
+    });
 
-  useEffect(() => {
-   
-  }, []);
+    if (response.records && response.records.length > 0) {
+      const record = response.records[0];
+      const updateResult = await record.update( {data: data});
+      togglePopup(recordId)
+      if (updateResult.status.code === 202) {
+        toast.success('Social Details updated successfully.', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000, 
+        });
+        setSocialData(prevSocialDetails => prevSocialDetails.map(message => message.recordId === recordId ? { ...message, ...data } : message));
+        setUpdateLoading(false);
+      } else {
+        console.error('Error updating message:', updateResult.status);
+        toast.error('Error updating campaign', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000, 
+        });
+        setUpdateLoading(false);
+      }
+    } else {
+      console.error('No record found with the specified ID');
+      toast.error('No record found with the specified ID', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+    }
+  } catch (error) {
+    console.error('Error in updateSocialDetail:', error);
+    toast.error('Error in updateSocialDetail:', {
+      position: toast.POSITION.TOP_RIGHT,
+      autoClose: 3000, 
+    });
+    setUpdateLoading(false);
+  }
+};
+
+
+    const deleteSocialDetails = async (recordId) => {
+      try {
+        const response = await web5.dwn.records.query({
+          message: {
+            filter: {
+              recordId: recordId,
+            },
+          },
+        });
+        console.log(response);
+        if (response.records && response.records.length > 0) {
+          const record = response.records[0];
+          console.log(record)
+          const deleteResult = await web5.dwn.records.delete({
+            message: {
+              recordId: recordId
+            },
+          });
+    
+          const remoteResponse = await web5.dwn.records.delete({
+            from: myDid,
+            message: {
+              recordId: recordId,
+            },
+          });
+          console.log(remoteResponse);
+          
+          if (deleteResult.status.code === 202) {
+            console.log('Social Details deleted successfully');
+            toast.success('Social Details deleted successfully', {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 3000, 
+            });
+            setSocialData(prevSocialDetails => prevSocialDetails.filter(message => message.recordId !== recordId));
+          } else {
+            console.error('Error deleting message:', deleteResult.status);
+            toast.error('Error deleting donation:', {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 3000, 
+            });
+          }
+        } else {
+          // console.error('No record found with the specified ID');
+        }
+      } catch (error) {
+        console.error('Error in deleteSocialDetails:', error);
+      }
+    };
+
 
   return (
-    <div className="mx-5 flex flex-col rounded-lg border border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div className="flex flex-wrap w-full">
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Name</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            Festus Idowu
-          </h4>
-        </div>
-
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Email</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            idowufestustemiloluwa@gmail.com
-          </h4>
-        </div>
-
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Phone Number</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            +2348067590789
-          </h4>
-        </div>
-
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Address</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            7 Ayelabowo Moore, Ile-Ife
-          </h4>
-        </div>
-
-        <div className='w-1/2 mb-5'>
-          <span className="text-xl">Date of Birth</span>
-          <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-            March 4, 2000
-          </h4>
-        </div>       
+    <div className="lg:mx-5 flex flex-col rounded-lg border border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
+      <div className="flex flex-row mb-5 items-center gap-4 justify-end">
+      <button 
+        onClick={fetchSocialDetails}
+        className=" items-center  rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover-bg-opacity-90">
+        {fetchDetailsLoading ? (
+          <div className="flex items-center">
+            <div className="spinner"></div>
+            <span className="pl-1">Fetching...</span>
+          </div>
+        ) : (
+          <>Fetch Profile</>
+        )}           
+      </button>
+      <div className="relative">
+        <button
+          onClick={toggleDetails}
+          className="inline-flex items-center justify-center rounded-full bg-primary py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+        >
+          {showDetails ? 'Hide Details' : 'Show Details'}
+        </button>
       </div>
-      <div className="flex justify-evenly gap-2">
-            <div className="relative">
-              <button
-                // onClick={toggleSortDropdown}
-                className="inline-flex items-center justify-center rounded-full bg-success py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-              >
-                Share
-              </button>
-            </div>
+    </div>
+      <div className="py-6 px-4 md:px-6 xl:px-7.5 ">
+        <h4 className="text-xl font-semibold text-black dark:text-white">
+          Social Media Accounts
+        </h4>
+      </div>
+      
+      {socialData. length > 0 ? ( 
+      <div className='overflow-x-auto '>
+        <div className="grid grid-cols-8 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5">
+          <div className="col-span-2 items-center">
+            <p className="font-medium">Platform</p>
+          </div>
+          <div className="col-span-1 items-center">
+            <p className="font-medium">Handle</p>
+          </div>
+          <div className="col-span-3 items-center">
+            <p className="font-medium">URL</p>
+          </div>
+          <div className="col-span-2 items-center">
+            <p className="font-medium">Actions</p>
+          </div>
+        </div>
 
-            <div className="relative">
+       
+      {/* <div className=""> */}
+        {socialData.map((user, index) => (
+          <div
+            key={user.recordId}
+            className="grid grid-cols-8 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-8 md:px-6 2xl:px-7.5"
+          >
+            <div className="col-span-2 flex items-center">
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                  <img
+                    src={ user.platform === 'Behance' ? Behance : user.platform === 'Discord' ? Discord : user.platform === 'Instagram' ? Instagram : user.platform === 'Twitter' ? Twitter : user.platform === 'Facebook' ? Facebook : user.platform === 'Whatsapp' ? Whatsapp : user.platform === 'Slack' ? Slack : user.platform === 'Twitch' ? Twitch : user.platform === 'LinkedIn' ? LinkedIn : user.platform === 'Snapchat' ? Snapchat : user.platform === 'Telegram' ? Telegram : user.platform === 'Tiktok' ? Tiktok : user.platform === 'Youtube' ? Youtube : user.platform === 'Skype' ? Skype : user.platform === 'Line' ? Line : X}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <p className="ml-3 font-medium">{showDetails ? user.platform : '********'}</p>
+              </div>
+            </div>
+            <div className="col-span-1 items-center sm:flex">
+              <p className="font-medium">{showDetails ? user.username : '********'}</p>
+            </div>
+            <div className="col-span-3 flex flex-row flex-wrap items-center">
+              <p className="font-medium">{showDetails ? user.url : '********'}</p>
+            </div>
+            <div className="col-span-2 flex flex-row gap-4">
               <button
-                onClick={() => togglePopup(5)}                      
-                className="inline-flex items-center justify-center rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-                >
-                Edit
+                onClick={() => togglePopup(user.recordId)}
+                className="rounded bg-primary py-2 px-3 text-white hover:bg-opacity-90">
+              Edit
               </button>
-                {popupOpenMap[4] && (
+              {popupOpenMap[user.recordId] && (
+                    <div
+                      ref={popup}
+                      className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
+                    >
                       <div
-                        ref={popup}
-                        className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
-                      >
-                        <div
-                            className="bg-white lg:mt-15 lg:w-1/2 rounded-lg pt-3 px-4 shadow-md"
-                            style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'scroll' }}
-                          >              
-                              <div className="flex flex-row justify-between">
-                              <h2 className="text-xl font-semibold mb-4">Edit Worker</h2>
-                              <div className="flex justify-end">
-                                <button
-                                  onClick={() => closePopup(worker._id)}
-                                  className="text-blue-500 hover:text-gray-700 focus:outline-none"
+                          className="bg-white lg:mt-15 lg:w-1/2 rounded-lg pt-3 px-4 shadow-md"
+                          style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'scroll' }}
+                        >              
+                            <div className="flex flex-row justify-between">
+                            <h2 className="text-xl font-semibold mb-4">Edit Social Details</h2>
+                            <div className="flex justify-end">
+                              <button
+                                onClick={() => closePopup(user.recordId)}
+                                className="text-blue-500 hover:text-gray-700 focus:outline-none"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-5 w-5 fill-current bg-primary rounded-full p-1 hover:bg-opacity-90"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="white"
                                 >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5 fill-current bg-primary rounded-full p-1 hover:bg-opacity-90"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="white"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M6 18L18 6M6 6l12 12"
-                                    />
-                                  </svg>
-                                </button>
-                              </div>
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
+                                </svg>
+                              </button>
                             </div>
-                            <form>
-                            <div className=" rounded-sm px-6.5 bg-white dark:border-strokedark dark:bg-boxdark">
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                  <div className="w-full xl:w-3/5">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Worker's Name
-                                      </label>
-                                      <div className={`relative ${formData.name ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"                                             
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        placeholder="Bam Bam"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-2/5">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Gender
-                                      </label>
-                                      <div className={`relative ${formData.gender ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="gender"
-                                        value={formData.gender}
-                                        onChange={handleInputChange}
-                                        placeholder="Male"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-2/5">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Date of Birth
-                                      </label>
-                                      <div className={`relative ${formData.dateofbirth ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text" 
-                                        maxLength={4}
-                                        name="dateofbirth"
-                                        value={formData.dateofbirth}
-                                        onChange={handleInputChange}
-                                        placeholder="1990"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Nationality
-                                      </label>
-                                      <div className={`relative ${formData.nationality ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="nationality"
-                                        value={formData.nationality}
-                                        onChange={handleInputChange}
-                                        placeholder="American"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Languages
-                                      </label>
-                                      
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Whatsapp
-                                      </label>
-                                      <div className={`relative ${formData.whatsapp ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="whatsapp"
-                                        value={formData.whatsapp}
-                                        onChange={handleInputChange}
-                                        placeholder="+23476543210"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Address
-                                      </label>
-                                      <div className={`relative ${formData.address ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="address"
-                                        value={formData.address}
-                                        onChange={handleInputChange}
-                                        placeholder="7 10 Marakesh Street"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Area
-                                      </label>
-                                      <div className={`relative ${formData.area ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="area"
-                                        value={formData.area}
-                                        onChange={handleInputChange}
-                                        placeholder="Kutana"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Block
-                                      </label>
-                                      <div className={`relative ${formData.block ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="block"
-                                        value={formData.block}
-                                        onChange={handleInputChange}
-                                        placeholder="4"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                        <label className="mb-2.5 block text-black dark:text-white">
-                                          Category
-                                        </label>
-                                        
-                                      </div>
-                                  
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                  <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Phone
-                                      </label>
-                                      <div className={`relative ${formData.phone ? 'bg-light-blue' : ''}`}>
-                                      <input
-                                        type="text"
-                                        name="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                        placeholder="+234123456789"
-                                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                      />
-                                      </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Length of Service
-                                      </label>
-                                      <div className={`relative ${formData.lengthOfService ? 'bg-light-blue' : ''}`}>
-                                      <select
-                                            name="lengthOfService"
-                                            value={formData.lengthOfService}
-                                            onChange={handleInputChange}
-                                            required
-                                            placeholder="Full Time"
-                                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                          >
-                                            <option value="">Select</option>
-                                            <option value="Full Time">Full Time</option>
-                                            <option value="Part Time">Part Time</option>
-                                          </select>
-                                          </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Family in Kuwait
-                                      </label>
-                                      <div className={`relative ${formData.familyInKuwait ? 'bg-light-blue' : ''}`}>
-                                      <select
-                                            name="familyInKuwait"
-                                            value={formData.familyInKuwait}
-                                            onChange={handleInputChange}
-                                            required
-                                            placeholder="Yes"
-                                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                          >
-                                            <option value="">Select</option>
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                          </select>
-                                          </div>
-                                    </div>
-
-                                    <div className="w-full xl:w-1/2">
-                                      <label className="mb-2.5 block text-black dark:text-white">
-                                        Petfriendly
-                                      </label>
-                                      <div className={`relative ${formData.petFriendly ? 'bg-light-blue' : ''}`}>
-                                      <select
-                                            name="petFriendly"
-                                            value={formData.petFriendly}
-                                            onChange={handleInputChange}
-                                            required
-                                            placeholder="Yes"
-                                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                          >
-                                            <option value="">Select</option>
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                          </select>
-                                        </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="mb-4.5 flex flex-col gap-3">
-                                    <label className="mb-2.5 block text-black dark:text-white">
-                                      Worker Image
-                                    </label>
-                                    <div
-                                      id="FileUpload"
-                                      className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border-2 border-dashed border-primary bg-gray py-4 px-4 dark:bg-meta-4 sm:py-7.5"
-                                    >
-                                      <input
-                                        name="image"
-                                        type="file"
-                                        accept="image/*"
-                                        ref={fileInputRef}
-                                        onChange={handleInputChange}
-                                        className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"
-                                      />
-                                      <div className="flex flex-col items-center justify-center space-y-3">
-                                        <span className="flex h-5 w-10 items-center justify-center rounded-full border border-stroke bg-white dark:border-strokedark dark:bg-boxdark">
-                                          <svg
-                                            width="16"
-                                            height="16"
-                                            viewBox="0 0 16 16"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                          >
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M1.99967 9.33337C2.36786 9.33337 2.66634 9.63185 2.66634 10V12.6667C2.66634 12.8435 2.73658 13.0131 2.8616 13.1381C2.98663 13.2631 3.1562 13.3334 3.33301 13.3334H12.6663C12.8431 13.3334 13.0127 13.2631 13.1377 13.1381C13.2628 13.0131 13.333 12.8435 13.333 12.6667V10C13.333 9.63185 13.6315 9.33337 13.9997 9.33337C14.3679 9.33337 14.6663 9.63185 14.6663 10V12.6667C14.6663 13.1971 14.4556 13.7058 14.0806 14.0809C13.7055 14.456 13.1968 14.6667 12.6663 14.6667H3.33301C2.80257 14.6667 2.29387 14.456 1.91879 14.0809C1.54372 13.7058 1.33301 13.1971 1.33301 12.6667V10C1.33301 9.63185 1.63148 9.33337 1.99967 9.33337Z"
-                                              fill="#3C50E0"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M7.5286 1.52864C7.78894 1.26829 8.21106 1.26829 8.4714 1.52864L11.8047 4.86197C12.0651 5.12232 12.0651 5.54443 11.8047 5.80478C11.5444 6.06513 11.1223 6.06513 10.8619 5.80478L8 2.94285L5.13807 5.80478C4.87772 6.06513 4.45561 6.06513 4.19526 5.80478C3.93491 5.54443 3.93491 5.12232 4.19526 4.86197L7.5286 1.52864Z"
-                                              fill="#3C50E0"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M7.99967 1.33337C8.36786 1.33337 8.66634 1.63185 8.66634 2.00004V10C8.66634 10.3682 8.36786 10.6667 7.99967 10.6667C7.63148 10.6667 7.33301 10.3682 7.33301 10V2.00004C7.33301 1.63185 7.63148 1.33337 7.99967 1.33337Z"
-                                              fill="#3C50E0"
-                                            />
-                                          </svg>
-                                        </span>
-                                        <p>
-                                          <span className="text-primary">
-                                          {selectedFileName ? selectedFileName : 'Click to add Image'}                            
-                                            </span> 
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => handleEdit(worker._id)} 
-                                  // Close popup on second page
-                                  disabled={loading}
-                                  className="mr-5 lg:mb-5 inline-flex items-center justify-center gap-2.5 rounded-full bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-                                >
-                                  {loading ? (
-                                        <div className="flex items-center">
-                                          <div className="w-6 h-6 border-t-2 border-primary border-solid rounded-full animate-spin" />
-                                          <span>Updating...</span>
-                                        </div>
-                                      ) : (
-                                        <>Update Worker</>
-                                      )}
-                                </button>
-                        
-                            </form>
                           </div>
+                          <form>
+                        <div className= "rounded-sm px-6.5 bg-white dark:border-strokedark dark:bg-boxdark">
+                        <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                        <div className="w-full xl:w-1/2">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Social Platform
+                        </label>
+                        <div className={`relative ${formData.platform ? 'bg-light-blue' : ''}`}>
+                        <select
+                              name="platform"
+                              value={formData.platform}
+                              onChange={handleInputChange}
+                              required
+                              className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
+                              <option value="">Select Platform</option>                        
+                              <option value="Twitter">Twitter</option>
+                              <option value="LinkedIn">LinkedIn</option>
+                              <option value="Facebook">Facebook</option>
+                              <option value="Github">Github</option>
+                              <option value="Twitch">Twitch</option>
+                              <option value="YouTube">YouTube</option>
+                              <option value="TikTok">TikTok</option>
+                              <option value="Instagram">Instagram</option>
+                              <option value="Thread">Thread</option>
+                              <option value="Reddit">Reddit</option>
+                              <option value="Discord">Discord</option>
+                              <option value="Slack">Slack</option>
+                              <option value="StackOverflow">StackOverflow</option>
+                            </select>
+                            </div>
                       </div>
-                    )}
-            </div>
 
-            <div className="relative">
+                      <div className="w-full xl:w-3/5">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Username/Handle
+                        </label>
+                        <div className={`relative ${formData.username ? 'bg-light-blue' : ''}`}>
+                        <input
+                          type="text"
+                          name="username"
+                          required
+                          value={formData.username}
+                          onChange={handleInputChange}
+                          placeholder="Mcnobledev"
+                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">                                   
+                      <div className="w-full xl:w-2/2">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          URL
+                        </label>
+                        <div className={`relative ${formData.url ? 'bg-light-blue' : ''}`}>
+                        <input
+                          type="text"
+                          name="url"
+                          value={formData.url}
+                          required
+                          onChange={handleInputChange}
+                          placeholder="https://twitter.com/xyz"
+                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                    </form>
+                        <button
+                          type="button"
+                          onClick={() => updateSocialDetails(user.recordId, formData)}
+                          disabled={updateLoading}
+                          className={`mr-5 mb-5 inline-flex items-center justify-center gap-2.5 rounded-full bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 ${updateLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          {updateLoading ? (
+                            <div className="flex items-center">
+                              <div className="spinner"></div>
+                              <span className="pl-1">Updating...</span>
+                            </div>
+                          ) : (
+                            <>Update Details</>
+                          )}
+                        </button>
+                        </div>
+                    </div>
+                  )}
               <button
-                onClick={() => showDeleteConfirmation(4)}
-                className="inline-flex items-center justify-center rounded-full bg-danger py-3 px-10 text-center font-medium text-white hover-bg-opacity-90 lg:px-8 xl:px-10"
-              >
+                onClick={() => showDeleteConfirmation(user.recordId)}
+                className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
+                >
                 Delete
               </button>
               {isDeleteConfirmationVisible && (
-                      <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-20">
-                        <div className="bg-white p-5 rounded-lg shadow-md">
-                          <p>Are you sure you want to delete your record?</p>
-                          <div className="mt-4 flex justify-end">
-                            <button
-                              onClick={hideDeleteConfirmation}
-                              className="mr-4 rounded bg-primary py-2 px-3 text-white hover:bg-opacity-90"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={() => {
-                                hideDeleteConfirmation();
-                                handleDelete(workerToDeleteId);
-                              }}
-                              className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
-                            >
-                              Confirm
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-20">
+                  <div className="bg-white p-5 rounded-lg shadow-md">
+                    <p>Are you sure you want to delete this record?</p>
+                    <div className="mt-4 flex justify-end">
+                      <button
+                        onClick={hideDeleteConfirmation}
+                        className="mr-4 rounded bg-primary py-2 px-3 text-white hover:bg-opacity-90"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => {
+                          hideDeleteConfirmation();
+                          deleteSocialDetails(user.recordId);
+                        }}
+                        className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
+        ))}
+        </div>
+        ) : (
+          <div className="flex items-center justify-center h-48">
+            <div className="text-md font-medium text-gray-500 dark:text-gray-400">
+              No Details yet
+            </div>
+          </div>
+        )}
     </div>
+    // </div>
+    
   );
 };
 
-export default PersonalDetails;
+export default SocialDetails;

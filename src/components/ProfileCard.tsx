@@ -1,37 +1,106 @@
 import React, { useState, useRef, useEffect, FormEvent, ChangeEvent } from 'react';
 import Select from 'react-select';
+// import useWeb5 from '../hooks/useWeb5';  
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import '../pages/signin.css';
 import Image from '../images/user/1.png';
 const ProfileCard = () => {
-  
+
+  const [web5, setWeb5] = useState(null);
+  const [myDid, setMyDid] = useState(null);
+
+  useEffect(() => {
+
+    const initWeb5 = async () => {
+      // @ts-ignore
+      const { Web5 } = await import('@web5/api/browser');
+      
+      try {
+        const { web5, did } = await Web5.connect({ 
+          sync: '5s', 
+        });
+        setWeb5(web5);
+        setMyDid(did);
+        console.log(web5);
+        if (web5 && did) {
+          console.log('Web5 initialized');
+          toast.success('Web5 initialized successfully!', {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 3000, 
+          });
+          await configureProtocol(web5, did);
+        }
+      } catch (error) {
+        console.error('Error initializing Web5:', error);
+      }
+    };
+
+    initWeb5();
+    
+}, []);
+
   const [popupOpen, setPopupOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const popup = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [personalDetails, setPersonalDetails] = useState<any[]>([]);
-  const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false);
-  const [sharePopupOpen, setSharePopupOpen] = useState(false);
-  const [shareLoading, setShareLoading] = useState(false);
-  const [recipientDid, setRecipientDid] = useState('');
-  const [myDid, setMyDid] = useState('');
-  const [web5, setWeb5] = useState<any>(null);
-  const [formData, setFormData] = useState<{ name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; languages: string[]; image: File | null }>({
+    const [formData, setFormData] = useState<{ race: string, name: string; dateofbirth: string; gender: string; phone: string; address: string; nationality: string; email: string, maidenName: string, language: string;}>({
     name: '',
     gender: '',
     phone: '',
+    email: '',
     address: '',
     nationality: '',
     dateofbirth: '',
-    languages: [],
-    image: null,
+    language: "",
+    race: '',
+    maidenName: '',
+    // image: null,
   });
 
 
-  const protocolDefinition = () => {
+  const queryLocalProtocol = async (web5: any, url: string) => {
+    return await web5.dwn.protocols.query({
+      message: {
+        filter: {
+          protocol: "https://did-box.com",
+        },
+      },
+    });
+  };
+
+
+  const queryRemoteProtocol = async (web5: any, did: string, url: string) => {
+    return await web5.dwn.protocols.query({
+      from: did,
+      message: {
+        filter: {
+          protocol: "https://did-box.com",
+        },
+      },
+    });
+  };
+
+  const installLocalProtocol = async (web5: any, protocolDefinition: any) => {
+    return await web5.dwn.protocols.configure({
+      message: {
+        definition: protocolDefinition,
+      },
+    });
+  };
+
+  const installRemoteProtocol = async (web5: any, did: string, protocolDefinition: any) => {
+    const { protocol } = await web5.dwn.protocols.configure({
+      message: {
+        definition: protocolDefinition,
+      },
+    });
+    return await protocol.send(did);
+  };
+
+  const profileProtocolDefinition = () => {
     return {
       protocol: "https://did-box.com",
       published: true,
@@ -52,29 +121,25 @@ const ProfileCard = () => {
           schema: "https://did-box.com/schemas/workDetails",
           dataFormats: ["application/json"],
         },
-        financialDetails: {
-          schema: "https://did-box.com/schemas/financialDetails",
-          dataFormats: ["application/json"],
-        },
-        sportDetails: {
-          schema: "https://did-box.com/schemas/sportDetails",
-          dataFormats: ["application/json"],
-        },
         socialDetails: {
           schema: "https://did-box.com/schemas/socialDetails",
           dataFormats: ["application/json"],
         },
-        entertainmentDetails: {
-          schema: "https://did-box.com/schemas/entertainmentDetails",
+        letterDetails: {
+          schema: "https://did-box.com/schemas/letterDetails",
           dataFormats: ["application/json"],
         },
-        reviewDetails: {
-          schema: "https://did-box.com/schemas/reviewDetails",
-          dataFormats: ["application/json"],
+        pictureDetails: {
+          schema: "https://did-box.com/schemas/pictureDetails",
+          dataFormats: ['image/jpg', 'image/png', 'image/jpeg', 'image/gif']
         },
-        otherDetails: {
-          schema: "https://did-box.com/schemas/otherDetails",
-          dataFormats: ["application/json"],
+        videoDetails: {
+          schema: "https://did-box.com/schemas/videoDetails",
+          dataFormats: ["video/mp4", "video/mpeg", "video/ogg", "video/quicktime", "video/webm", "video/x-ms-wmv"],
+        },
+        documentDetails: {
+          schema: "https://did-box.com/schemas/documentDetails",
+          dataFormats: ['application/octet-stream', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
         },
       },
       structure: {
@@ -82,65 +147,104 @@ const ProfileCard = () => {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "personalDetails", can: "read" },
+            { who: "recipient", of: "personalDetails", can: "read" },
           ],
         },
         healthDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "healthDetails", can: "read" },
+            { who: "recipient", of: "healthDetails", can: "read" },
           ],
         },
         educationDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "educationDetails", can: "read" },
+            { who: "recipient", of: "educationDetails", can: "read" },
           ],
         },
         professionDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "professionDetails", can: "read" },
-          ],
-        },
-        financialDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "financialDetails", can: "read" },
-          ],
-        },
-        sportDetails: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "sportDetails", can: "read" },
+            { who: "recipient", of: "professionDetails", can: "read" },
           ],
         },
         socialDetails: {
           $actions: [
             { who: "anyone", can: "write" },
             { who: "author", of: "socialDetails", can: "read" },
+            { who: "recipient", of: "socialDetails", can: "read" },
           ],
         },
-        entertainmentDetails: {
+        letterDetails: {
           $actions: [
             { who: "anyone", can: "write" },
-            { who: "author", of: "entertainmentDetails", can: "read" },
+            { who: "author", of: "letterDetails", can: "read" },
+            { who: "recipient", of: "letterDetails", can: "read" },
           ],
         },
-        reviewDetails: {
+        pictureDetails: {
           $actions: [
             { who: "anyone", can: "write" },
-            { who: "author", of: "reviewDetails", can: "read" },
+            { who: "author", of: "pictureDetails", can: "read" },
+            { who: "recipient", of: "pictureDetails", can: "read"}
           ],
         },
-        otherDetails: {
+        videoDetails: {
           $actions: [
             { who: "anyone", can: "write" },
-            { who: "author", of: "otherDetails", can: "read" },
+            { who: "author", of: "videoDetails", can: "read" },
+            { who: "recipient", of: "videoDetails", can: "read" },
+          ],
+        },
+        documentDetails: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "documentDetails", can: "read" },
+            { who: "recipient", of: "documentDetails", can: "read"}
           ],
         },
       },
     };
   };
+
+  const configureProtocol = async (web5, did) => {
+    const protocolDefinition = profileProtocolDefinition();
+    const protocolUrl = protocolDefinition.protocol;
+
+    const { protocols: localProtocols, status: localProtocolStatus } = await queryLocalProtocol(web5, protocolUrl);
+    if (localProtocolStatus.code !== 200 || localProtocols.length === 0) {
+      const result = await installLocalProtocol(web5, protocolDefinition);
+      console.log({ result })
+      toast.success('Personal Protocol installed locally', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+    } else {
+      toast.success('Personal Protocol already installed locally', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+      }
+
+    const { protocols: remoteProtocols, status: remoteProtocolStatus } = await queryRemoteProtocol(web5, did, protocolUrl);
+    if (remoteProtocolStatus.code !== 200 || remoteProtocols.length === 0) {
+      const result = await installRemoteProtocol(web5, did, protocolDefinition);
+      console.log({ result })
+      toast.success('Personal Protocol installed remotely', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+    }  else {
+      toast.success('Personal Protocol already installed remotely', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3000, 
+      });
+      }
+  };
+  
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -175,7 +279,7 @@ const handleAddProfile = async (e: FormEvent) => {
   e.preventDefault();
   setLoading(true); 
 
-  const requiredFields = ['name', 'gender', 'phone', 'nationality', 'languages', 'dateofbirth', 'address'];
+  const requiredFields = ['name', 'gender', 'phone', 'nationality', 'language', 'address'];
   const emptyFields = requiredFields.filter((field) => !formData[field]);
 
   if (emptyFields.length > 0) {
@@ -199,30 +303,30 @@ const handleAddProfile = async (e: FormEvent) => {
   formdata.append('name', formData.name);
   formdata.append('gender', formData.gender);
   formdata.append('phone', formData.phone);  
+  formdata.append('email', formData.email);  
   formdata.append('nationality', formData.nationality);
-  for (let i = 0; i < formData.languages.length; i++) {
-    formdata.append('languages[]', formData.languages[i]);
-  } 
+  formdata.append('language', formData.language);  
   formdata.append('dateofbirth', formData.dateofbirth);
   formdata.append('address', formData.address);
-  formdata.append("image", fileInputRef.current.files[0], fileInputRef.current.files[0].name);
+  formdata.append('race', formData.race);
+  formdata.append('maidenName', formData.maidenName);
+  // formdata.append("image", fileInputRef.current.files[0], fileInputRef.current.files[0]?.name);
 
 
   try {
     let record;
-    let targetDid; 
-
-    record = await writeProfileToDwn(formdata);
+    console.log(formData);
+    record = await writeProfileToDwn(formData);
 
     if (record) {
-      const { status } = await record.send(targetDid);
+      const { status } = await record.send(myDid);
       console.log("Send record status in handleAddProfile", status);
-      await fetchPersonalDetails();
     } else {
       toast.error('Failed to create personal record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000, 
         });
+        setLoading(false);
       throw new Error('Failed to create personal record');       
     }
 
@@ -230,11 +334,14 @@ const handleAddProfile = async (e: FormEvent) => {
       name: '',
       gender: '',
       phone: '',
+      email: '',
       address: '',
       nationality: '',
       dateofbirth: '',
-      languages: [],
-      image: null,
+      language: '',
+      race: '',
+      maidenName: '',
+      // image: null,
     });
 
     setPopupOpen(false);
@@ -255,9 +362,9 @@ const handleAddProfile = async (e: FormEvent) => {
     } 
 };
 
-   const writeProfileToDwn = async (profileData: FormData) => {
+   const writeProfileToDwn = async (profileData) => {
     try {
-      const personalProtocol = protocolDefinition();
+      const personalProtocol = profileProtocolDefinition();
       const { record, status } = await web5.dwn.records.write({
         data: profileData,
         message: {
@@ -286,96 +393,7 @@ const handleAddProfile = async (e: FormEvent) => {
     }
    }; 
 
-   const shareProfile = async (recordId: string) => {
-    setShareLoading(true);
-    try {
-      const response = await web5.dwn.records.query({
-        message: {
-          filter: {
-            recordId: recordId,
-          },
-        },
-      });
-
-      if (response.records && response.records.length > 0) {
-        const record = response.records[0];
-        const { status } = await record.send(recipientDid);
-        console.log('Send record status in shareProfile', status);
-        toast.success('Successfully shared personal record', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-        setShareLoading(false);
-        setSharePopupOpen(false);
-      } else {
-        console.error('No record found with the specified ID');
-        toast.error('Failed to share personal record', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-      }
-      setShareLoading(false);
-    } catch (err) {
-      console.error('Error in shareProfile:', err);
-      toast.error('Error in shareProfile. Please try again later.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 5000,
-      });
-      setShareLoading(false);
-    }
-  };
-
-  const fetchPersonalDetails = async () => {
-    setFetchDetailsLoading(true);
-    try {
-      const response = await web5.dwn.records.query({
-        from: myDid,
-        message: {
-          filter: {
-            message: {
-              protocol: 'https://did-box.com',
-              protocolPath: 'personalDetails',
-              schema: 'https://did-box.com/schemas/personalDetails',
-            },
-          },
-        },
-      });
-      console.log('Personal Details:', response);
-
-      if (response.status.code === 200) {
-        const personalDetails = await Promise.all(
-          response.records.map(async (record: { data: { json: () => any; }; id: any; }) => {
-            const data = await record.data.json();
-            return {
-              ...data,
-              recordId: record.id,
-            };
-          })
-        );
-        setPersonalDetails(personalDetails);
-        toast.success('Successfully fetched personal details', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-        setFetchDetailsLoading(false);
-      } else {
-        console.error('No personal details found');
-        toast.error('Failed to fetch personal details', {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 3000,
-        });
-      }
-      setFetchDetailsLoading(false);
-    } catch (err) {
-      console.error('Error in fetchPersonalDetails:', err);
-      toast.error('Error in fetchPersonalDetails. Please try again later.', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 5000,
-      });
-      setFetchDetailsLoading(false);
-    };
-  };
-
+ 
 
   return (
     <div className="w-full md:w-3/5 flex justify-between rounded-lg border border-stroke bg-white py-7.5 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -446,11 +464,11 @@ const handleAddProfile = async (e: FormEvent) => {
                               value={formData.gender}
                               onChange={handleInputChange}
                               required
-                              placeholder="Yes"
+                              placeholder="Male"
                               className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
                               <option value="">Select Gender</option>
-                              <option value="Yes">Male</option>
-                              <option value="No">Female</option>
+                              <option value="Male">Male</option>
+                              <option value="Female">Female</option>
                             </select>
                         </div>
                       </div>
@@ -462,8 +480,6 @@ const handleAddProfile = async (e: FormEvent) => {
                         <div className={`relative ${formData.dateofbirth ? 'bg-light-blue' : ''}`}>
                         <input
                            type="date" 
-                           maxLength={4}
-                           step="1"
                           name="dateofbirth"
                           required
                           value={formData.dateofbirth}
@@ -496,35 +512,23 @@ const handleAddProfile = async (e: FormEvent) => {
                       </div>
 
                       <div className="w-full xl:w-1/2">
-                      <label className="mb-2.5 block text-black dark:text-white">Languages</label>
-                      <div className={`relative ${formData.languages.length ? 'bg-light-blue' : ''}`}>
-                        <Select
-                          isMulti
-                          name="languages"
-                          closeMenuOnSelect={false}
-                          value={formData.languages.map((lang) => ({ label: lang, value: lang }))}
-                          onChange={(selectedOptions) => {
-                            const selectedLanguages = selectedOptions.map((option) => option.value);
-                            setFormData((prevData) => ({
-                              ...prevData,
-                              languages: selectedLanguages,
-                            }));
-                          }}
-                          options={[
-                            { label: 'English', value: 'English' },
-                            { label: 'Spanish', value: 'Spanish' },
-                            { label: 'French', value: 'French' },
-                            { label: 'German', value: 'German' },
-                            { label: 'Chinese', value: 'Chinese' },
-                            { label: 'Japanese', value: 'Japanese' },
-                          ]}
-                          placeholder="Select language(s)"
-                        />
+                      <label className="mb-2.5 block text-black dark:text-white">Language</label>
+                      <div className={`relative ${formData.language ? 'bg-light-blue' : ''}`}>
+                      <select
+                        name="language"
+                        value={formData.language}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
+                        <option value="">Select Language</option>                        
+                        <option value="English">English</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="German">German</option>
+                        <option value="Yoruba">Yoruba</option>
+                        <option value="Igbo">Igbo</option>
+                      </select>
                       </div>
                     </div>
-
-
-
                     </div>
 
                     <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
@@ -560,6 +564,78 @@ const handleAddProfile = async (e: FormEvent) => {
                           className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
                         </div>
                       </div>
+                    </div>
+
+                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                                           
+                      <div className="w-full xl:w-1/2">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Email
+                        </label>
+                        <div className={`relative ${formData.email ? 'bg-light-blue' : ''}`}>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          required
+                          onChange={handleInputChange}
+                          placeholder="xyz@xyz.com"
+                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                        </div>
+                      </div>
+
+                      <div className="w-full xl:w-1/2">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Mother's Maiden Name
+                        </label>
+                        <div className={`relative ${formData.maidenName ? 'bg-light-blue' : ''}`}>
+                        <input
+                          type="text"
+                          name="maidenName"
+                          value={formData.maidenName}
+                          required
+                          onChange={handleInputChange}
+                          placeholder="Kathera"
+                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">                         
+                    <div className="w-full xl:w-1/2">
+                      <label className="mb-2.5 block text-black dark:text-white">Race</label>
+                      <div className={`relative ${formData.race ? 'bg-light-blue' : ''}`}>
+                      <select
+                        name="race"
+                        value={formData.race}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary">
+                        <option value="">Select Race</option>                        
+                        <option value="Black">Black</option>
+                        <option value="American">American</option>
+                        <option value="Latino">Latino</option>
+                        <option value="Hispanic">Hispanic</option>
+                        <option value="Asian">Asian</option>
+                      </select>
+                      </div>
+                    </div>
+
+                      {/* <div className="w-full xl:w-1/2">
+                        <label className="mb-2.5 block text-black dark:text-white">
+                          Mother's Maiden Name
+                        </label>
+                        <div className={`relative ${formData.maidenName ? 'bg-light-blue' : ''}`}>
+                        <input
+                          type="text"
+                          name="maidenName"
+                          value={formData.maidenName}
+                          required
+                          onChange={handleInputChange}
+                          placeholder="Kathera"
+                          className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus-border-primary"/>
+                        </div>
+                      </div> */}
                     </div>
 
                     <div className="mb-4.5 flex flex-col gap-3">
