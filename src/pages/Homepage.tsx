@@ -35,19 +35,19 @@ const Homepage = () => {
         </div>
       </div>
 
-      <div className='flex w-full lg:w-[90%] flex-col h-screen flex-wrap'>
-        <div className="flex w-full justify-center mb-5 lg:mb-30 text-6xl font-bold text-white dark:text-white">
+      <div className='flex w-full lg:w-[90%] pb-10 flex-col'>
+        <div className="flex w-full justify-center mb-10 lg:mb-30 text-6xl font-bold text-white dark:text-white">
             Our Features
         </div>
-        <div className="flex w-full lg:mx-[5%] flex-col lg:flex-row ">   
-          <div className="flex flex-col lg:w-1/3">
+        <div className="flex w-[90%] mx-[5%] flex-col lg:flex-row ">   
+          <div className="flex flex-col mb-10 lg:w-1/3">
             <FontAwesomeIcon icon={faFileAlt} size="6x" className="text-white mb-10 dark:text-white"/>
             <p className="text-center text-2xl  font-bold">
             Create and save your (Personal, Education, Health, Social, and Professional) records in your personal Decentralized Web Node (DWN).
             Share your records and files with other users.
             </p>            
           </div>
-          <div className="flex flex-col lg:w-1/3">
+          <div className="flex flex-col mb-10 lg:w-1/3">
             <FontAwesomeIcon icon={faVideo} size="6x" className="text-white mb-10 dark:text-white"/>
             <p className="text-center text-2xl  font-bold">
             Save your files (Documents, Images, Videos) in your personal Decentralized Web Node (DWN).
