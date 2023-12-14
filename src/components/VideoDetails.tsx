@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 const VideoDetails = () => {
@@ -7,22 +7,17 @@ const VideoDetails = () => {
   const [myDid, setMyDid] = useState(null);
 
   const [usersDetails, setUsersDetails] = useState<User[]>([]);
-  const [recipientDid, setRecipientDid] = useState("");
-  const [sharePopupOpen, setSharePopupOpen] = useState(false);
-  const [shareLoading, setShareLoading] = useState(false);
   const [userToDeleteId, setUserToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false)
   const [formData, setFormData] = useState<{ video: File | null }>({
     video: null,
   });
-    // const [imageDataURL, setImageDataURL] = useState<string | null>(null);
 
   const [showDetails, setShowDetails] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const popup = useRef<HTMLDivElement | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [videoURLs, setVideoURLs] = useState<string[]>([]);
 
   useEffect(() => {
 
@@ -46,11 +41,6 @@ const VideoDetails = () => {
     
 }, []);
   
-const toggleDetails = () => {
-  setShowDetails((prevShowDetails) => !prevShowDetails);
-};
-
-
 const fetchVideoDetails = async () => {
   setFetchDetailsLoading(true);
   try {
@@ -65,32 +55,34 @@ const fetchVideoDetails = async () => {
     });
     console.log('Video Details:', response);
 
-    if (response.status.code === 200) {
-      const videoDetails = await Promise.all(
-        response.records.map(async (record) => {
-          const data = await record.data.json();
-          console.log(data);
-          return {
-            ...data,
-            recordId: record.id,
-          };
-        })
-      );
-      setUsersDetails(videoDetails);
-      console.log(videoDetails);
-      toast.success('Successfully fetched video details', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-      setFetchDetailsLoading(false);
-    } else {
-      console.error('No video details found');
-      toast.error('Failed to fetch video details', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-    }
+    
+  response.records.forEach( async (videoRec) => {
+  console.log('this is the each video record', videoRec);
+   // Get the blob of the video data
+   const videoId = videoRec.id;
+    console.log(videoId);
+    const {record, status }= await web5.dwn.records.read({
+      message: {
+        filter: {
+          recordId: videoId,
+         },
+      },
+    });
+    console.log({record, status});
+    const videoResult = await record.data.blob();
+    console.log(videoResult);
+    const videoURL = URL.createObjectURL(videoResult);
+    console.log(videoURL);
+    setVideoURLs(prevVideoURLs => [...prevVideoURLs, videoURL]);
+  });
+
+  toast.success('Successfully fetched video details', {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: 3000,
+  });
+
     setFetchDetailsLoading(false);
+
   } catch (err) {
     console.error('Error in fetchVideoDetails:', err);
     toast.error('Error in fetchVideoDetails. Please try again later.', {
@@ -102,47 +94,8 @@ const fetchVideoDetails = async () => {
 };
 
 
-const shareVideoDetails = async (recordId: string) => {
-  setShareLoading(true);
-  try {
-    const response = await web5.dwn.records.query({
-      message: {
-        filter: {
-          recordId: recordId,
-        },
-      },
-    });
-
-    if (response.records && response.records.length > 0) {
-      const record = response.records[0];
-      const { status } = await record.send(recipientDid);
-      console.log('Send record status in shareVideo', status);
-      toast.success('Successfully shared video record', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-      setShareLoading(false);
-      setSharePopupOpen(false);
-    } else {
-      console.error('No record found with the specified ID');
-      toast.error('Failed to share video record', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-    }
-    setShareLoading(false);
-  } catch (err) {
-    console.error('Error in shareProfile:', err);
-    toast.error('Error in shareProfile. Please try again later.', {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 5000,
-    });
-    setShareLoading(false);
-  }
-};
-
-const showDeleteConfirmation = (userId: string) => {
-    setUserToDeleteId(userId);
+const showDeleteConfirmation = (videoId: string) => {
+    setUserToDeleteId(videoId);
     setDeleteConfirmationVisible(true);
   };
 
@@ -218,30 +171,19 @@ const deleteVideoDetails = async (recordId) => {
          <>Fetch Videos</>
        )}           
      </button>
-     <div className="relative">
-       <button
-         onClick={toggleDetails}
-         className="inline-flex items-center justify-center rounded-full bg-primary py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-       >
-         {showDetails ? 'Hide Details' : 'Show Details'}
-       </button>
-     </div>
    </div>
-   {usersDetails.length > 0 ? (
-     <div className="flex flex-row flex-wrap justify-evenly gap-2">
-     {usersDetails.map((user, index) => (
-     <div className="flex flex-wrap w-full" key={index}>
-      <div className='w-1/2 mb-5'>
-         <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-           {showDetails ? user.video : '********'}
-         </h4>
-       </div>
-
-
-       <div className='w-full flex flex-row justify-evenly mb-5'>
+   {videoURLs.length > 0 ? (
+     <div className="flex flex-col lg:flex-row justify-evenly">
+     {videoURLs.map((video, index) => (
+     <div className="flex w-full lg:w-2/5" key={index}>
+      <div className='mb-5'>
+        <video width="320" height="240" controls>
+          <source src={video} type="video/mp4" />
+        </video>
+        <div className='w-full flex mt-5 flex-row justify-evenly mb-5'>
          <div className="relative">
            <button
-             onClick={() => showDeleteConfirmation(user.recordId)}
+             onClick={() => showDeleteConfirmation(video.recordId)}
              className="inline-flex items-center justify-center rounded-full bg-danger py-3 px-7 text-center font-medium text-white hover-bg-opacity-90 lg:px-8 xl:px-10"
            >
              Delete
@@ -260,7 +202,7 @@ const deleteVideoDetails = async (recordId) => {
                    <button
                      onClick={() => {
                        hideDeleteConfirmation();
-                       deleteVideoDetails(user.recordId);
+                       deleteVideoDetails(video.recordId);
                      }}
                      className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
                    >
@@ -271,6 +213,7 @@ const deleteVideoDetails = async (recordId) => {
              </div>
            )}
          </div>
+       </div>
        </div>
      </div>
      ))}

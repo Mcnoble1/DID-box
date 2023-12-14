@@ -187,9 +187,9 @@ const VideoCard = () => {
     }
       
     const formdata = new FormData();
-    formdata.append('image', fileInputRef.current?.files?.[0], fileInputRef.current?.files?.[0].name);
+    formdata.append('video', fileInputRef.current?.files?.[0], fileInputRef.current?.files?.[0].name);
 
-    const blob = new Blob(fileInputRef.current.files, { type: "image/png" }); 
+    const blob = new Blob(fileInputRef.current.files, { type: "video/mp4" }); 
 
     try {
       let record;
@@ -240,6 +240,7 @@ const VideoCard = () => {
             protocolPath: 'videoDetails',
             schema: videoProtocol.types.videoDetails.schema,
             recipient: myDid,
+            dataFormat: "video/mp4"
           },
         });
         console.log(record);
