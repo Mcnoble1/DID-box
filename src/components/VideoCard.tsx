@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
-import Select from 'react-select';
+import { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
 import Image from '../images/user/7.png';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
@@ -188,22 +187,25 @@ const VideoCard = () => {
     }
       
     const formdata = new FormData();
-    formdata.append('video', formData.video as File);
+    formdata.append('image', fileInputRef.current?.files?.[0], fileInputRef.current?.files?.[0].name);
+
+    const blob = new Blob(fileInputRef.current.files, { type: "image/png" }); 
+
     try {
       let record;
-      console.log(formData);
-      record = await writeVideoToDwn(formData);
+      console.log(blob);
+      record = await writeVideoToDwn(blob);
       console.log(record);
       if (record) {
         const { status } = await record.send(myDid);
         console.log("Send record status in handleAddVideo", status);
       } else {
-        toast.error('Failed to create videoal record', {
+        toast.error('Failed to create video record', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
           });
           setLoading(false);
-        throw new Error('Failed to create videoal record');       
+        throw new Error('Failed to create video record');       
       }
   
       setFormData({
@@ -312,6 +314,7 @@ const VideoCard = () => {
                       >
                         <input
                           type="file"
+                          name='video'
                           accept="video/*"
                           ref={fileInputRef}
                           onChange={handleInputChange}

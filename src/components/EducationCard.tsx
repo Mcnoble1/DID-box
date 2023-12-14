@@ -746,7 +746,7 @@ const EducationCard = () => {
                       </div>
                     </div>
        
-                    <div className="mb-4.5 flex flex-col gap-3">
+                    {/* <div className="mb-4.5 flex flex-col gap-3">
                       <label className="mb-2.5 block text-black dark:text-white">
                       Image
                       </label>
@@ -797,7 +797,7 @@ const EducationCard = () => {
                           </p>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
               
                   </div>

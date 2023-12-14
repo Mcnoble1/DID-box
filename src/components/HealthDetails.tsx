@@ -1079,7 +1079,7 @@ const deleteHealthDetails = async (recordId) => {
                     </div>
        
                     <h3 className="mb-2.5 block mt-10 font-semibold dark:text-white">Lab Results</h3>
-                    <div className="mb-4.5 flex flex-col gap-3">
+                    {/* <div className="mb-4.5 flex flex-col gap-3">
                       <label className="mb-2.5 block text-black dark:text-white">
                       Image
                       </label>
@@ -1130,7 +1130,7 @@ const deleteHealthDetails = async (recordId) => {
                           </p>
                         </div>
                       </div>
-                    </div>          
+                    </div>           */}
                   </div>
                           </form>
                         <button

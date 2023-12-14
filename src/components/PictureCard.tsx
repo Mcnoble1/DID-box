@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
-import Select from 'react-select';
+import { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
 import Image from '../images/user/7.png';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
