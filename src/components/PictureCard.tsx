@@ -157,15 +157,6 @@ const profileProtocolDefinition = () => {
   };
 };
 
-  // const handleImageInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     const imageFile = event.target.files[0];
-  //     const filereader = new FileReader();
-  //     filereader.readAsArrayBuffer(imageFile);
-  //     filereader.addEventListener('load', function () {
-  //     imageData = filereader.result;
-  //   })
-  // };
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
   
@@ -180,54 +171,6 @@ const profileProtocolDefinition = () => {
       [name]: value,
     }));
   };
-
-  
-// const writeImageToDwn = async (imageDataFile) => {
-//   const imageblob = new Blob([imageDataFile], { type: 'image/jpeg' });
-
-//   try {
-//   const fundraiseProtocol = fundraiseProtocolDefinition();
-//   const { record, status } = await web5.dwn.records.create({
-//     data: imageblob,
-//     message: {
-//         protocol: fundraiseProtocol.protocol,
-//         schema: fundraiseProtocol.types.image.schema,
-//         dataFormat: 'image/jpeg',
-//         protocolPath: "image",
-//         // parentId: contextId,
-//         // contextId: contextId,
-//         published: true,
-//     },
-//   });
-//   // const { status: imagestatus } = await record.send(myDid);
-//   // console.log(imagestatus);
-//   console.log("imagerecord:", {record, status})
-//   if (status.code === 200) {
-//     return { ...imageblob, recordId: record.id };
-//   }
-
-//   toast.success('Image Data written to DWN', {
-//     position: toast.POSITION.TOP_RIGHT,
-//     autoClose: 3000, 
-//   });
-//     return record;
-// } catch (error) {
-//   console.log(error)
-
-//   toast.error('Error writing image data to DWN', {
-//     position: toast.POSITION.TOP_RIGHT,
-//     autoClose: 3000, 
-//   });
-// }
-
-// };
-
-
-// const conId = record.id;
-
-    // if (imageData) {
-    //   writeImageToDwn(imageData);
-    // }
 
   const handleAddPicture = async (e: FormEvent) => {
     e.preventDefault();
@@ -296,18 +239,6 @@ const profileProtocolDefinition = () => {
         setLoading(false);
       } 
   };
-
-  // Create a blob record
-//   async function upload(event) {
-//     const blob = new Blob(event.currentTarget.files, { type: "image/png" });
-//     const { record } = await web5.dwn.records.create({
-//         data: blob,
-//         message: {
-//             dataFormat: "image/png"
-//         }
-//     });
-    
-// }
   
      const writePictureToDwn = async (pictureData) => {
       try {
@@ -319,6 +250,7 @@ const profileProtocolDefinition = () => {
             protocolPath: 'pictureDetails',
             schema: pictureProtocol.types.pictureDetails.schema,
             recipient: myDid,
+            dataFormat: "image/png"
           },
         });
         console.log(record);
