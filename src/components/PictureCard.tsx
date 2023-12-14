@@ -220,6 +220,7 @@ const profileProtocolDefinition = () => {
       setFormData({
         image: null,
       });
+      setSelectedFileName("Click to add Image")
   
       setPopupOpen(false);
       toast.success('Successfully created picture record', {

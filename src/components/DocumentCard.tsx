@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
-import Select from 'react-select';
+import { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
 import Image from '../images/user/7.png';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
@@ -189,17 +188,20 @@ const DocumentCard = () => {
     }
       
     const formdata = new FormData();
-    formdata.append('document', formData.document as File);
+    formdata.append('document', fileInputRef.current?.files?.[0], fileInputRef.current?.files?.[0].name);
+
+    const blob = new Blob(fileInputRef.current.files, { type: 'application/pdf' });   
+    
     try {
       let record;
-      console.log(formData);
-      record = await writeDocumentToDwn(formData);
+      console.log(blob);
+      record = await writeDocumentToDwn(blob);
       console.log(record);
       if (record) {
         const { status } = await record.send(myDid);
         console.log("Send record status in handleAddDocument", status);
       } else {
-        toast.error('Failed to create documental record', {
+        toast.error('Failed to create document record', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
           });
@@ -210,6 +212,7 @@ const DocumentCard = () => {
       setFormData({
         document: null,
       });
+      setSelectedFileName("Click to add Document")
   
       setPopupOpen(false);
       toast.success('Successfully created document record', {
@@ -239,6 +242,7 @@ const DocumentCard = () => {
             protocolPath: 'documentDetails',
             schema: documentProtocol.types.documentDetails.schema,
             recipient: myDid,
+            dataFormat: "application/pdf"
           },
         });
         console.log(record);
@@ -313,7 +317,8 @@ const DocumentCard = () => {
                       >
                         <input
                           type="file"
-                          accept='application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                          name='document'
+                          accept='application/pdf'
                           ref={fileInputRef}
                           onChange={handleInputChange}
                           className="absolute inset-0 z-50 m-0 h-full w-full cursor-pointer p-0 opacity-0 outline-none"

@@ -211,6 +211,7 @@ const VideoCard = () => {
       setFormData({
         video: null,
       });
+      setSelectedFileName("Click to add Video")
   
       setPopupOpen(false);
       toast.success('Successfully created videoal record', {
