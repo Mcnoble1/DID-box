@@ -22,8 +22,7 @@ const PictureDetails = () => {
   const [showDetails, setShowDetails] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const popup = useRef<HTMLDivElement | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+  const [imageURLs, setImageURLs] = useState<string[]>([]);
   useEffect(() => {
 
     const initWeb5 = async () => {
@@ -50,43 +49,6 @@ const toggleDetails = () => {
   setShowDetails((prevShowDetails) => !prevShowDetails);
 };
 
-// Get images from DWN
-
-        // const imagerecords = await web5.dwn.records.query({
-        //   from: myDid,
-        //   message: {
-        //     filter: {
-        //       protocol: "https://shege.xyz",
-        //       protocolPath: "image",
-        //     },
-        //   },
-        // });
-        // console.log('imagerecords', imagerecords);
-
-
-        // imagerecords.records.forEach(async (imageRec) => {
-        //   console.log('this is the each image record', imageRec);
-        //   // Get the blob of the image data
-        //   const imageId = imageRec.id
-        //   console.log(imageId)
-        //    const {record, status }= await web5.dwn.records.read({
-        //     from: myDid,
-        //     message: {
-        //        filter: {
-        //         recordId: imageId,
-        //        },
-        //     },
-        //     });
-        //   console.log ({record, status})
-        //   const imageresult = await record.data.blob();
-        //   console.log(imageresult)
-        //   const imageid = await record.contextId;  
-        //   console.log(imageid)         
-        //   const imageUrl = URL.createObjectURL(imageresult);
-        //   console.log(imageUrl)
-        //   setImageURLs(prevImageURLs => [...prevImageURLs, imageUrl]);
-        // })
-
 const fetchPictureDetails = async () => {
   setFetchDetailsLoading(true);
   try {
@@ -101,31 +63,33 @@ const fetchPictureDetails = async () => {
     });
     console.log('Picture Details:', response);
 
-    if (response.status.code === 200) {
-      const pictureDetails = await Promise.all(
-        response.records.map(async (record) => {
-          const data = await record.data.json();
-          console.log(data);
-          return {
-            ...data,
-            recordId: record.id,
-          };
-        })
-      );
-      setUsersDetails(pictureDetails);
-      console.log(pictureDetails);
+  response.records.forEach(async (imageRec) => {
+  console.log('this is the each image record', imageRec);
+  // Get the blob of the image data
+  const imageId = imageRec.id
+  console.log(imageId)
+   const record = await web5.dwn.records.read({
+    from: myDid,
+    message: {
+       filter: {
+        recordId: imageId,
+       },
+    },
+    });
+  console.log (record)
+
+      const imageresult = await record.data.json();
+      console.log(imageresult)         
+      const imageUrl = URL.createObjectURL(imageresult);
+      console.log(imageUrl)
+      setImageURLs(prevImageURLs => [...prevImageURLs, imageUrl]);
+    })
+
+    
       toast.success('Successfully fetched picture details', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
-      setFetchDetailsLoading(false);
-    } else {
-      console.error('No picture details found');
-      toast.error('Failed to fetch picture details', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-    }
     setFetchDetailsLoading(false);
   } catch (err) {
     console.error('Error in fetchPictureDetails:', err);

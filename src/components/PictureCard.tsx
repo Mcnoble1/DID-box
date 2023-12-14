@@ -254,18 +254,20 @@ const profileProtocolDefinition = () => {
     }
       
     const formdata = new FormData();
-    // formdata.append('image', fileInputRef.current?.files?.[0] as Blob);
-    
+    formdata.append('image', fileInputRef.current?.files?.[0], fileInputRef.current?.files?.[0].name);
+
+    const blob = new Blob(fileInputRef.current.files, { type: "image/png" });
+
     try {
       let record;
-      console.log(formData);
-      record = await writePictureToDwn(formData);
+      console.log(blob);
+      record = await writePictureToDwn(blob);
       console.log(record);
       if (record) {
         const { status } = await record.send(myDid);
         console.log("Send record status in handleAddPicture", status);
       } else {
-        toast.error('Failed to create pictureal record', {
+        toast.error('Failed to create picture record', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
           });
@@ -294,6 +296,18 @@ const profileProtocolDefinition = () => {
         setLoading(false);
       } 
   };
+
+  // Create a blob record
+//   async function upload(event) {
+//     const blob = new Blob(event.currentTarget.files, { type: "image/png" });
+//     const { record } = await web5.dwn.records.create({
+//         data: blob,
+//         message: {
+//             dataFormat: "image/png"
+//         }
+//     });
+    
+// }
   
      const writePictureToDwn = async (pictureData) => {
       try {
@@ -312,7 +326,7 @@ const profileProtocolDefinition = () => {
         if (status === 200) {
           return { ...pictureData, recordId: record.id}
         } 
-        console.log('Successfully wrote pictureal details to DWN:', record);
+        console.log('Successfully wrote picture details to DWN:', record);
         toast.success('Picture Details written to DWN', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
@@ -379,6 +393,7 @@ const profileProtocolDefinition = () => {
                       >
                         <input
                           type="file"
+                          name='image'
                           accept="image/*"
                           ref={fileInputRef}
                           onChange={handleInputChange}
