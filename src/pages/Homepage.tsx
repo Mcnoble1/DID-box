@@ -13,13 +13,13 @@ const Homepage = () => {
   return (
     <>
     <div className="rounded-sm bg-primary shadow-default dark:bg-boxdark">
-      <div className='p-20 lg:p-0 flex w-full mb-20 flex-col lg:flex-row h-screen'>
+      <div className='p-20 lg:p-0 flex w-full mb-0 flex-col lg:flex-row h-screen'>
         <div className="lg:pl-30 flex lg:w-1/2 flex-col items-center justify-center">
           <div className='text-center mb-7'>
-          <p className="mb-5 text-6xl font-bold text-white dark:text-white">
+          <p className="mb-5 text-5xl lg:text-6xl font-bold text-white dark:text-white">
             Welcome to DID-Box
           </p>
-          <span className="text-4xl font-medium">Your Personal Secure Data Store, Manager and Aggregator</span>
+          <span className="text-3xl lg:text-4xl font-medium">Your Personal Secure Data Store, Manager and Aggregator</span>
           </div>
           <div className="flex justify-center">
           <button 
@@ -36,7 +36,7 @@ const Homepage = () => {
       </div>
 
       <div className='flex w-full lg:w-[90%] flex-col h-screen flex-wrap'>
-        <div className="flex w-full justify-center mb-30 text-6xl font-bold text-white dark:text-white">
+        <div className="flex w-full justify-center mb-5 lg:mb-30 text-6xl font-bold text-white dark:text-white">
             Our Features
         </div>
         <div className="flex w-full lg:mx-[5%] flex-col lg:flex-row ">   
