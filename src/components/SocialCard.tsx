@@ -2,6 +2,7 @@ import { useState, useRef, useContext, FormEvent, ChangeEvent } from 'react';
 
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
+import { Web5Context } from "../utils/Web5Context";
 import '../pages/signin.css';
 import Image from '../images/user/2.png';
 const ProfileCard = () => {
