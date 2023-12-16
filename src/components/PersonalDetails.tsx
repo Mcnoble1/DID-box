@@ -1,10 +1,11 @@
-import React, { useState, useRef, ChangeEvent, FormEvent, useEffect } from 'react';
+import { useState, useRef, ChangeEvent, FormEvent, useContext } from 'react';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
+import { Web5Context } from "../utils/Web5Context";
+
 const PersonalDetails = () => {
 
-  const [web5, setWeb5] = useState(null);
-  const [myDid, setMyDid] = useState(null);
+  const { web5, myDid } = useContext( Web5Context);
 
   const [usersDetails, setUsersDetails] = useState<User[]>([]);
   const [recipientDid, setRecipientDid] = useState("");
@@ -34,31 +35,6 @@ const PersonalDetails = () => {
   const trigger = useRef<HTMLButtonElement | null>(null);
   const popup = useRef<HTMLDivElement | null>(null); 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-
-  useEffect(() => {
-
-    const initWeb5 = async () => {
-      // @ts-ignore
-      const { Web5 } = await import('@web5/api/browser');
-      
-      try {
-        const { web5, did } = await Web5.connect({ 
-          sync: '5s', 
-        });
-        setWeb5(web5);
-        setMyDid(did);
-        console.log(web5);
-      } catch (error) {
-        console.error('Error initializing Web5:', error);
-      }
-    };
-
-    initWeb5();
-    
-}, []);
-  
-
 
   const toggleDetails = () => {
     setShowDetails((prevShowDetails) => !prevShowDetails);

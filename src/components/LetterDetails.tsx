@@ -1,10 +1,12 @@
-import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useRef, useContext, ChangeEvent, FormEvent } from 'react';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
+import { Web5Context } from "../utils/Web5Context";
+
 const LetterDetails = () => {
   
-  const [web5, setWeb5] = useState(null);
-  const [myDid, setMyDid] = useState(null);
+  const { web5, myDid } = useContext( Web5Context);
+
 
   const [usersDetails, setUsersDetails] = useState<User[]>([]);
   const [recipientDid, setRecipientDid] = useState("");
@@ -28,43 +30,7 @@ const LetterDetails = () => {
   const trigger = useRef<HTMLButtonElement | null>(null);
   const popup = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
 
-    const initWeb5 = async () => {
-      // @ts-ignore
-      const { Web5 } = await import('@web5/api/browser');
-      
-      try {
-        const { web5, did } = await Web5.connect({ 
-          sync: '5s', 
-        });
-        setWeb5(web5);
-        setMyDid(did);
-        console.log(web5);
-      } catch (error) {
-        console.error('Error initializing Web5:', error);
-      }
-    };
-
-    initWeb5();
-    
-}, []);
-
-// useEffect(() => {
-
-//   usersDetails.map((user) => {
-//     const targetDate: any = user.publishedDate;
-
-//     const currentDate = new Date();
-//     const formattedTargetDate = new Date(targetDate);
-
-//     if (currentDate >= formattedTargetDate) {
-//       setShowViewButton(true);
-//     } else {
-//       setShowViewButton(false);
-//     }
-//   });
-// }, []);
   
 const toggleDetails = () => {
   setShowDetails((prevShowDetails) => !prevShowDetails);

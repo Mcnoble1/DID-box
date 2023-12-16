@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import useWeb5 from '../hooks/useWeb5';  
+import { useState, useEffect, useContext } from 'react';
+import { Web5Context } from "../utils/Web5Context";
 const DidCard = () => {
 
-    const { web5, myDid } = useWeb5();
+    const { myDid } = useContext( Web5Context);
 
   const [didCopied, setDidCopied] = useState(false);
 

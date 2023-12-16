@@ -1,32 +1,13 @@
-import { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useRef, useContext, ChangeEvent, FormEvent } from 'react';
 import Image from '../images/user/7.png';
+import { Web5Context } from "../utils/Web5Context";
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import '../pages/signin.css';
 const PictureCard = () => {
-  const [web5, setWeb5] = useState(null);
-  const [myDid, setMyDid] = useState(null);
 
-  useEffect(() => {
+  const { web5, myDid, profileProtocolDefinition } = useContext( Web5Context);
 
-    const initWeb5 = async () => {
-      // @ts-ignore
-      const { Web5 } = await import('@web5/api/browser');
-      
-      try {
-        const { web5, did } = await Web5.connect({ 
-          sync: '5s', 
-        });
-        setWeb5(web5);
-        setMyDid(did);
-      } catch (error) {
-        console.error('Error initializing Web5:', error);
-      }
-    };
-
-    initWeb5();
-    
-}, []);
   
   const [popupOpen, setPopupOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
@@ -45,116 +26,6 @@ const PictureCard = () => {
 //     URL.revokeObjectURL(imageURLs.map((imageURL) => imageURL));
 //   };
 // }, [imageURLs]);
-
-const profileProtocolDefinition = () => {
-  return {
-    protocol: "https://did-box.com",
-    published: true,
-    types: {
-      personalDetails: {
-        schema: "https://did-box.com/schemas/personalDetails",
-        dataFormats: ["application/json"],
-      },
-      healthDetails: {
-        schema: "https://did-box.com/schemas/healthDetails",
-        dataFormats: ["application/json"],
-      },
-      educationDetails: {
-        schema: "https://did-box.com/schemas/educationDetails",
-        dataFormats: ["application/json"],
-      },
-      professionDetails: {
-        schema: "https://did-box.com/schemas/workDetails",
-        dataFormats: ["application/json"],
-      },
-      socialDetails: {
-        schema: "https://did-box.com/schemas/socialDetails",
-        dataFormats: ["application/json"],
-      },
-      letterDetails: {
-        schema: "https://did-box.com/schemas/letterDetails",
-        dataFormats: ["application/json"],
-      },
-      pictureDetails: {
-        schema: "https://did-box.com/schemas/pictureDetails",
-        dataFormats: ['image/jpg', 'image/png', 'image/jpeg', 'image/gif']
-      },
-      videoDetails: {
-        schema: "https://did-box.com/schemas/videoDetails",
-        dataFormats: ["video/mp4", "video/mpeg", "video/ogg", "video/quicktime", "video/webm", "video/x-ms-wmv"],
-      },
-      documentDetails: {
-        schema: "https://did-box.com/schemas/documentDetails",
-        dataFormats: ['application/octet-stream', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-      },
-    },
-    structure: {
-      personalDetails: {
-        $actions: [
-          { who: "anyone", can: "write" },
-          { who: "author", of: "personalDetails", can: "read" },
-          { who: "recipient", of: "personalDetails", can: "read" },
-        ],
-      },
-      healthDetails: {
-        $actions: [
-          { who: "anyone", can: "write" },
-          { who: "author", of: "healthDetails", can: "read" },
-          { who: "recipient", of: "healthDetails", can: "read" },
-        ],
-      },
-      educationDetails: {
-        $actions: [
-          { who: "anyone", can: "write" },
-          { who: "author", of: "educationDetails", can: "read" },
-          { who: "recipient", of: "educationDetails", can: "read" },
-        ],
-      },
-      professionDetails: {
-        $actions: [
-          { who: "anyone", can: "write" },
-          { who: "author", of: "professionDetails", can: "read" },
-          { who: "recipient", of: "professionDetails", can: "read" },
-        ],
-      },
-      socialDetails: {
-        $actions: [
-          { who: "anyone", can: "write" },
-          { who: "author", of: "socialDetails", can: "read" },
-          { who: "recipient", of: "socialDetails", can: "read" },
-        ],
-      },
-      letterDetails: {
-        $actions: [
-          { who: "anyone", can: "write" },
-          { who: "author", of: "letterDetails", can: "read" },
-          { who: "recipient", of: "letterDetails", can: "read" },
-        ],
-      },
-      pictureDetails: {
-        $actions: [
-          { who: "anyone", can: "write" },
-          { who: "author", of: "pictureDetails", can: "read" },
-          { who: "recipient", of: "pictureDetails", can: "read"}
-        ],
-      },
-      videoDetails: {
-        $actions: [
-          { who: "anyone", can: "write" },
-          { who: "author", of: "videoDetails", can: "read" },
-          { who: "recipient", of: "videoDetails", can: "read" },
-        ],
-      },
-      documentDetails: {
-        $actions: [
-          { who: "anyone", can: "write" },
-          { who: "author", of: "documentDetails", can: "read" },
-          { who: "recipient", of: "documentDetails", can: "read"}
-        ],
-      },
-    },
-  };
-};
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -242,7 +113,7 @@ const profileProtocolDefinition = () => {
   
      const writePictureToDwn = async (pictureData) => {
       try {
-        const pictureProtocol = profileProtocolDefinition();
+        const pictureProtocol = profileProtocolDefinition;
         const { record, status } = await web5.dwn.records.write({
           data: pictureData,
           message: {

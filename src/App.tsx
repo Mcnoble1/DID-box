@@ -1,7 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-
 import Health from './pages/Health';
 import Education from './pages/Education';
 import Professional from './pages/Professional';
