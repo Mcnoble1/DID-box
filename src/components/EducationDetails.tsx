@@ -1,10 +1,12 @@
-import React, { useState, useRef, ChangeEvent, FormEvent, useEffect } from 'react';
+import { useState, useRef, ChangeEvent, FormEvent, useContext } from 'react';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
+import { Web5Context } from "../utils/Web5Context";
+
 const EducationDetails = () => {
 
-  const [web5, setWeb5] = useState(null);
-  const [myDid, setMyDid] = useState(null);
+  const { web5, myDid } = useContext( Web5Context);
+
 
   const [usersDetails, setUsersDetails] = useState<User[]>([]);
   const [recipientDid, setRecipientDid] = useState("");
@@ -44,28 +46,6 @@ const EducationDetails = () => {
   const popup = useRef<HTMLDivElement | null>(null); 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-
-  useEffect(() => {
-
-    const initWeb5 = async () => {
-      // @ts-ignore
-      const { Web5 } = await import('@web5/api/browser');
-      
-      try {
-        const { web5, did } = await Web5.connect({ 
-          sync: '5s', 
-        });
-        setWeb5(web5);
-        setMyDid(did);
-        console.log(web5);
-      } catch (error) {
-        console.error('Error initializing Web5:', error);
-      }
-    };
-
-    initWeb5();
-    
-}, []);
   
 
 
@@ -76,7 +56,6 @@ const EducationDetails = () => {
   const togglePopup = (userId: string) => {
     usersDetails.map((user) => { 
       if (user.recordId === userId) {
-        console.log(user.name);
         setFormData({
           university: user.university,
           degree: user.degree,
@@ -128,13 +107,11 @@ const fetchEducationDetails = async () => {
         },
       },
     });
-    console.log('Education Details:', response);
 
     if (response.status.code === 200) {
       const educationDetails = await Promise.all(
         response.records.map(async (record) => {
           const data = await record.data.json();
-          console.log(data);
           return {
             ...data,
             recordId: record.id,
@@ -142,7 +119,6 @@ const fetchEducationDetails = async () => {
         })
       );
       setUsersDetails(educationDetails);
-      console.log(educationDetails);
       toast.success('Successfully fetched education details', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
@@ -181,7 +157,6 @@ const shareEducationDetails = async (recordId: string) => {
     if (response.records && response.records.length > 0) {
       const record = response.records[0];
       const { status } = await record.send(recipientDid);
-      console.log('Send record status in shareProfile', status);
       toast.success('Successfully shared education record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
@@ -297,10 +272,8 @@ const deleteEducationDetails = async (recordId) => {
         },
       },
     });
-    console.log(response);
     if (response.records && response.records.length > 0) {
       const record = response.records[0];
-      console.log(record)
       const deleteResult = await web5.dwn.records.delete({
         message: {
           recordId: recordId
@@ -313,10 +286,8 @@ const deleteEducationDetails = async (recordId) => {
           recordId: recordId,
         },
       });
-      console.log(remoteResponse);
       
       if (deleteResult.status.code === 202) {
-        console.log('Education Details deleted successfully');
         toast.success('Education Details deleted successfully', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
@@ -1018,7 +989,7 @@ const deleteEducationDetails = async (recordId) => {
                         </div>
                       </div>
         
-                      <div className="mb-4.5 flex flex-col gap-3">
+                      {/* <div className="mb-4.5 flex flex-col gap-3">
                         <label className="mb-2.5 block text-black dark:text-white">
                         Image
                         </label>
@@ -1069,7 +1040,7 @@ const deleteEducationDetails = async (recordId) => {
                             </p>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
 
                 
                             </div>

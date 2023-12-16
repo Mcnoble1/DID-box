@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useRef, useContext, ChangeEvent, FormEvent } from 'react';
+import { Web5Context } from "../utils/Web5Context";
 import Behance from '../images/social/Behance-1.png';
 import Discord from '../images/social/Discord-1.png';
 import Instagram from '../images/social/Instagram-1.png';
@@ -22,8 +23,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 
 const SocialDetails = () => {
-  const [web5, setWeb5] = useState(null);
-  const [myDid, setMyDid] = useState(null);
+  const { web5, myDid } = useContext( Web5Context);
+
   const [showDetails, setShowDetails] = useState(false);
   const [socialData, setSocialData] = useState<Social[]>([]);
   const [userToDeleteId, setWorkerToDeleteId] = useState<number | null>(null);
@@ -39,28 +40,6 @@ const SocialDetails = () => {
     platform: '',
     url: '',
   });
-
-  useEffect(() => {
-
-    const initWeb5 = async () => {
-      // @ts-ignore
-      const { Web5 } = await import('@web5/api/browser');
-      
-      try {
-        const { web5, did } = await Web5.connect({ 
-          sync: '5s', 
-        });
-        setWeb5(web5);
-        setMyDid(did);
-        console.log(web5);
-      } catch (error) {
-        console.error('Error initializing Web5:', error);
-      }
-    };
-
-    initWeb5();
-    
-}, []);
 
   const popup = useRef<HTMLDivElement | null>(null);
 
@@ -124,13 +103,11 @@ const showDeleteConfirmation = (userId: string) => {
           },
         },
       });
-      console.log('Social Details:', response);
   
       if (response.status.code === 200) {
         const socialDetails = await Promise.all(
           response.records.map(async (record) => {
             const data = await record.data.json();
-            console.log(data);
             return {
               ...data,
               recordId: record.id,
@@ -138,7 +115,6 @@ const showDeleteConfirmation = (userId: string) => {
           })
         );
         setSocialData(socialDetails);
-        console.log(socialDetails);
         toast.success('Successfully fetched social details', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000,
@@ -176,7 +152,6 @@ const showDeleteConfirmation = (userId: string) => {
       if (response.records && response.records.length > 0) {
         const record = response.records[0];
         const { status } = await record.send(recipientDid);
-        console.log('Send record status in shareProfile', status);
         toast.success('Successfully shared social record', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000,
@@ -259,10 +234,8 @@ const showDeleteConfirmation = (userId: string) => {
             },
           },
         });
-        console.log(response);
         if (response.records && response.records.length > 0) {
           const record = response.records[0];
-          console.log(record)
           const deleteResult = await web5.dwn.records.delete({
             message: {
               recordId: recordId
@@ -275,10 +248,8 @@ const showDeleteConfirmation = (userId: string) => {
               recordId: recordId,
             },
           });
-          console.log(remoteResponse);
           
           if (deleteResult.status.code === 202) {
-            console.log('Social Details deleted successfully');
             toast.success('Social Details deleted successfully', {
               position: toast.POSITION.TOP_RIGHT,
               autoClose: 3000, 

@@ -1,54 +1,32 @@
-import React, { useState, useRef, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useRef, useContext } from 'react';
+import { pdfjs, Document, Page } from 'react-pdf';
 import { toast } from 'react-toastify'; 
+import { Web5Context } from "../utils/Web5Context";
 import 'react-toastify/dist/ReactToastify.css'; 
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString();
 const DocumentDetails = () => {
   
-  const [web5, setWeb5] = useState(null);
-  const [myDid, setMyDid] = useState(null);
+  const { web5, myDid } = useContext( Web5Context);
+
 
   const [usersDetails, setUsersDetails] = useState<User[]>([]);
-  const [recipientDid, setRecipientDid] = useState("");
-  const [sharePopupOpen, setSharePopupOpen] = useState(false);
-  const [shareLoading, setShareLoading] = useState(false);
   const [userToDeleteId, setUserToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false)
   const [formData, setFormData] = useState<{ document: File | null }>({
     document: null,
   });
-    // const [imageDataURL, setImageDataURL] = useState<string | null>(null);
 
   const [showDetails, setShowDetails] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const popup = useRef<HTMLDivElement | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-
-    const initWeb5 = async () => {
-      // @ts-ignore
-      const { Web5 } = await import('@web5/api/browser');
-      
-      try {
-        const { web5, did } = await Web5.connect({ 
-          sync: '5s', 
-        });
-        setWeb5(web5);
-        setMyDid(did);
-        console.log(web5);
-      } catch (error) {
-        console.error('Error initializing Web5:', error);
-      }
-    };
-
-    initWeb5();
-    
-}, []);
-  
-const toggleDetails = () => {
-  setShowDetails((prevShowDetails) => !prevShowDetails);
-};
+  const [documentURLs, setDocumentURLs] = useState<string[]>([]);
 
 const fetchDocumentDetails = async () => {
   setFetchDetailsLoading(true);
@@ -62,34 +40,29 @@ const fetchDocumentDetails = async () => {
         },
       },
     });
-    console.log('Document Details:', response);
 
-    if (response.status.code === 200) {
-      const documentDetails = await Promise.all(
-        response.records.map(async (record) => {
-          const data = await record.data.json();
-          console.log(data);
-          return {
-            ...data,
-            recordId: record.id,
-          };
-        })
-      );
-      setUsersDetails(documentDetails);
-      console.log(documentDetails);
-      toast.success('Successfully fetched document details', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-      setFetchDetailsLoading(false);
-    } else {
-      console.error('No document details found');
-      toast.error('Failed to fetch document details', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-    }
+  response.records.forEach( async (documentRec) => {
+  // Get the blob of the document data
+  const documentId = documentRec.id;
+    const {record, status }= await web5.dwn.records.read({
+      message: {
+        filter: {
+          recordId: documentId,
+         },
+      },
+    });
+
+  const documentResult = await record.data.blob();
+  const documentURL = URL.createObjectURL(documentResult);
+  setDocumentURLs(prevDocumentURLs => [...prevDocumentURLs, documentURL]);
+  });
+  toast.success('Successfully fetched document details', {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: 3000,
+  });
+
     setFetchDetailsLoading(false);
+
   } catch (err) {
     console.error('Error in fetchDocumentDetails:', err);
     toast.error('Error in fetchDocumentDetails. Please try again later.', {
@@ -101,47 +74,8 @@ const fetchDocumentDetails = async () => {
 };
 
 
-const shareDocumentDetails = async (recordId: string) => {
-  setShareLoading(true);
-  try {
-    const response = await web5.dwn.records.query({
-      message: {
-        filter: {
-          recordId: recordId,
-        },
-      },
-    });
-
-    if (response.records && response.records.length > 0) {
-      const record = response.records[0];
-      const { status } = await record.send(recipientDid);
-      console.log('Send record status in shareDocument', status);
-      toast.success('Successfully shared document record', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-      setShareLoading(false);
-      setSharePopupOpen(false);
-    } else {
-      console.error('No record found with the specified ID');
-      toast.error('Failed to share document record', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-    }
-    setShareLoading(false);
-  } catch (err) {
-    console.error('Error in shareProfile:', err);
-    toast.error('Error in shareProfile. Please try again later.', {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 5000,
-    });
-    setShareLoading(false);
-  }
-};
-
-const showDeleteConfirmation = (userId: string) => {
-    setUserToDeleteId(userId);
+const showDeleteConfirmation = (documentId: string) => {
+    setUserToDeleteId(documentId);
     setDeleteConfirmationVisible(true);
   };
 
@@ -160,10 +94,8 @@ const deleteDocumentDetails = async (recordId) => {
         },
       },
     });
-    console.log(response);
     if (response.records && response.records.length > 0) {
       const record = response.records[0];
-      console.log(record)
       const deleteResult = await web5.dwn.records.delete({
         message: {
           recordId: recordId
@@ -176,10 +108,8 @@ const deleteDocumentDetails = async (recordId) => {
           recordId: recordId,
         },
       });
-      console.log(remoteResponse);
       
       if (deleteResult.status.code === 202) {
-        console.log('Document Details deleted successfully');
         toast.success('Document Details deleted successfully', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
@@ -200,6 +130,7 @@ const deleteDocumentDetails = async (recordId) => {
   }
 };
 
+// deleteDocumentDetails("bafyreie7tqntvzj5azpomhx5xqzoccs2ejk3773gg52cyffajbawo3sdjy");
 
   return (
     <div className="lg:mx-5 flex flex-col rounded-lg border break-words border-stroke bg-white p-10 shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -216,29 +147,21 @@ const deleteDocumentDetails = async (recordId) => {
          <>Fetch Documents</>
        )}           
      </button>
-     <div className="relative">
-       <button
-         onClick={toggleDetails}
-         className="inline-flex items-center justify-center rounded-full bg-primary py-3 px-5 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-       >
-         {showDetails ? 'Hide Details' : 'Show Details'}
-       </button>
-     </div>
    </div>
-   {usersDetails.length > 0 ? (
-     <div className="flex flex-row flex-wrap justify-evenly gap-2">
-     {usersDetails.map((user, index) => (
-     <div className="flex flex-wrap w-full" key={index}>
-      <div className='w-1/2 mb-5'>
-         <h4 className="text-xl mt-1 font-medium text-black dark:text-white">
-           {showDetails ? user.document : '********'}
-         </h4>
-       </div>
-
-       <div className='w-full flex flex-row justify-evenly mb-5'>
+   {documentURLs.length > 0 ? (
+     <div className="flex flex-col lg:flex-row flex-wrap">
+     {documentURLs.map((document, index) => (
+     <div className="flex w-full lg:w-2/5" key={index}>
+      <div className='mb-5'>
+        <div>
+          <Document file={document}>
+            <Page pageNumber={1} />
+          </Document>
+        </div>
+        <div className='w-full flex flex-row justify-evenly mb-5'>
          <div className="relative">
            <button
-             onClick={() => showDeleteConfirmation(user.recordId)}
+             onClick={() => showDeleteConfirmation(document.recordId)}
              className="inline-flex items-center justify-center rounded-full bg-danger py-3 px-7 text-center font-medium text-white hover-bg-opacity-90 lg:px-8 xl:px-10"
            >
              Delete
@@ -257,7 +180,7 @@ const deleteDocumentDetails = async (recordId) => {
                    <button
                      onClick={() => {
                        hideDeleteConfirmation();
-                       deleteDocumentDetails(user.recordId);
+                       deleteDocumentDetails(document.recordId);
                      }}
                      className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
                    >
@@ -268,6 +191,7 @@ const deleteDocumentDetails = async (recordId) => {
              </div>
            )}
          </div>
+       </div>
        </div>
      </div>
      ))}
