@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Health from './pages/Health';
 import Education from './pages/Education';
+import Chat from './pages/Chat';
 import Professional from './pages/Professional';
 import Social from './pages/Social';
 import Letters from './pages/Letters';
@@ -34,6 +35,7 @@ function App() {
         <Route path="/homepage" index element={<Homepage />} />
         <Route path="/health" element={<Health />} />
         <Route path="/social" element={<Social />} />
+        <Route path="/chat" element={<Chat />} />
         <Route path="/education" element={<Education />} />
         <Route path="/letters" element={<Letters />} />
         <Route path="/professional" element={<Professional />} /> 

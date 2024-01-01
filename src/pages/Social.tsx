@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import SocialCard from '../components/SocialCard.tsx';
-import DidCard from '../components/DidCard.tsx';
 import SocialDetails from '../components/SocialDetails.tsx';
 
 const Social = () => {
@@ -18,7 +17,6 @@ const Social = () => {
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <div className="flex flex-row flex-wrap justify-evenly gap-5 md:gap-0">
                 <SocialCard />
-                <DidCard />
               </div>
 
               <div className="mt-4">

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Sidebar from '../../components/Sidebar.tsx';
 import Header from '../../components/Header.tsx';
 import DocumentCard from '../../components/DocumentCard.tsx';
-import DidCard from '../../components/DidCard.tsx';
 import DocumentDetails from '../../components/DocumentDetails.tsx';
 
 const Documents = () => {
@@ -18,7 +17,6 @@ const Documents = () => {
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <div className="flex flex-row flex-wrap justify-evenly gap-5 md:gap-0">
                 <DocumentCard />
-                <DidCard />
               </div>
 
               <div className="mt-4">
