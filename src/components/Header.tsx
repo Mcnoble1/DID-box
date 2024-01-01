@@ -1,10 +1,25 @@
-
+import { useState, useContext } from 'react';
 import DropdownUser from './DropdownUser';
+import { Web5Context } from "../utils/Web5Context.tsx";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 const Header = (props: {
   sidebarOpen: string | boolean | undefined;
   setSidebarOpen: (arg0: boolean) => void;
 }) => {
+
+  const { web5, myDid } = useContext( Web5Context);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(myDid);
+    setIsCopied(true);
+
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 3000);
+  };
 
   return (
     <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
@@ -63,7 +78,26 @@ const Header = (props: {
         </div>
 
         <div className="flex items-center gap-3 2xsm:gap-7">
-          <DropdownUser />
+        <div className="text-[#213960] inline-flex space-x-3 items-end justify-between">
+                  <span>{myDid?.slice(0, 20) + "..." + myDid?.slice(-8)}</span>
+                  <button
+                    className="flex gap-2"
+                    onClick={handleCopy}
+                    type="button"
+                  >
+                   <FontAwesomeIcon icon={faCopy} style={{color: "#213960",}} />
+                    <div>
+                      {isCopied ? (
+                        <p className="bg-primary text-sm text-white p-1 rounded-3xl">
+                          Copied!
+                        </p>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </button>
+                </div>
+          {/* <DropdownUser /> */}
         </div>
       </div>
     </header>

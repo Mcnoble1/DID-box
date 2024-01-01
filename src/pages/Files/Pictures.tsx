@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Sidebar from '../../components/Sidebar.tsx';
 import Header from '../../components/Header.tsx';
 import PictureCard from '../../components/PictureCard.tsx';
-import DidCard from '../../components/DidCard.tsx';
 import PictureDetails from '../../components/PictureDetails.tsx';
 
 const Pictures = () => {
@@ -18,7 +17,6 @@ const Pictures = () => {
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <div className="flex flex-row flex-wrap justify-evenly gap-5 md:gap-0">
                 <PictureCard />
-                <DidCard />
               </div>
 
               <div className="mt-4">

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Sidebar from '../../components/Sidebar.tsx';
 import Header from '../../components/Header.tsx';
 import VideoCard from '../../components/VideoCard.tsx';
-import DidCard from '../../components/DidCard.tsx';
 import VideoDetails from '../../components/VideoDetails.tsx';
 
 const Videos = () => {
@@ -18,7 +17,6 @@ const Videos = () => {
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <div className="flex flex-row flex-wrap justify-evenly gap-5 md:gap-0">
                 <VideoCard />
-                <DidCard />
               </div>
 
               <div className="mt-4">

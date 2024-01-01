@@ -253,18 +253,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li> */}
 
-              {/* <li>
+              <li>
                 <NavLink
-                  to="/financial"
+                  to="/chat"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:border-r-4 border-fuchsia-600 dark:hover:bg-meta-4 ${
-                    pathname.includes('financial') &&
+                    pathname.includes('chat') &&
                     'border-r-4 dark:bg-meta-4'
                   }`}
                 >
-                  <FontAwesomeIcon icon={faUserGroup} style={{color: "#fcfcfc",}} />
-                  Financial
+                  <FontAwesomeIcon icon={faBook} style={{color: "#fcfcfc",}} />
+                  Chat
                 </NavLink>
-              </li> */}
+              </li>
 
               <li>
                 <NavLink
