@@ -1,15 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import Breadcrumb from '../components/Breadcrumb';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import { Web5Context } from "../utils/Web5Context.tsx";
+import { useNavigate } from 'react-router-dom'; 
 
 
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { web5, myDid, userType } = useContext( Web5Context);
+  const navigate = useNavigate();
 
-  const [web5, setWeb5] = useState(null);
-  const [myDid, setMyDid] = useState(null);
   const [activeRecipient, setActiveRecipient] = useState(null);
 
   const [receivedDings, setReceivedDings] = useState([]);
@@ -206,16 +208,40 @@ export default function Home() {
     }
   };
 
+  const shareHealthDetails = () => {
+    setActiveRecipient(recipientDid);
+    setActiveRecipient(recipientDid);
+    setShowNewChatInput(false);
+    if (!groupedDings[recipientDid]) {
+      groupedDings[recipientDid] = [];
+    }
+  };
+
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
       <div className="flex h-screen overflow-hidden">
-        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
           <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <div className="mb-6 flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <Breadcrumb pageName="Chat" />   
+                <Breadcrumb pageName="Chat" />
+                <div>
+                  {/* {userType === 'patient' ? (
+                    <button 
+                    onClick={shareHealthDetails}
+                    className="inline-flex mr-5 items-center justify-center rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                      Share Record
+                  </button>
+                  ) : (
+                    <button 
+                    onClick={() => navigate('/doctor/patient/:id')}                      
+                    className="inline-flex mr-5 items-center justify-center rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                      View Record
+                  </button>
+                  )}                 */}
+                </div>    
               </div>
               <div className="flex flex-col gap-10">
                 
@@ -252,30 +278,6 @@ export default function Home() {
                               <div className="w-full">
                                   <h5 className="text-sm font-medium text-black dark:text-white">Mariya Desoja</h5>
                                   <p className="text-sm">I like your confidence 💪</p>
-                              </div>
-                            </div>
-                            <div className="flex cursor-pointer items-center rounded py-2 px-4 hover:bg-gray-2 dark:hover:bg-strokedark">
-                              <div className="relative mr-3.5 h-11 w-full max-w-11 rounded-full">
-                                <img src="/assets/user-05-d5425ed5.png" alt="profile" className="h-full w-full object-cover object-center"/><span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-gray-2 bg-success"></span></div>
-                              <div className="w-full">
-                                  <h5 className="text-sm font-medium text-black dark:text-white">Robert Jhon</h5>
-                                  <p className="text-sm">Can you share your offer?</p>
-                              </div>
-                            </div>
-                            <div className="flex cursor-pointer items-center rounded py-2 px-4 hover:bg-gray-2 dark:hover:bg-strokedark">
-                              <div className="relative mr-3.5 h-11 w-full max-w-11 rounded-full">
-                                <img src="/assets/user-01-b007ff3f.png" alt="profile" className="h-full w-full object-cover object-center"/><span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-gray-2 bg-success"></span></div>
-                              <div className="w-full">
-                                  <h5 className="text-sm font-medium text-black dark:text-white">Cody Fisher</h5>
-                                  <p className="text-sm">I'm waiting for you response!</p>
-                              </div>
-                            </div>
-                            <div className="flex cursor-pointer items-center rounded py-2 px-4 hover:bg-gray-2 dark:hover:bg-strokedark">
-                              <div className="relative mr-3.5 h-11 w-full max-w-11 rounded-full">
-                                <img src="/assets/user-02-5a304001.png" alt="profile" className="h-full w-full object-cover object-center"/><span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-gray-2 bg-success"></span></div>
-                              <div className="w-full">
-                                  <h5 className="text-sm font-medium text-black dark:text-white">Jenny Wilson</h5>
-                                  <p className="text-sm">I cam across your profile and...</p>
                               </div>
                             </div>
                         </div>
@@ -328,32 +330,6 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="no-scrollbar max-h-full space-y-3.5 overflow-auto px-6 py-7.5">
-                        <div className="max-w-125">
-                            <p className="mb-2.5 text-sm font-medium">Andri Thomas</p>
-                            <div className="mb-2.5 rounded-2xl rounded-tl-none bg-gray py-3 px-5 dark:bg-boxdark-2">
-                              <p>I want to make an appointment tomorrow from 2:00 to 5:00pm?</p>
-                            </div>
-                            <p className="text-xs">1:55pm</p>
-                        </div>
-                        <div className="ml-auto max-w-125">
-                            <div className="mb-2.5 rounded-2xl rounded-br-none bg-primary py-3 px-5">
-                              <p className="text-white">Hello, Thomas! I will check the schedule and inform you</p>
-                            </div>
-                            <p className="text-right text-xs">1:55pm</p>
-                        </div>
-                        <div className="max-w-125">
-                            <p className="mb-2.5 text-sm font-medium">Andri Thomas</p>
-                            <div className="mb-2.5 rounded-2xl rounded-tl-none bg-gray py-3 px-5 dark:bg-boxdark-2">
-                              <p>Ok, Thanks for your reply.</p>
-                            </div>
-                            <p className="text-xs">1:55pm</p>
-                        </div>
-                        <div className="ml-auto max-w-125">
-                            <div className="mb-2.5 rounded-2xl rounded-br-none bg-primary py-3 px-5">
-                              <p className="text-white">You are welcome!</p>
-                            </div>
-                            <p className="text-right text-xs">1:55pm</p>
-                        </div>
                         <div className="max-w-125">
                             <p className="mb-2.5 text-sm font-medium">Andri Thomas</p>
                             <div className="mb-2.5 rounded-2xl rounded-tl-none bg-gray py-3 px-5 dark:bg-boxdark-2">
