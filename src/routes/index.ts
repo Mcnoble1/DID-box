@@ -4,6 +4,7 @@ const Pictures = lazy(() => import('../pages/Files/Pictures'));
 const Videos = lazy(() => import('../pages/Files/Videos'));
 const Documents = lazy(() => import('../pages/Files/Documents'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
+const Credentials = lazy(() => import('../pages/Credentials'));
 const Chat = lazy(() => import('../pages/Chat'));
 const Education = lazy(() => import('../pages/Education'));
 const Letters = lazy(() => import('../pages/Letters'));
@@ -18,6 +19,11 @@ const coreRoutes = [
     path: '/dashboard', 
     title: 'Dashboard',
     component: Dashboard, 
+  },
+  {
+    path: '/credentials', 
+    title: 'Credentials',
+    component: Credentials, 
   },
   {
     path: '/chat', 
