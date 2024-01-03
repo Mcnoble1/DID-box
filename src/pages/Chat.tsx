@@ -9,13 +9,13 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { web5, myDid, userType } = useContext( Web5Context);
+  const { web5, myDid, profileProtocolDefinition } = useContext( Web5Context);
   const navigate = useNavigate();
 
   const [activeRecipient, setActiveRecipient] = useState(null);
 
-  const [receivedDings, setReceivedDings] = useState([]);
-  const [sentDings, setSentDings] = useState([]);
+  const [receivedChats, setReceivedChats] = useState([]);
+  const [sentChats, setSentChats] = useState([]);
 
   const [noteValue, setNoteValue] = useState("");
   const [errorMessage, setErrorMessage] = useState('');
@@ -24,83 +24,35 @@ export default function Home() {
   const [didCopied, setDidCopied] = useState(false);
   const [showNewChatInput, setShowNewChatInput] = useState(false);
 
-  const allDings = [...receivedDings, ...sentDings];
+  const allChats = [...receivedChats, ...sentChats];
 
-  const sortedDings = allDings.sort(
+  const sortedChats = allChats.sort(
     (a, b) => new Date(a.timestampWritten) - new Date(b.timestampWritten)
   );
 
-  const groupedDings = allDings.reduce((acc, ding) => {
+  const groupedChats = allChats.reduce((acc, ding) => {
     const recipient = ding.sender === myDid ? ding.recipient : ding.sender;
     if (!acc[recipient]) acc[recipient] = [];
-    acc[recipient].push(ding);
+    acc[recipient].push(chat);
     return acc;
   }, {});
 
   useEffect(() => {
-    const initWeb5 = async () => {
-      const { web5, did } = await Web5.connect();
-      setWeb5(web5);
-      setMyDid(did);
-
-      if (web5 && did) {
-        await configureProtocol(web5);
-        await fetchDings(web5, did);
+      if (web5 && myDid) {
+         fetchChats();
       }
-    };
-    initWeb5();
   }, []);
 
   useEffect(() => {
     if (!web5 || !myDid) return;
     const intervalId = setInterval(async () => {
-      await fetchDings(web5, myDid);
+      await fetchChats();
     }, 2000);
 
     return () => clearInterval(intervalId);
   }, [web5, myDid]);
 
-  const configureProtocol = async (web5) => {
-    const dingerProtocolDefinition = {
-      protocol: "https://blackgirlbytes.dev/dinger-chat-protocol",
-      published: true,
-      types: {
-        ding: {
-          schema: "https://blackgirlbytes.dev/ding",
-          dataFormats: ["application/json"],
-        },
-      },
-      structure: {
-        ding: {
-          $actions: [
-            { who: "anyone", can: "write" },
-            { who: "author", of: "ding", can: "read" },
-            { who: "recipient", of: "ding", can: "read" },
-          ],
-        },
-      },
-    };
-
-    const { protocols, status: protocolStatus } =
-      await web5.dwn.protocols.query({
-        message: {
-          filter: {
-            protocol: "https://blackgirlbytes.dev/dinger-chat-protocol",
-          },
-        },
-      });
-
-    if (protocolStatus.code !== 200 || protocols.length === 0) {
-      const { protocolStatus } = await web5.dwn.protocols.configure({
-        message: {
-          definition: dingerProtocolDefinition,
-        },
-      });
-      console.log("Configure protocol status", protocolStatus);
-    }
-  };
-
-  const constructDing = () => {
+  const constructChat = () => {
     const currentDate = new Date().toLocaleDateString();
     const currentTime = new Date().toLocaleTimeString();
     const ding = {
@@ -112,13 +64,14 @@ export default function Home() {
     return ding;
   };
 
-  const writeToDwn = async (ding) => {
+  const writeToDwn = async (chat) => {
+    const chatProtocol = profileProtocolDefinition;
     const { record } = await web5.dwn.records.write({
-      data: ding,
+      data: chat,
       message: {
-        protocol: "https://blackgirlbytes.dev/dinger-chat-protocol",
-        protocolPath: "ding",
-        schema: "https://blackgirlbytes.dev/ding",
+        protocol: chatProtocol.protocol,
+        protocolPath: "chat",
+        schema: chatProtocol.types.chat.schema,
         recipient: recipientDid,
       },
     });
@@ -137,36 +90,21 @@ export default function Home() {
       return;
     }
 
-    const ding = constructDing();
-    const record = await writeToDwn(ding);
+    const chat = constructChat();
+    const record = await writeToDwn(chat);
     const { status } = await sendRecord(record);
 
     console.log("Send record status", status);
 
-    await fetchDings(web5, myDid);
+    await fetchChats();
   };
 
-  const handleCopyDid = async () => {
-    if (myDid) {
-      try {
-        await navigator.clipboard.writeText(myDid);
-        setDidCopied(true);
-
-        setTimeout(() => {
-          setDidCopied(false);
-        }, 3000);
-      } catch (err) {
-        console.log("Failed to copy DID: " + err);
-      }
-    }
-  };
-
-  const fetchDings = async (web5, did) => {
+  const fetchChats = async () => {
     const { records, status: recordStatus } = await web5.dwn.records.query({
       message: {
         filter: {
-          protocol: "https://blackgirlbytes.dev/dinger-chat-protocol",
-          protocolPath: "ding",
+          protocol: "https://did-box.com",
+          protocolPath: "chat",
         },
         dateSort: "createdAscending",
       },
@@ -180,8 +118,8 @@ export default function Home() {
       if (recordStatus.code == 200) {
         const received = results.filter((result) => result?.recipient === did);
         const sent = results.filter((result) => result?.sender === did);
-        setReceivedDings(received);
-        setSentDings(sent);
+        setReceivedChats(received);
+        setSentChats(sent);
       }
     } catch (error) {
       console.error(error);
@@ -203,8 +141,8 @@ export default function Home() {
     setActiveRecipient(recipientDid);
     setActiveRecipient(recipientDid);
     setShowNewChatInput(false);
-    if (!groupedDings[recipientDid]) {
-      groupedDings[recipientDid] = [];
+    if (!groupedChats[recipientDid]) {
+      groupedChats[recipientDid] = [];
     }
   };
 
@@ -212,8 +150,8 @@ export default function Home() {
     setActiveRecipient(recipientDid);
     setActiveRecipient(recipientDid);
     setShowNewChatInput(false);
-    if (!groupedDings[recipientDid]) {
-      groupedDings[recipientDid] = [];
+    if (!groupedChats[recipientDid]) {
+      groupedChats[recipientDid] = [];
     }
   };
 
@@ -226,22 +164,7 @@ export default function Home() {
           <main>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               <div className="mb-6 flex flex-row gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <Breadcrumb pageName="Chat" />
-                <div>
-                  {/* {userType === 'patient' ? (
-                    <button 
-                    onClick={shareHealthDetails}
-                    className="inline-flex mr-5 items-center justify-center rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
-                      Share Record
-                  </button>
-                  ) : (
-                    <button 
-                    onClick={() => navigate('/doctor/patient/:id')}                      
-                    className="inline-flex mr-5 items-center justify-center rounded-full bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
-                      View Record
-                  </button>
-                  )}                 */}
-                </div>    
+                <Breadcrumb pageName="Chat" />   
               </div>
               <div className="flex flex-col gap-10">
                 
@@ -270,14 +193,6 @@ export default function Home() {
                               <div className="w-full">
                                   <h5 className="text-sm font-medium text-black dark:text-white">Henry Dholi</h5>
                                   <p className="text-sm">I cam across your profile and...</p>
-                              </div>
-                            </div>
-                            <div className="flex cursor-pointer items-center rounded py-2 px-4 hover:bg-gray-2 dark:hover:bg-strokedark">
-                              <div className="relative mr-3.5 h-11 w-full max-w-11 rounded-full">
-                                <img src="/assets/user-04-04f11146.png" alt="profile" className="h-full w-full object-cover object-center"/><span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-gray-2 bg-success"></span></div>
-                              <div className="w-full">
-                                  <h5 className="text-sm font-medium text-black dark:text-white">Mariya Desoja</h5>
-                                  <p className="text-sm">I like your confidence 💪</p>
                               </div>
                             </div>
                         </div>
@@ -340,19 +255,6 @@ export default function Home() {
                         <div className="ml-auto max-w-125">
                             <div className="mb-2.5 rounded-2xl rounded-br-none bg-primary py-3 px-5">
                               <p className="text-white">Hello, Thomas! I will check the schedule and inform you</p>
-                            </div>
-                            <p className="text-right text-xs">1:55pm</p>
-                        </div>
-                        <div className="max-w-125">
-                            <p className="mb-2.5 text-sm font-medium">Andri Thomas</p>
-                            <div className="mb-2.5 rounded-2xl rounded-tl-none bg-gray py-3 px-5 dark:bg-boxdark-2">
-                              <p>Ok, Thanks for your reply.</p>
-                            </div>
-                            <p className="text-xs">1:55pm</p>
-                        </div>
-                        <div className="ml-auto max-w-125">
-                            <div className="mb-2.5 rounded-2xl rounded-br-none bg-primary py-3 px-5">
-                              <p className="text-white">You are welcome!</p>
                             </div>
                             <p className="text-right text-xs">1:55pm</p>
                         </div>
