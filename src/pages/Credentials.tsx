@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef, useContext, FormEvent, ChangeEvent } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import PersonalDetails from '../components/PersonalDetails.tsx';
+import CredentialsDetails from '../components/CredentialsDetails.tsx';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 import { Web5Context } from "../utils/Web5Context";
 import Image from '../images/user/1.png';
 import '../pages/signin.css';
 
-const Dashboard = () => {
+const Credentials = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { web5, myDid, profileProtocolDefinition } = useContext( Web5Context);
   const [usersDetails, setUsersDetails] = useState<User[]>([]);
@@ -78,7 +78,7 @@ const closePopup = (userId: string) => {
 
 useEffect(() => {
   if (web5 && myDid) {
-  fetchPersonalDetails();
+  fetchCredentialsDetails();
   }
 }, [web5, myDid]);
 
@@ -159,12 +159,12 @@ const handleAddProfile = async (e: FormEvent) => {
       const { status } = await record.send(myDid);
       console.log("Send record status in handleAddProfile", status);
     } else {
-      toast.error('Failed to create personal record', {
+      toast.error('Failed to create Credentials record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000, 
         });
         setLoading(false);
-      throw new Error('Failed to create personal record');       
+      throw new Error('Failed to create Credentials record');       
     }
 
     setFormData({
@@ -180,10 +180,10 @@ const handleAddProfile = async (e: FormEvent) => {
       maidenName: '',
       // image: null,
     });
-    fetchPersonalDetails();
+    fetchCredentialsDetails();
 
     setPopupOpen(false);
-    toast.success('Successfully created personal record', {
+    toast.success('Successfully created Credentials record', {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 3000, 
     });
@@ -201,13 +201,13 @@ const handleAddProfile = async (e: FormEvent) => {
 
    const writeProfileToDwn = async (profileData) => {
     try {
-      const personalProtocol = profileProtocolDefinition;
+      const CredentialsProtocol = profileProtocolDefinition;
       const { record, status } = await web5.dwn.records.write({
         data: profileData,
         message: {
-          protocol: personalProtocol.protocol,
-          protocolPath: 'personalDetails',
-          schema: personalProtocol.types.personalDetails.schema,
+          protocol: CredentialsProtocol.protocol,
+          protocolPath: 'CredentialsDetails',
+          schema: CredentialsProtocol.types.CredentialsDetails.schema,
           recipient: myDid,
         },
       });
@@ -215,37 +215,37 @@ const handleAddProfile = async (e: FormEvent) => {
       if (status === 200) {
         return { ...profileData, recordId: record.id}
       } 
-      console.log('Successfully wrote personal details to DWN:', record);
-      toast.success('Personal Details written to DWN', {
+      console.log('Successfully wrote Credentials details to DWN:', record);
+      toast.success('Credentials Details written to DWN', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000, 
       });
       return record;
     } catch (err) {
-      console.error('Failed to write personal details to DWN:', err);
-      toast.error('Failed to write personal details to DWN. Please try again later.', {
+      console.error('Failed to write Credentials details to DWN:', err);
+      toast.error('Failed to write Credentials details to DWN. Please try again later.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
     }
    }; 
 
-   const fetchPersonalDetails = async () => {
+   const fetchCredentialsDetails = async () => {
     try {
       const response = await web5.dwn.records.query({
         from: myDid,
         message: {
           filter: {
               protocol: 'https://did-box.com',
-              protocolPath: 'personalDetails',
-              // schema: 'https://did-box.com/schemas/personalDetails',
+              protocolPath: 'CredentialsDetails',
+              // schema: 'https://did-box.com/schemas/CredentialsDetails',
           },
         },
       });
-      console.log('Personal Details:', response);
+      console.log('Credentials Details:', response);
   
       if (response.status.code === 200) {
-        const personalDetails = await Promise.all(
+        const CredentialsDetails = await Promise.all(
           response.records.map(async (record) => {
             const data = await record.data.json();
             console.log(data);
@@ -255,29 +255,29 @@ const handleAddProfile = async (e: FormEvent) => {
             };
           })
         );
-        setUsersDetails(personalDetails);
-        console.log(personalDetails);
-        toast.success('Successfully fetched personal details', {
+        setUsersDetails(CredentialsDetails);
+        console.log(CredentialsDetails);
+        toast.success('Successfully fetched Credentials details', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000,
         });
       } else {
-        console.error('No personal details found');
-        toast.error('Failed to fetch personal details', {
+        console.error('No Credentials details found');
+        toast.error('Failed to fetch Credentials details', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000,
         });
       }
     } catch (err) {
-      console.error('Error in fetchPersonalDetails:', err);
-      toast.error('Error in fetchPersonalDetails. Please try again later.', {
+      console.error('Error in fetchCredentialsDetails:', err);
+      toast.error('Error in fetchCredentialsDetails. Please try again later.', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 5000,
       });
     };
   };
   
-const sharePersonalDetails = async (recordId: string) => {
+const shareCredentialsDetails = async (recordId: string) => {
   setShareLoading(true);
   try {
     const response = await web5.dwn.records.query({
@@ -292,7 +292,7 @@ const sharePersonalDetails = async (recordId: string) => {
       const record = response.records[0];
       const { status } = await record.send(recipientDid);
       console.log('Send record status in shareProfile', status);
-      toast.success('Successfully shared personal record', {
+      toast.success('Successfully shared Credentials record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
@@ -300,7 +300,7 @@ const sharePersonalDetails = async (recordId: string) => {
       setSharePopupOpen(false);
     } else {
       console.error('No record found with the specified ID');
-      toast.error('Failed to share personal record', {
+      toast.error('Failed to share Credentials record', {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
@@ -326,7 +326,7 @@ const showDeleteConfirmation = (userId: string) => {
     setDeleteConfirmationVisible(false);
   };
 
-  const updatePersonalDetails = async (recordId, data) => {
+  const updateCredentialsDetails = async (recordId, data) => {
     setUpdateLoading(true);
   try {
     const response = await web5.dwn.records.query({
@@ -342,11 +342,11 @@ const showDeleteConfirmation = (userId: string) => {
       const updateResult = await record.update({data: data});
       togglePopup(recordId)
       if (updateResult.status.code === 202) {
-        toast.success('Personal Details updated successfully.', {
+        toast.success('Credentials Details updated successfully.', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
         });
-        setUsersDetails(prevPersonalDetails => prevPersonalDetails.map(message => message.recordId === recordId ? { ...message, ...data } : message));
+        setUsersDetails(prevCredentialsDetails => prevCredentialsDetails.map(message => message.recordId === recordId ? { ...message, ...data } : message));
         setUpdateLoading(false);
       } else {
         console.error('Error updating message:', updateResult.status);
@@ -364,8 +364,8 @@ const showDeleteConfirmation = (userId: string) => {
       });
     }
   } catch (error) {
-    console.error('Error in updatePersonalDetail:', error);
-    toast.error('Error in updatePersonalDetail:', {
+    console.error('Error in updateCredentialsDetail:', error);
+    toast.error('Error in updateCredentialsDetail:', {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 3000, 
     });
@@ -374,7 +374,7 @@ const showDeleteConfirmation = (userId: string) => {
 };
 
 
-const deletePersonalDetails = async (recordId) => {
+const deleteCredentialsDetails = async (recordId) => {
   try {
     const response = await web5.dwn.records.query({
       message: {
@@ -402,12 +402,12 @@ const deletePersonalDetails = async (recordId) => {
       console.log(remoteResponse);
       
       if (deleteResult.status.code === 202) {
-        console.log('Personal Details deleted successfully');
-        toast.success('Personal Details deleted successfully', {
+        console.log('Credentials Details deleted successfully');
+        toast.success('Credentials Details deleted successfully', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 3000, 
         });
-        setUsersDetails(prevPersonalDetails => prevPersonalDetails.filter(message => message.recordId !== recordId));
+        setUsersDetails(prevCredentialsDetails => prevCredentialsDetails.filter(message => message.recordId !== recordId));
       } else {
         console.error('Error deleting record:', deleteResult.status);
         toast.error('Error deleting record:', {
@@ -419,7 +419,7 @@ const deletePersonalDetails = async (recordId) => {
       // console.error('No record found with the specified ID');
     }
   } catch (error) {
-    console.error('Error in deletePersonalDetails:', error);
+    console.error('Error in deleteCredentialsDetails:', error);
   }
 };
 
@@ -437,7 +437,7 @@ const deletePersonalDetails = async (recordId) => {
               <div className="w-full flex justify-between rounded-lg border border-stroke bg-white py-7.5 px-7.5 shadow-default dark:border-strokedark dark:bg-boxdark">
                 <div className="">
                     <h4 className="text-2xl font-bold text-black dark:text-white">
-                      Personal Details
+                      Credentials Details
                     </h4>
                     <button
                       ref={trigger}
@@ -455,7 +455,7 @@ const deletePersonalDetails = async (recordId) => {
                               style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'scroll' }}
                             >
                               <div className="flex flex-row justify-between">
-                                <h2 className="text-xl font-semibold mb-4">Add Personal Details</h2>
+                                <h2 className="text-xl font-semibold mb-4">Add Credentials Details</h2>
                                 <div className="flex justify-end">
                                   <button
                                     onClick={() => setPopupOpen(false)} 
@@ -867,7 +867,7 @@ const deletePersonalDetails = async (recordId) => {
                       data-wow-delay=".15s
                       ">        
                         <div className="flex flex-row justify-between ">
-                          <h2 className="text-xl font-semibold mb-4">Share Personal Details</h2>
+                          <h2 className="text-xl font-semibold mb-4">Share Credentials Details</h2>
                           <div className="flex justify-end">
                             <button
                               onClick={() => setSharePopupOpen(false)}
@@ -918,7 +918,7 @@ const deletePersonalDetails = async (recordId) => {
                       <div className="w-full px-4">
                         <button 
                           type="button"
-                          onClick={() => sharePersonalDetails(user.recordId)}
+                          onClick={() => shareCredentialsDetails(user.recordId)}
                           disabled={shareLoading}
                           className="rounded-lg bg-primary py-4 px-9 text-base font-medium text-white transition duration-300 ease-in-out hover:bg-opacity-80 hover:shadow-signUp">
                           {shareLoading ? (
@@ -1240,7 +1240,7 @@ const deletePersonalDetails = async (recordId) => {
                       </form>
                         <button
                           type="button"
-                          onClick={() => updatePersonalDetails(user.recordId, formData)}
+                          onClick={() => updateCredentialsDetails(user.recordId, formData)}
                           disabled={updateLoading}
                           className={`mr-5 mb-5 inline-flex items-center justify-center gap-2.5 rounded-full bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 ${updateLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
@@ -1279,7 +1279,7 @@ const deletePersonalDetails = async (recordId) => {
                     <button
                       onClick={() => {
                         hideDeleteConfirmation();
-                        deletePersonalDetails(user.recordId);
+                        deleteCredentialsDetails(user.recordId);
                       }}
                       className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
                     >
@@ -1297,7 +1297,7 @@ const deletePersonalDetails = async (recordId) => {
       ) : (
         <div className="flex items-center justify-center h-48">
           <div className="text-md font-medium text-gray-500 dark:text-gray-400">
-            No Details yet
+            No Credentials yet
           </div>
         </div>
       )}
@@ -1311,4 +1311,4 @@ const deletePersonalDetails = async (recordId) => {
   );
 };
 
-export default Dashboard;
+export default Credentials;

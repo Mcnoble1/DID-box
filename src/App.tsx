@@ -8,6 +8,7 @@ import Professional from './pages/Professional';
 import Social from './pages/Social';
 import Letters from './pages/Letters';
 import Dashboard from './pages/Dashboard';
+import Credentials from './pages/Credentials';
 import Pictures from './pages/Files/Pictures';
 import Videos from './pages/Files/Videos';
 import Documents from './pages/Files/Documents';
@@ -40,6 +41,7 @@ function App() {
         <Route path="/letters" element={<Letters />} />
         <Route path="/professional" element={<Professional />} /> 
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/credentials" element={<Credentials />} />
         <Route path="/files/pictures" element={<Pictures />} />
         <Route path="/files/videos" element={<Videos />} />
         <Route path="/files/documents" element={<Documents />} />

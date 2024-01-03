@@ -23,7 +23,6 @@ const Professional = () => {
   const [userToDeleteId, setUserToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
-  const [fetchDetailsLoading, setFetchDetailsLoading] = useState(false)
   const [popupOpenMap, setPopupOpenMap] = useState<{ [key: number]: boolean }>({});
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [formData, setFormData] = useState<{ name: string; company: string; bio: string; role: string; startDate: string; endDate: string; }>({
