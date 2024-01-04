@@ -90,6 +90,7 @@ export default function Home() {
     }
 
     const chat = constructChat();
+    setNoteValue("");
     const record = await writeToDwn(chat);
     const { status } = await sendRecord(record);
 
@@ -148,21 +149,6 @@ export default function Home() {
     }
   };
 
-  const handleCopyDid = async () => {
-    if (myDid) {
-      try {
-        await navigator.clipboard.writeText(myDid);
-        setDidCopied(true);
-
-        setTimeout(() => {
-          setDidCopied(false);
-        }, 3000);
-      } catch (err) {
-        console.log("Failed to copy DID: " + err);
-      }
-    }
-  };
-
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">
       <div className="flex h-screen overflow-hidden">
@@ -178,9 +164,9 @@ export default function Home() {
                 
 
               <div className="h-screen rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark xl:flex">
-                  <div className="hidden h-screen flex-col xl:flex xl:w-1/4">
+                  <div className=" h-screen flex-col xl:flex xl:w-1/4">
                       <div className="sticky border-b border-stroke px-6 py-7.5 dark:border-strokedark">
-                        <h3 className="text-lg font-medium text-black dark:text-white 2xl:text-xl">Active Conversations<span className="rounded-md border-[.5px] border-stroke bg-gray-2 py-0.5 px-2 text-base font-medium text-black dark:border-strokedark dark:bg-boxdark-2 dark:text-white 2xl:ml-4">7</span></h3>
+                        <h3 className="text-lg font-medium text-black dark:text-white 2xl:text-xl">Active Conversations<span className="rounded-md border-[.5px] border-stroke bg-gray-2 py-0.5 px-2 text-base font-medium text-black dark:border-strokedark dark:bg-boxdark-2 dark:text-white 2xl:ml-4"></span></h3>
                       </div>
                       <div className="flex max-h-screen flex-col overflow-auto p-5">
                               <div className="bg-primary rounded-xl p-2 mb-5 text-white">
@@ -215,10 +201,7 @@ export default function Home() {
                                   </div>
                                 )}
                                 
-                                <div className="absolute flex flex-row gap-3 bottom-10">
-                                  <button className="bg-primary text-white rounded p-2" onClick={handleCopyDid}>
-                                    <span>{didCopied ? "DID Copied!" : "Copy DID"}</span>
-                                  </button>
+                                <div className="absolute flex justify-center bottom-5">
                                   <button className="bg-primary text-white rounded p-2" onClick={handleStartNewChat}>
                                     <span>Add Friends +</span>
                                   </button>
@@ -296,10 +279,10 @@ export default function Home() {
                       
                   </div>
                   ) : (
-                    <div className="flex flex-col justify-center align-center">
+                    <div className="flex flex-col mx-30 justify-center align-center">
                     <h3>Start a new chat or select an existing chat</h3>
                     <p>
-                      No chats? Click Add Friends + button to start a new chat. Please note
+                      Click the Add Friends + button to start a new chat. Please note
                       that chats may take awhile to render.
                     </p>
                   </div>
