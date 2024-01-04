@@ -71,6 +71,10 @@ const ContextProvider = ({ children }) => {
           schema: "https://did-box.com/schemas/documentDetails",
           dataFormats: ['application/octet-stream', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
         },
+        chat: {
+          schema: "https://did-box.com/schemas/chat",
+          dataFormats: ["application/json"],
+        },
       },
       structure: {
         personalDetails: {
@@ -134,6 +138,13 @@ const ContextProvider = ({ children }) => {
             { who: "anyone", can: "write" },
             { who: "author", of: "documentDetails", can: "read" },
             { who: "recipient", of: "documentDetails", can: "read"}
+          ],
+        },
+        chat: {
+          $actions: [
+            { who: "anyone", can: "write" },
+            { who: "author", of: "chat", can: "read" },
+            { who: "recipient", of: "chat", can: "read" },
           ],
         },
       },
