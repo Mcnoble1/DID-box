@@ -520,7 +520,7 @@ const Letters = () => {
                       </div>
                       </>
                       ) : (
-                        <h3 className="text-xl mt-1 mb-5 font-medium text-black text-center dark:text-white">🥳🎉🎊You just sent a letter into the future! Hold tight</h3>
+                        <h3 className="text-xl mt-1 mb-5 font-medium text-black text-center dark:text-white">🥳🎉🎊You just sent a letter into the future! Hold tight. It will arrive on {user.publishedDate}</h3>
                       )}      
                       
 
