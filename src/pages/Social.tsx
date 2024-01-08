@@ -20,7 +20,7 @@ import Youtube from '../images/social/Youtube-1.png'
 import Skype from '../images/social/Skype-1.png'
 import Line from '../images/social/Line-1.png'
 import '../pages/signin.css';
-import Image from '../images/user/2.png';
+import Image from '../images/social/Twitter-1.png';
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 
 
@@ -514,7 +514,7 @@ const showDeleteConfirmation = (userId: string) => {
                           </div>
                         )}
                   </div>
-                  <div>
+                  <div className='flex flex-row'>
                     <img src={Image} width={120} height={120} />
                   </div>
                 </div>

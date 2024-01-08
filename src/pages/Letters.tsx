@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext, ChangeEvent, FormEvent } from 'react';
-import Image from '../images/user/7.png';
+import Image from '../images/user/message.png';
 import { Web5Context } from "../utils/Web5Context";
 import { toast } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css'; 

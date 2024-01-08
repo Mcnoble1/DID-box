@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useContext, ChangeEvent, FormEvent } from 'react';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
-import Image from '../../images/user/7.png';
+import Image from '../../images/user/onee.png';
 import { toast } from 'react-toastify'; 
 import { Web5Context } from "../../utils/Web5Context";
 import 'react-toastify/dist/ReactToastify.css'; 
