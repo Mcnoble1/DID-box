@@ -22,6 +22,9 @@ const Documents = () => {
   const [userToDeleteId, setUserToDeleteId] = useState<number | null>(null);
   const [isDeleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [recipientDid, setRecipientDid] = useState("");
+  const [sharePopupOpen, setSharePopupOpen] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const popup = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(false);
@@ -63,7 +66,7 @@ const Documents = () => {
   
     const documentResult = await record.data.blob();
     const documentURL = URL.createObjectURL(documentResult);
-    setDocumentURLs(prevDocumentURLs => [...prevDocumentURLs, documentURL]);
+    setDocumentURLs(prevDocumentURLs => [...prevDocumentURLs, {documentURL, documentId}]);
     });
     toast.success('Successfully fetched document details', {
       position: toast.POSITION.TOP_RIGHT,
@@ -118,7 +121,7 @@ const Documents = () => {
             position: toast.POSITION.TOP_RIGHT,
             autoClose: 3000, 
           });
-          setUsersDetails(prevDocumentDetails => prevDocumentDetails.filter(message => message.recordId !== recordId));
+          setDocumentURLs(prevDocumentDetails => prevDocumentDetails.filter(message => message.documentId !== recordId));
         } else {
           console.error('Error deleting record:', deleteResult.status);
           toast.error('Error deleting record:', {
@@ -131,6 +134,45 @@ const Documents = () => {
       }
     } catch (error) {
       console.error('Error in deleteDocumentDetails:', error);
+    }
+  };
+
+  const shareDocumentDetails = async (recordId: string) => {
+    setShareLoading(true);
+    try {
+      const response = await web5.dwn.records.query({
+        message: {
+          filter: {
+            recordId: recordId,
+          },
+        },
+      });
+  
+      if (response.records && response.records.length > 0) {
+        const record = response.records[0];
+        const { status } = await record.send(recipientDid);
+        console.log('Send record status in shareDocument', status);
+        toast.success('Successfully shared document', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000,
+        });
+        setShareLoading(false);
+        setSharePopupOpen(false);
+      } else {
+        console.error('No record found with the specified ID');
+        toast.error('Failed to share document', {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 3000,
+        });
+      }
+      setShareLoading(false);
+    } catch (err) {
+      console.error('Error in shareDoc:', err);
+      toast.error('Error in shareDoc. Please try again later.', {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 5000,
+      });
+      setShareLoading(false);
     }
   };
 
@@ -390,14 +432,107 @@ const Documents = () => {
                   <div className="flex w-full lg:w-2/5" key={index}>
                     <div className='mb-5'>
                       <div>
-                        <Document file={document}>
+                        <Document file={document.documentURL}>
                           <Page pageNumber={1} />
                         </Document>
                       </div>
                       <div className='w-full flex flex-row justify-evenly mb-5'>
                       <div className="relative">
                         <button
-                          onClick={() => showDeleteConfirmation(document.recordId)}
+                          ref={trigger}
+                          onClick={() => setSharePopupOpen(!sharePopupOpen)}
+                          className="inline-flex items-center justify-center rounded-full bg-success py-3 px-7 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+                        >
+                          Share
+                        </button>
+                        {sharePopupOpen && (
+                            <div
+                              ref={popup}
+                              className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
+                            >
+                              <div
+                                  className="lg:mt-15 lg:w-1/2 rounded-lg bg-white dark:bg-dark pt-3 px-4 shadow-md"
+                                  style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'scroll' }}
+                                >      
+                                <div
+                                  className="w-full wow fadeInUp mb-12 rounded-lg bg-primary/[5%] py-11 px-8 dark:bg-dark sm:p-[55px] lg:mb-5 lg:px-8 xl:p-[55px]"
+                                  data-wow-delay=".15s
+                                  ">        
+                                    <div className="flex flex-row justify-between ">
+                                      <h2 className="text-xl font-semibold mb-4">Share Document</h2>
+                                      <div className="flex justify-end">
+                                        <button
+                                          onClick={() => setSharePopupOpen(false)}
+                                          className="text-blue-500 hover:text-gray-700 focus:outline-none"
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-5 w-5 fill-current bg-primary rounded-full p-1 hover:bg-opacity-90"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="white"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M6 18L18 6M6 6l12 12"
+                                            />
+                                          </svg>
+                                        </button>
+                                      </div>  
+                                    </div>
+                                  <form>
+                                <div className="-mx-4 flex flex-wrap">
+                                  <div className="w-full px-4">
+                                    <div className="mb-8">
+                                      <label
+                                        htmlFor="recipientDid"
+                                        className="mb-3 block text-sm font-medium text-dark dark:text-white"
+                                      >
+                                        Recipient DID
+                                      </label>
+                                      <div>
+                                      <input
+                                        type="text"
+                                        name="recipientDid"
+                                        value={recipientDid}
+                                        onChange={(e) => setRecipientDid(e.target.value)}
+                                        placeholder="Paste Recipient DID"
+                                        required
+                                        className="w-full rounded-lg border border-transparent py-3 px-6 text-base text-body-color placeholder-body-color shadow-one outline-none focus:border-primary focus-visible:shadow-none dark:bg-[#242B51] dark:shadow-signUp"
+                                      />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  
+                                  <div className="w-full px-4">
+                                    <button 
+                                      type="button"
+                                      onClick={() => shareDocumentDetails(document.documentId)}
+                                      disabled={shareLoading}
+                                      className="rounded-lg bg-primary py-4 px-9 text-base font-medium text-white transition duration-300 ease-in-out hover:bg-opacity-80 hover:shadow-signUp">
+                                      {shareLoading ? (
+                                        <div className="flex items-center">
+                                          <div className="spinner"></div>
+                                          <span className="pl-1">Sharing...</span>
+                                        </div>
+                                      ) : (
+                                        <>Share</>
+                                      )}
+                                    </button>
+                                  </div>
+                                </div>
+                                  </form>
+                                  </div>
+                                </div>
+                            </div>
+                          )}
+                      </div>
+                      <div className="relative">
+                        <button
+                          onClick={() => showDeleteConfirmation(document.documentId)}
                           className="inline-flex items-center justify-center rounded-full bg-danger py-3 px-7 text-center font-medium text-white hover-bg-opacity-90 lg:px-8 xl:px-10"
                         >
                           Delete
@@ -416,7 +551,7 @@ const Documents = () => {
                                 <button
                                   onClick={() => {
                                     hideDeleteConfirmation();
-                                    deleteDocumentDetails(document.recordId);
+                                    deleteDocumentDetails(document.documentId);
                                   }}
                                   className="rounded bg-danger py-2 px-3 text-white hover:bg-opacity-90"
                                 >
