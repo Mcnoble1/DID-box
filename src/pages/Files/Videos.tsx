@@ -152,7 +152,6 @@ const Videos = () => {
 
   
      const fetchVideoDetails = async () => {
-      setFetchDetailsLoading(true);
       try {
         const response = await web5.dwn.records.query({
           from: myDid,
@@ -190,16 +189,13 @@ const Videos = () => {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
-    
-        setFetchDetailsLoading(false);
-    
+        
       } catch (err) {
         console.error('Error in fetchVideoDetails:', err);
         toast.error('Error in fetchVideoDetails. Please try again later.', {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 5000,
         });
-        setFetchDetailsLoading(false);
       };
     };
     
